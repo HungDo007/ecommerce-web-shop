@@ -7,4 +7,4 @@ Nhóm sinh viên thực hiện (Hệ đại trà):
 
 *Mô tả: Xây dựng trang web thương mại điện tử với nhiều loại mặt hàng và người dùng có thể tham gia bán hàng*
 
-*Công nghệ sử dụng: ASP.NET 5.0, ReactJS, SQL Server*
+*Công nghệ sử dụng: ASP.NET Core 5.0, ReactJS, SQL Server*
