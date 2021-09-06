@@ -1,4 +1,5 @@
-﻿using Application.System;
+﻿using Application.Common;
+using Application.System;
 using Application.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,12 +9,15 @@ namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
-        public UsersController(IUserService userService)
+        private readonly IMailService _mailService;
+        public UsersController(IUserService userService, IMailService mailService)
         {
             _userService = userService;
+            _mailService = mailService;
         }
 
         [HttpPost("authenticate")]
@@ -38,6 +42,14 @@ namespace WebAPI.Controllers
                 return Ok();
             else 
                 return BadRequest(result);
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> Ts()
+        {
+            await _mailService.ActiveMail("18110357@student.hcmute.edu.vn");
+            return Ok();
         }
 
     }

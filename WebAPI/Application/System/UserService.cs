@@ -20,10 +20,15 @@ namespace Application.System
         private readonly RoleManager<AppRole> _roleManager;
         private readonly IConfiguration _config;
         private readonly IMapper _mapper;
-        public UserService(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IConfiguration config, IMapper mapper)
+        public UserService(UserManager<AppUser> userManager,
+            SignInManager<AppUser> signInManager,
+            RoleManager<AppRole> roleManager,
+            IConfiguration config,
+            IMapper mapper)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _roleManager = roleManager;
             _config = config;
             _mapper = mapper;
         }
@@ -33,7 +38,9 @@ namespace Application.System
         {
             var user = await _userManager.FindByNameAsync(request.Username);
             if (user == null)
-                return null;
+            {
+                user = await _userManager.FindByEmailAsync(request.Username) != null ? await _userManager.FindByEmailAsync(request.Username) : null;
+            }
 
             var result = await _signInManager.PasswordSignInAsync(user, request.Password, request.Remember, true);
             if (!result.Succeeded)
@@ -90,7 +97,7 @@ namespace Application.System
 
             if (result.Succeeded)
                 return null;
-            else 
+            else
                 return errorList;
         }
     }
