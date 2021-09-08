@@ -9,7 +9,7 @@ namespace WebAPI.Mapping
         public AutoMapperProfile()
         {
             CreateMap<RegisterRequest, AppUser>();
-           
+            CreateMap<AppUser, UserResponse>();
         }
     }
 }

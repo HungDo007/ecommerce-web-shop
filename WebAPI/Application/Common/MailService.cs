@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Application.ViewModels;
 using MailKit.Net.Smtp;
@@ -17,20 +18,31 @@ namespace Application.Common
             _mailSettings = mailSettings.Value;
         }
 
-        public async Task<bool> ActiveMail(string toEmail)
+        public async Task SendMail(SendMailRequest mailRequest)
         {
-
-
             var email = new MimeMessage();
             email.Sender = MailboxAddress.Parse(_mailSettings.Mail);
-            email.To.Add(MailboxAddress.Parse(toEmail));
-
-            email.Subject = SystemConstants.ActiveMail;
-
-
+            email.To.Add(MailboxAddress.Parse(mailRequest.ToEmail));
+            email.Subject = mailRequest.Subject;
 
             var builder = new BodyBuilder();
-            builder.HtmlBody = $"Mã kích hoạt Email của bạn là: {GenerateCode()}";
+            if (mailRequest.Attachments != null)
+            {
+                byte[] fileBytes;
+                foreach (var file in mailRequest.Attachments)
+                {
+                    if (file.Length > 0)
+                    {
+                        using (var ms = new MemoryStream())
+                        {
+                            file.CopyTo(ms);
+                            fileBytes = ms.ToArray();
+                        }
+                        builder.Attachments.Add(file.FileName, fileBytes, ContentType.Parse(file.ContentType));
+                    }
+                }
+            }
+            builder.HtmlBody = mailRequest.Body;
             email.Body = builder.ToMessageBody();
 
             using var smtp = new SmtpClient();
@@ -38,14 +50,6 @@ namespace Application.Common
             smtp.Authenticate(_mailSettings.Mail, _mailSettings.Password);
             await smtp.SendAsync(email);
             smtp.Disconnect(true);
-
-            return true;
-        }
-
-        private string GenerateCode()
-        {
-            Random rd = new Random();
-            return rd.Next(100000, 999999).ToString();
         }
     }
 }

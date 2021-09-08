@@ -1,7 +1,10 @@
-﻿using Application.ViewModels;
+﻿using Application.Common;
+using Application.ViewModels;
 using AutoMapper;
+using Data.EF;
 using Data.Entities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -17,20 +20,45 @@ namespace Application.System
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
-        private readonly RoleManager<AppRole> _roleManager;
         private readonly IConfiguration _config;
         private readonly IMapper _mapper;
+        private readonly IMailService _mailService;
+        private readonly EShopContext _context;
+
         public UserService(UserManager<AppUser> userManager,
             SignInManager<AppUser> signInManager,
-            RoleManager<AppRole> roleManager,
             IConfiguration config,
-            IMapper mapper)
+            IMapper mapper,
+            IMailService mailService,
+            EShopContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _roleManager = roleManager;
             _config = config;
             _mapper = mapper;
+            _mailService = mailService;
+            _context = context;
+        }
+
+
+        public async Task ActiveMail(string email)
+        {
+            string code = GenerateCode();
+
+            SendMailRequest mailRequest = new SendMailRequest();
+            mailRequest.Subject = SystemConstants.ActiveMail;
+            mailRequest.ToEmail = email;
+            mailRequest.Body = $"Mã xác thực của bạn là: {code}";
+
+            await _mailService.SendMail(mailRequest);
+
+            UserActiveEmail uae = new UserActiveEmail() 
+            { 
+                Email = email,
+                Code = code 
+            };
+            _context.UserActiveEmails.Add(uae);
+            await _context.SaveChangesAsync();
         }
 
 
@@ -52,7 +80,6 @@ namespace Application.System
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Email,user.Email),
-                new Claim(ClaimTypes.GivenName,user.LastName),
                 new Claim(ClaimTypes.Name,user.UserName)
             };
             foreach (var i in roles)
@@ -78,16 +105,46 @@ namespace Application.System
             return tokenHandler.WriteToken(token);
         }
 
+
+        public async Task<bool> ChangeEmail(string username, string email)
+        {
+            if (await _userManager.Users.AnyAsync(x => x.UserName != username && x.Email == email))
+                return false;
+
+            var user = await _userManager.FindByNameAsync(username);
+            user.Email = email;
+            user.EmailConfirmed = false;
+            if ((await _userManager.UpdateAsync(user)).Succeeded)
+                return true;
+            return false;
+        }
+
+        public async Task<UserResponse> GetByName(string username)
+        {
+            var user = await _userManager.FindByNameAsync(username);
+            if (user == null)
+                return null;
+
+            UserResponse res = _mapper.Map<UserResponse>(user);
+            res.Role = (await _userManager.GetRolesAsync(user))[0];
+            return res;
+        }
+
+        public Task<List<UserResponse>> GetUserPaging()
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<List<string>> Register(RegisterRequest request)
         {
             List<string> errorList = new List<string>();
 
             var user = await _userManager.FindByNameAsync(request.UserName);
             if (user != null)
-                errorList.Add("Username is exists");
+                errorList.Add("Username đã được sử dụng");
 
             if (await _userManager.FindByEmailAsync(request.Email) != null)
-                errorList.Add("Email already in use");
+                errorList.Add("Email đã được sử dụng");
 
 
             user = _mapper.Map<AppUser>(request);
@@ -99,6 +156,33 @@ namespace Application.System
                 return null;
             else
                 return errorList;
+        }
+
+
+        public async Task<bool> Update(string username, UserUpdateRequest request)
+        {
+            var user = await _userManager.FindByNameAsync(username);
+
+            if (user == null)
+                return false;
+
+            user.Address = request.Address;
+            user.PhoneNumber = request.PhoneNumber;
+            user.FirstName = request.FirstName;
+            user.LastName = request.LastName;
+            user.Dob = request.Dob;
+
+            var result = await _userManager.UpdateAsync(user);
+            if (result.Succeeded)
+                return true;
+            return false;
+        }
+
+
+        private string GenerateCode()
+        {
+            Random rd = new Random();
+            return rd.Next(100000, 999999).ToString();
         }
     }
 }
