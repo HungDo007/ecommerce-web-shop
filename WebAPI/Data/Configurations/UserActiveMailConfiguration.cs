@@ -8,7 +8,7 @@ namespace Data.Configurations
     {
         public void Configure(EntityTypeBuilder<UserActiveEmail> builder)
         {
-            builder.HasKey(x => x.Username);
+            builder.HasKey(x => x.Email);
         }
     }
 }

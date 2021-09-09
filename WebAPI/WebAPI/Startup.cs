@@ -14,6 +14,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Collections.Generic;
+using Application.ViewModels;
+using Application.Common;
 
 namespace WebAPI
 {
@@ -43,7 +45,8 @@ namespace WebAPI
                             .WithExposedHeaders("Content-Range");
                     });
             });
-
+            //mail settings
+            services.Configure<MailSettings>(Configuration.GetSection(SystemConstants.MailSettings));
             //For identity.entityframworkcore.
             services.AddDbContext<EShopContext>(options => options.UseSqlServer(Configuration.GetConnectionString(SystemConstants.MainConnectionString)));
 
@@ -60,10 +63,12 @@ namespace WebAPI
             //Injecting interface
 
             services.AddScoped<IUserService, UserService>();
-
+            services.AddScoped<IMailService, MailService>();
 
 
             services.AddControllers();
+
+            
 
             services.AddAutoMapper(typeof(Startup));
 
