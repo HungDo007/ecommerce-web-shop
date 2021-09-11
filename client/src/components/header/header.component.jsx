@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
+import { useHistory } from "react-router-dom";
 
 import { ReactComponent as Logo } from "../../assets/home.svg";
 import CartIcon from "../cart-icon/cart-icon.component";
@@ -9,9 +10,14 @@ import { setCurrentUser } from "../../redux/user/user.actions";
 import "./header.styles.scss";
 
 const Header = ({ currentUser, setCurrentUser }) => {
-  //use hook to get currentUser from redux
+  //use hook to get currentUser  or dispatch setCurrentUser from redux
   //const currentUser = useSelector((state) => state.user.currentUser);
   //const dispatch = useDispatch();
+  const history = useHistory();
+  const handleSignOut = () => {
+    setCurrentUser(null);
+    history.push("/");
+  };
   return (
     <div className="header">
       <Link className="logo-container" to="/">
@@ -21,7 +27,7 @@ const Header = ({ currentUser, setCurrentUser }) => {
       </Link>
       <div className="options">
         {currentUser ? (
-          <div className="option" onClick={() => setCurrentUser(null)}>
+          <div className="option" onClick={handleSignOut}>
             SIGN OUT
           </div>
         ) : (
@@ -29,6 +35,12 @@ const Header = ({ currentUser, setCurrentUser }) => {
             SIGN IN
           </Link>
         )}
+        <div
+          className="option"
+          onClick={() => setCurrentUser({ hung: "name", role: "Admin" })}
+        >
+          setUser
+        </div>
         <CartIcon></CartIcon>
       </div>
     </div>

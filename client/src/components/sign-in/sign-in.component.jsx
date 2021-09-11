@@ -34,7 +34,7 @@ const SignIn = ({ setCurrentUser }) => {
       .post("http://localhost:5000/api/Users/authenticate", data)
       .then((response) => {
         const user = jwtDecode(response.data);
-        // console.log(user);
+        //console.log(user.role);
         setCurrentUser(user);
       })
       .catch((error) => {
