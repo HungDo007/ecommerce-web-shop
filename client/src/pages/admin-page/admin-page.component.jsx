@@ -7,7 +7,7 @@ import "./admin-page.styles.scss";
 
 const AdminPage = ({ match }) => {
   return (
-    <div className="">
+    <div>
       <Switch>
         <Route exact path={match.path} component={Profile} />
         <Route path={`${match.path}/account`} component={ManageAccountPage} />
