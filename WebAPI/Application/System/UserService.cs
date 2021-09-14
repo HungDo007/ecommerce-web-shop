@@ -1,5 +1,6 @@
 ﻿using Application.Common;
-using Application.ViewModels;
+using Application.ViewModels.Common;
+using Application.ViewModels.System;
 using AutoMapper;
 using Data.EF;
 using Data.Entities;
@@ -10,6 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -52,15 +54,14 @@ namespace Application.System
 
             await _mailService.SendMail(mailRequest);
 
-            UserActiveEmail uae = new UserActiveEmail() 
-            { 
+            UserActiveEmail uae = new UserActiveEmail()
+            {
                 Email = email,
-                Code = code 
+                Code = code
             };
             _context.UserActiveEmails.Add(uae);
             await _context.SaveChangesAsync();
         }
-
 
         public async Task<string> Authenticate(LoginRequest request)
         {
@@ -105,7 +106,6 @@ namespace Application.System
             return tokenHandler.WriteToken(token);
         }
 
-
         public async Task<bool> ChangeEmail(string username, string email)
         {
             if (await _userManager.Users.AnyAsync(x => x.UserName != username && x.Email == email))
@@ -119,6 +119,12 @@ namespace Application.System
             return false;
         }
 
+        public async Task<List<UserResponse>> GetAll()
+        {
+            var data = await _userManager.Users.ToListAsync();
+            return _mapper.Map<List<UserResponse>>(data);
+        }
+
         public async Task<UserResponse> GetByName(string username)
         {
             var user = await _userManager.FindByNameAsync(username);
@@ -130,12 +136,36 @@ namespace Application.System
             return res;
         }
 
-        public Task<List<UserResponse>> GetUserPaging()
+        public async Task<PagedResult<UserResponse>> GetUserPaging(UserPagingRequest request)
         {
-            throw new NotImplementedException();
+            var query = _userManager.Users;
+
+            //Filter
+            if (!string.IsNullOrEmpty(request.Keyword))
+            {
+                query = query.Where(x => x.UserName.Contains(request.Keyword));
+            }
+
+            //Paging
+            int totalRow = await query.CountAsync();
+            var data = await query.Skip((request.PageIndex - 1) * request.PageSize)
+                .Take(request.PageSize)
+                .ToListAsync();
+
+            List<UserResponse> responses = _mapper.Map<List<UserResponse>>(data);
+
+            //Select and projection
+            var pagedResult = new PagedResult<UserResponse>()
+            {
+                TotalRecords = totalRow,
+                PageIndex = request.PageIndex,
+                PageSize = request.PageSize,
+                Items = responses
+            };
+            return pagedResult;
         }
 
-        public async Task<List<string>> Register(RegisterRequest request)
+        public async Task<List<string>> Register(RegisterRequest request, bool IsAdmin)
         {
             List<string> errorList = new List<string>();
 
@@ -150,14 +180,16 @@ namespace Application.System
             user = _mapper.Map<AppUser>(request);
 
             var result = await _userManager.CreateAsync(user, request.Password);
-            await _userManager.AddToRoleAsync(user, SystemConstants.RoleUser);
+            if (IsAdmin)
+                await _userManager.AddToRoleAsync(user, SystemConstants.RoleAdmin);
+            else
+                await _userManager.AddToRoleAsync(user, SystemConstants.RoleUser);
 
             if (result.Succeeded)
                 return null;
             else
                 return errorList;
         }
-
 
         public async Task<bool> Update(string username, UserUpdateRequest request)
         {
@@ -178,6 +210,19 @@ namespace Application.System
             return false;
         }
 
+        public async Task<bool> VerifyEmail(string email, string code)
+        {
+            var check = await _context.UserActiveEmails.FindAsync(email);
+            var user = await _userManager.FindByEmailAsync(email);
+            if (check.Code == code)
+            {
+                user.EmailConfirmed = true;
+                var result = await _userManager.UpdateAsync(user);
+                if (result.Succeeded)
+                    return true;
+            }
+            return false;
+        }
 
         private string GenerateCode()
         {

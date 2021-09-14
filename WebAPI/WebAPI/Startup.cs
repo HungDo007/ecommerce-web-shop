@@ -14,8 +14,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Collections.Generic;
-using Application.ViewModels;
 using Application.Common;
+using Application.ViewModels.Common;
 
 namespace WebAPI
 {
