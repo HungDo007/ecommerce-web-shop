@@ -1,4 +1,4 @@
-﻿using Application.ViewModels;
+﻿using Application.ViewModels.Common;
 using System.Threading.Tasks;
 
 namespace Application.Common

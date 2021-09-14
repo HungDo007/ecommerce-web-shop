@@ -1,5 +1,5 @@
-﻿using Application.ViewModels;
-using System;
+﻿using Application.ViewModels.Common;
+using Application.ViewModels.System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -20,7 +20,7 @@ namespace Application.System
         /// </summary>
         /// <param name="request"></param>
         /// <returns>null if register successed; otherwise, list error in process</returns>
-        Task<List<string>> Register(RegisterRequest request);
+        Task<List<string>> Register(RegisterRequest request, bool IsAdmin);
 
 
         /// <summary>
@@ -50,10 +50,17 @@ namespace Application.System
 
 
         /// <summary>
-        /// Return list infomation of user paged.
+        /// Return list infomation of user paged and infomation of page result.
         /// </summary>
         /// <returns></returns>
-        Task<List<UserResponse>> GetUserPaging();
+        Task<PagedResult<UserResponse>> GetUserPaging(UserPagingRequest request);
+
+
+        /// <summary>
+        /// Return all user.
+        /// </summary>
+        /// <returns></returns>
+        Task<List<UserResponse>> GetAll();
 
 
         /// <summary>
@@ -62,5 +69,14 @@ namespace Application.System
         /// <param name="request"></param>
         /// <returns></returns>
         Task ActiveMail(string email);
+
+
+        /// <summary>
+        /// Verify email
+        /// </summary>
+        /// <param name="email"></param>
+        /// <param name="code"></param>
+        /// <returns>true if verify successed when match code; otherwise, false</returns>
+        Task<bool> VerifyEmail(string email, string code);
     }
 }

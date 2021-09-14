@@ -1,7 +1,7 @@
 ﻿using Application;
 using Application.Common;
 using Application.System;
-using Application.ViewModels;
+using Application.ViewModels.System;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -15,7 +15,7 @@ namespace WebAPI.Controllers
     {
         private readonly IUserService _userService;
         
-        public UsersController(IUserService userService, IMailService mailService)
+        public UsersController(IUserService userService)
         {
             _userService = userService;            
         }
@@ -36,7 +36,7 @@ namespace WebAPI.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
-            var result = await _userService.Register(request);
+            var result = await _userService.Register(request, false);
 
             if (result == null)
                 return Ok();
@@ -49,7 +49,7 @@ namespace WebAPI.Controllers
         public async Task<IActionResult> Update([FromBody] UserUpdateRequest request)
         {
             string username = User.Identity.Name;
-            if (User.IsInRole(SystemConstants.RoleAdmin) || username == request.Username)
+            if (username == request.Username)
             {
                 if (await _userService.Update(request.Username, request))
                 {
@@ -66,7 +66,7 @@ namespace WebAPI.Controllers
         public async Task<IActionResult> ChangeEmail([FromBody] MailRequest request)
         {
             string name = User.Identity.Name;
-            if (User.IsInRole(SystemConstants.RoleAdmin) || name == request.Username)
+            if (name == request.Username)
             {
                 if (await _userService.ChangeEmail(request.Username, request.Email))
                 {
@@ -76,15 +76,20 @@ namespace WebAPI.Controllers
             }
             return BadRequest("Bạn không có quyền chỉnh sửa thông tin cho tài khoản người khác.");
         }
-
-        [HttpGet]
-        public async Task<IActionResult> GetByName(string username)
+        
+        [HttpPost("verifyEmail")]
+        public async Task<IActionResult> VerifyEmail([FromBody] MailRequest request)
         {
-            if (string.IsNullOrEmpty(username))
-                return BadRequest();
-
-            UserResponse user = await _userService.GetByName(username);
-            return Ok(user);
+            string name = User.Identity.Name;
+            if (name == request.Username)
+            {
+                if (await _userService.VerifyEmail(request.Email, request.Code))
+                {
+                    return Ok();
+                }
+                return BadRequest("Mã nhập không đúng");
+            }
+            return BadRequest("Bạn không có quyền chỉnh sửa thông tin cho tài khoản người khác.");
         }
 
         [HttpPost("sendCode")]

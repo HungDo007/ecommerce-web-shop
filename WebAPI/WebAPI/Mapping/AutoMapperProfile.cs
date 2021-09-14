@@ -1,4 +1,4 @@
-﻿using Application.ViewModels;
+﻿using Application.ViewModels.System;
 using AutoMapper;
 using Data.Entities;
 
@@ -10,6 +10,7 @@ namespace WebAPI.Mapping
         {
             CreateMap<RegisterRequest, AppUser>();
             CreateMap<AppUser, UserResponse>();
+
         }
     }
 }
