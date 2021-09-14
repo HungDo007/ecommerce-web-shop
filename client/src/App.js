@@ -1,21 +1,48 @@
-import { Route, Switch } from "react-router-dom";
+import { Route, Switch, Redirect } from "react-router-dom";
+import { connect } from "react-redux";
 
 import "./App.css";
 
-import Header from "./components/header/header.component";
+import AdminPage from "./pages/admin-page/admin-page.component";
 import HomePage from "./pages/homepage/homepage.component";
 import SignInAndSignUpPage from "./pages/sign-in-and-sign-up/sign-in-and-sign-up.component";
+import Sidebar from "./components/sidebar/sidebar.component";
 
-const App = () => {
+const App = ({ currentUser }) => {
+  // currentUser ? console.log("có user") : console.log("user is null");
+  // user.currentUser
+  //   ? user.currentUser.role == "Admin"
+  //     ? console.log("is admin")
+  //     : console.log("not admin")
+  //   : console.log("null");
   return (
     <div>
-      <Header />
+      <Sidebar />
       <Switch>
         <Route exact path="/" component={HomePage} />
-        <Route path="/signin" component={SignInAndSignUpPage} />
+        <Route path="/admin" component={AdminPage} />
+        <Route
+          exact
+          path="/signin"
+          render={() =>
+            currentUser ? (
+              currentUser.role === "Admin" ? (
+                <Redirect to="/admin" />
+              ) : (
+                <Redirect to="/" />
+              )
+            ) : (
+              <SignInAndSignUpPage />
+            )
+          }
+        />
       </Switch>
     </div>
   );
 };
 
-export default App;
+const mapStateToProps = (state) => ({
+  currentUser: state.user.currentUser,
+});
+
+export default connect(mapStateToProps)(App);

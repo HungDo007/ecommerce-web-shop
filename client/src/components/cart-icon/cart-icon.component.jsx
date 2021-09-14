@@ -1,10 +1,9 @@
-import { ReactComponent as ShoppingIcon } from "../../assets/shopping-bag.svg";
-
+import * as FaIcons from "react-icons/fa";
 import "./cart-icon.styles.scss";
 
 const CartIcon = () => (
   <div className="cart-icon">
-    <ShoppingIcon className="shopping-icon" />
+    <FaIcons.FaShoppingCart className="shopping-icon" />
     <span className="item-count">0</span>
   </div>
 );

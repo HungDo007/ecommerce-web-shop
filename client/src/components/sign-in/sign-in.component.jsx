@@ -1,13 +1,16 @@
 import { useState } from "react";
+import axios from "axios";
+import { connect } from "react-redux";
+import jwtDecode from "jwt-decode";
 
 import CustomButton from "../custom-button/custom-button.component";
 import FormInput from "../form-input/form-input.component";
 
-import callApi from "../../api/apiService";
+import { setCurrentUser } from "../../redux/user/user.actions";
 
 import "./sign-in.styles.scss";
 
-const SignIn = () => {
+const SignIn = ({ setCurrentUser }) => {
   const [userInfo, setUserInfo] = useState({
     email: "",
     password: "",
@@ -24,11 +27,19 @@ const SignIn = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = {
-      email: email,
+      username: email,
       password: password,
     };
-    //console.log(data);
-    callApi("account/signin", "post", data);
+    axios
+      .post("http://localhost:5000/api/Users/authenticate", data)
+      .then((response) => {
+        const user = jwtDecode(response.data);
+        //console.log(user.role);
+        setCurrentUser(user);
+      })
+      .catch((error) => {
+        console.log(error.response.data);
+      });
   };
 
   return (
@@ -38,10 +49,9 @@ const SignIn = () => {
       <form onSubmit={handleSubmit}>
         <FormInput
           name="email"
-          type="email"
           handleChange={handleChange}
           value={email}
-          label="Email"
+          label="Email or Username"
           required
         />
         <FormInput
@@ -63,4 +73,8 @@ const SignIn = () => {
   );
 };
 
-export default SignIn;
+const mapDispatchToProps = (dispatch) => ({
+  setCurrentUser: (user) => dispatch(setCurrentUser(user)),
+});
+
+export default connect(null, mapDispatchToProps)(SignIn);

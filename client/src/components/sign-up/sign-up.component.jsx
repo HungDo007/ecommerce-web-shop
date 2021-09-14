@@ -1,9 +1,8 @@
 import { useState } from "react";
+import axios from "axios";
 
 import CustomButton from "../custom-button/custom-button.component";
 import FormInput from "../form-input/form-input.component";
-
-import callApi from "../../api/apiService";
 
 import "./sign-up.styles.scss";
 
@@ -32,12 +31,22 @@ const SignUp = () => {
     }
 
     const data = {
-      username: username,
+      userName: username,
       email: email,
       password: password,
     };
-    console.log(data);
-    callApi("account/signup", "post", data);
+    // console.log(data);
+    // callApi("Users/register", "post", data).then((item) => {
+    //   console.log(item);
+    // });
+    axios
+      .post("http://localhost:5000/api/Users/register", data)
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => {
+        console.log(error.response.data);
+      });
   };
 
   return (
