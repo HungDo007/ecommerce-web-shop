@@ -19,6 +19,36 @@ namespace Data.Migrations
                 .HasAnnotation("ProductVersion", "5.0.9")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("CategoryCategory", b =>
+                {
+                    b.Property<int>("CatChildrenId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CatParentId")
+                        .HasColumnType("int");
+
+                    b.HasKey("CatChildrenId", "CatParentId");
+
+                    b.HasIndex("CatParentId");
+
+                    b.ToTable("CategoryCategory");
+                });
+
+            modelBuilder.Entity("ComponentProductDetail", b =>
+                {
+                    b.Property<int>("ComponentsID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductDetailsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ComponentsID", "ProductDetailsId");
+
+                    b.HasIndex("ProductDetailsId");
+
+                    b.ToTable("ComponentProductDetail");
+                });
+
             modelBuilder.Entity("Data.Entities.AppUser", b =>
                 {
                     b.Property<Guid>("Id")
@@ -94,7 +124,7 @@ namespace Data.Migrations
                             Id = new Guid("f82493f3-ab61-477b-8bb8-daebc61cf148"),
                             AccessFailedCount = 0,
                             Address = "TPHCM",
-                            ConcurrencyStamp = "f820405b-c438-401b-bb5b-1962e9c41db2",
+                            ConcurrencyStamp = "1c2fde3f-0b21-47c6-9546-b9cb78b886fe",
                             Dob = new DateTime(2020, 1, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "webshop@gmail.com",
                             EmailConfirmed = true,
@@ -104,7 +134,7 @@ namespace Data.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "webshop@gmail.com",
                             NormalizedUserName = "admin",
-                            PasswordHash = "AQAAAAEAACcQAAAAEJbyfwHJGWTmpM4J7/izkAHExv1Gsfa6rguMiOu6jHBEJHV5DvLaAOt96/tZWnvZKg==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEPyD6q8824Cv9hpNHAfj4ZEF9FdEqCDDWmuGV4pPlywh7nZvdEE70LHGJ4wUwXubrQ==",
                             PhoneNumber = "1234567",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
@@ -115,9 +145,10 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.Cart", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
@@ -125,8 +156,8 @@ namespace Data.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<Guid>("ProductId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
@@ -145,9 +176,12 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.Category", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:IdentityIncrement", 1)
+                        .HasAnnotation("SqlServer:IdentitySeed", 1)
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<bool>("IsShowAtHome")
                         .HasColumnType("bit");
@@ -155,13 +189,10 @@ namespace Data.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("ParentId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<bool>("Status")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
-                        .HasDefaultValue(false);
+                        .HasDefaultValue(true);
 
                     b.HasKey("Id");
 
@@ -170,9 +201,12 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.Component", b =>
                 {
-                    b.Property<Guid>("ID")
+                    b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:IdentityIncrement", 1)
+                        .HasAnnotation("SqlServer:IdentitySeed", 1)
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
@@ -185,26 +219,14 @@ namespace Data.Migrations
                     b.ToTable("Components");
                 });
 
-            modelBuilder.Entity("Data.Entities.ComponentDetail", b =>
-                {
-                    b.Property<Guid>("ComponentId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("DetailId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("ComponentId", "DetailId");
-
-                    b.HasIndex("DetailId");
-
-                    b.ToTable("ComponentDetails");
-                });
-
             modelBuilder.Entity("Data.Entities.Order", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:IdentityIncrement", 1)
+                        .HasAnnotation("SqlServer:IdentitySeed", 1)
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
@@ -230,11 +252,11 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.OrderDetail", b =>
                 {
-                    b.Property<Guid>("OrderId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
 
-                    b.Property<Guid>("ProductId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
@@ -251,9 +273,12 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.Product", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:IdentityIncrement", 1)
+                        .HasAnnotation("SqlServer:IdentitySeed", 1)
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
@@ -284,11 +309,11 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.ProductCategory", b =>
                 {
-                    b.Property<Guid>("ProductId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
 
-                    b.Property<Guid>("CategoryId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
 
                     b.HasKey("ProductId", "CategoryId");
 
@@ -299,9 +324,12 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.ProductDetail", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:IdentityIncrement", 1)
+                        .HasAnnotation("SqlServer:IdentitySeed", 1)
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -309,8 +337,8 @@ namespace Data.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<Guid>("ProductId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
 
                     b.Property<int>("Stock")
                         .HasColumnType("int");
@@ -324,15 +352,21 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.ProductImage", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:IdentityIncrement", 1)
+                        .HasAnnotation("SqlServer:IdentitySeed", 1)
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<bool>("IsPoster")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Path")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("ProductId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -362,9 +396,12 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.Transaction", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:IdentityIncrement", 1)
+                        .HasAnnotation("SqlServer:IdentitySeed", 1)
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<decimal>("Fee")
                         .HasColumnType("decimal(18,2)");
@@ -379,11 +416,11 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.TransactionOrder", b =>
                 {
-                    b.Property<Guid>("OrderId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
 
-                    b.Property<Guid>("TransactionId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("TransactionId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("ExpectedDate")
                         .HasColumnType("datetime2");
@@ -555,7 +592,7 @@ namespace Data.Migrations
                         new
                         {
                             Id = new Guid("ae7f2c5c-8241-4e88-9e2e-4e9342f98a51"),
-                            ConcurrencyStamp = "aa6595a2-452b-4528-bf4a-31bdd72d9f2d",
+                            ConcurrencyStamp = "0c83b064-d060-4e05-bcc4-d02f79d44e39",
                             Name = "Admin",
                             NormalizedName = "admin",
                             Description = "Administrator"
@@ -563,11 +600,41 @@ namespace Data.Migrations
                         new
                         {
                             Id = new Guid("8daf1440-3444-416d-807c-edbe207f8fba"),
-                            ConcurrencyStamp = "8fdc6677-b367-4768-b8cb-f2cb1f516358",
+                            ConcurrencyStamp = "8b8eff82-24ca-456b-8313-c161e80b26cf",
                             Name = "User",
                             NormalizedName = "user",
                             Description = "Website Users"
                         });
+                });
+
+            modelBuilder.Entity("CategoryCategory", b =>
+                {
+                    b.HasOne("Data.Entities.Category", null)
+                        .WithMany()
+                        .HasForeignKey("CatChildrenId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Data.Entities.Category", null)
+                        .WithMany()
+                        .HasForeignKey("CatParentId")
+                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ComponentProductDetail", b =>
+                {
+                    b.HasOne("Data.Entities.Component", null)
+                        .WithMany()
+                        .HasForeignKey("ComponentsID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Data.Entities.ProductDetail", null)
+                        .WithMany()
+                        .HasForeignKey("ProductDetailsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Data.Entities.Cart", b =>
@@ -587,25 +654,6 @@ namespace Data.Migrations
                     b.Navigation("AppUser");
 
                     b.Navigation("Product");
-                });
-
-            modelBuilder.Entity("Data.Entities.ComponentDetail", b =>
-                {
-                    b.HasOne("Data.Entities.Component", "Component")
-                        .WithMany("ComponentDetails")
-                        .HasForeignKey("ComponentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Data.Entities.ProductDetail", "ProductDetail")
-                        .WithMany("ComponentDetails")
-                        .HasForeignKey("DetailId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Component");
-
-                    b.Navigation("ProductDetail");
                 });
 
             modelBuilder.Entity("Data.Entities.Order", b =>
@@ -736,11 +784,6 @@ namespace Data.Migrations
                     b.Navigation("ProductCategories");
                 });
 
-            modelBuilder.Entity("Data.Entities.Component", b =>
-                {
-                    b.Navigation("ComponentDetails");
-                });
-
             modelBuilder.Entity("Data.Entities.Order", b =>
                 {
                     b.Navigation("OrderDetails");
@@ -759,11 +802,6 @@ namespace Data.Migrations
                     b.Navigation("ProductDetails");
 
                     b.Navigation("ProductImages");
-                });
-
-            modelBuilder.Entity("Data.Entities.ProductDetail", b =>
-                {
-                    b.Navigation("ComponentDetails");
                 });
 
             modelBuilder.Entity("Data.Entities.Transaction", b =>

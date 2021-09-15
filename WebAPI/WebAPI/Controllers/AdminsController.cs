@@ -1,5 +1,7 @@
 ﻿using Application;
+using Application.Catalog;
 using Application.System;
+using Application.ViewModels.Catalog;
 using Application.ViewModels.Common;
 using Application.ViewModels.System;
 using Microsoft.AspNetCore.Authorization;
@@ -15,11 +17,14 @@ namespace WebAPI.Controllers
     public class AdminsController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly ICategoryService _categoryService;
 
-        public AdminsController(IUserService userService)
+        public AdminsController(IUserService userService, ICategoryService categoryService)
         {
             _userService = userService;
+            _categoryService = categoryService;
         }
+
 
         [HttpPost("addAdmin")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
@@ -55,6 +60,24 @@ namespace WebAPI.Controllers
         {
             List<UserResponse> res = await _userService.GetAll();
             return Ok(res);
+        }
+
+        [HttpPost("category")]
+        public async Task<IActionResult> AddCategory([FromBody] CategoryVm request)
+        {
+            if (await _categoryService.AddCat(request))
+                return Ok();
+            else
+                return BadRequest("Category is exists");
+        }
+
+        [HttpPost("category/update")]
+        public async Task<IActionResult> UpdateCategory([FromBody] CategoryVm request)
+        {
+            if (await _categoryService.UpdateCat(request))
+                return Ok();
+            else
+                return BadRequest("Cats");
         }
     }
 }

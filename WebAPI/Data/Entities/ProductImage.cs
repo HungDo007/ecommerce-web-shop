@@ -1,13 +1,17 @@
-﻿using System;
-
-namespace Data.Entities
+﻿namespace Data.Entities
 {
     public class ProductImage
     {
-        public Guid Id { get; set; }
-        public Guid ProductId { set; get; }
+        public int Id { get; set; }
+        public int ProductId { set; get; }
         public string Path { set; get; }
+        public bool IsPoster { get; set; }
 
         public Product Product { get; set; }
+
+        public override string ToString()
+        {
+            return Path;
+        }
     }
 }

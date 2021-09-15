@@ -5,7 +5,7 @@ namespace Data.Entities
 {
     public class Product
     {
-        public Guid Id { get; set; }
+        public int Id { get; set; }
         public Guid UserId { get; set; }
         public string Name { get; set; }
         public bool Status { get; set; }

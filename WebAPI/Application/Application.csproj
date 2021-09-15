@@ -7,8 +7,6 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Catalog\" />
-    <Folder Include="ViewModels\Catalog\" />
     <Folder Include="ViewModels\Sale\" />
   </ItemGroup>
   <ItemGroup>

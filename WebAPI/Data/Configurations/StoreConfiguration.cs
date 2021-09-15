@@ -14,6 +14,7 @@ namespace Data.Configurations
         public void Configure(EntityTypeBuilder<Store> builder)
         {
             builder.HasKey(x => x.UserId);
+
             builder.HasOne(x => x.User).WithOne(x => x.Store);
         }
     }

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Data.Migrations
 {
-    public partial class Initial : Migration
+    public partial class init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -127,10 +127,10 @@ namespace Data.Migrations
                 name: "Categories",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Status = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
-                    ParentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Status = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
                     IsShowAtHome = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -142,7 +142,8 @@ namespace Data.Migrations
                 name: "Components",
                 columns: table => new
                 {
-                    ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
@@ -155,7 +156,8 @@ namespace Data.Migrations
                 name: "Transactions",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Provider = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Fee = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
                 },
@@ -168,19 +170,20 @@ namespace Data.Migrations
                 name: "UserActiveEmails",
                 columns: table => new
                 {
-                    Username = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Code = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserActiveEmails", x => x.Username);
+                    table.PrimaryKey("PK_UserActiveEmails", x => x.Email);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Orders",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     OrderDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ShipAddress = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -202,7 +205,8 @@ namespace Data.Migrations
                 name: "Products",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Status = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
@@ -242,11 +246,35 @@ namespace Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "CategoryCategory",
+                columns: table => new
+                {
+                    CatChildrenId = table.Column<int>(type: "int", nullable: false),
+                    CatParentId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CategoryCategory", x => new { x.CatChildrenId, x.CatParentId });
+                    table.ForeignKey(
+                        name: "FK_CategoryCategory_Categories_CatChildrenId",
+                        column: x => x.CatChildrenId,
+                        principalTable: "Categories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CategoryCategory_Categories_CatParentId",
+                        column: x => x.CatParentId,
+                        principalTable: "Categories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "TransactionOrders",
                 columns: table => new
                 {
-                    OrderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TransactionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    OrderId = table.Column<int>(type: "int", nullable: false),
+                    TransactionId = table.Column<int>(type: "int", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     ExpectedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -271,9 +299,10 @@ namespace Data.Migrations
                 name: "Carts",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProductId = table.Column<int>(type: "int", nullable: false),
                     Quantity = table.Column<int>(type: "int", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false)
@@ -298,8 +327,8 @@ namespace Data.Migrations
                 name: "OrderDetails",
                 columns: table => new
                 {
-                    OrderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    OrderId = table.Column<int>(type: "int", nullable: false),
+                    ProductId = table.Column<int>(type: "int", nullable: false),
                     Quantity = table.Column<int>(type: "int", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
                 },
@@ -323,8 +352,8 @@ namespace Data.Migrations
                 name: "ProductCategories",
                 columns: table => new
                 {
-                    ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    ProductId = table.Column<int>(type: "int", nullable: false),
+                    CategoryId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -347,8 +376,9 @@ namespace Data.Migrations
                 name: "ProductDetails",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ProductId = table.Column<int>(type: "int", nullable: false),
                     Stock = table.Column<int>(type: "int", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true)
@@ -368,9 +398,11 @@ namespace Data.Migrations
                 name: "ProductImages",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Path = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ProductId = table.Column<int>(type: "int", nullable: false),
+                    Path = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsPoster = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -384,24 +416,24 @@ namespace Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ComponentDetails",
+                name: "ComponentProductDetail",
                 columns: table => new
                 {
-                    DetailId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ComponentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    ComponentsID = table.Column<int>(type: "int", nullable: false),
+                    ProductDetailsId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ComponentDetails", x => new { x.ComponentId, x.DetailId });
+                    table.PrimaryKey("PK_ComponentProductDetail", x => new { x.ComponentsID, x.ProductDetailsId });
                     table.ForeignKey(
-                        name: "FK_ComponentDetails_Components_ComponentId",
-                        column: x => x.ComponentId,
+                        name: "FK_ComponentProductDetail_Components_ComponentsID",
+                        column: x => x.ComponentsID,
                         principalTable: "Components",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ComponentDetails_ProductDetails_DetailId",
-                        column: x => x.DetailId,
+                        name: "FK_ComponentProductDetail_ProductDetails_ProductDetailsId",
+                        column: x => x.ProductDetailsId,
                         principalTable: "ProductDetails",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -412,8 +444,8 @@ namespace Data.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Description", "Discriminator", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { new Guid("ae7f2c5c-8241-4e88-9e2e-4e9342f98a51"), "2a8ff4e5-3126-493e-9526-e5c518b3b6ac", "Administrator", "AppRole", "Admin", "admin" },
-                    { new Guid("8daf1440-3444-416d-807c-edbe207f8fba"), "7336b9cb-3c85-4f32-8eff-debf8c9c3886", "Website Users", "AppRole", "User", "user" }
+                    { new Guid("ae7f2c5c-8241-4e88-9e2e-4e9342f98a51"), "0c83b064-d060-4e05-bcc4-d02f79d44e39", "Administrator", "AppRole", "Admin", "admin" },
+                    { new Guid("8daf1440-3444-416d-807c-edbe207f8fba"), "8b8eff82-24ca-456b-8313-c161e80b26cf", "Website Users", "AppRole", "User", "user" }
                 });
 
             migrationBuilder.InsertData(
@@ -424,7 +456,7 @@ namespace Data.Migrations
             migrationBuilder.InsertData(
                 table: "AppUsers",
                 columns: new[] { "Id", "AccessFailedCount", "Address", "ConcurrencyStamp", "Dob", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { new Guid("f82493f3-ab61-477b-8bb8-daebc61cf148"), 0, "TPHCM", "85349f8c-47d7-4eba-a177-4c81b16c77d9", new DateTime(2020, 1, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), "webshop@gmail.com", true, "Super", "Admin", false, null, "webshop@gmail.com", "admin", "AQAAAAEAACcQAAAAELxBaGAnBhWvLO78BNq+PoAgikimcYog0JMrle8gOKy/H5zaWcDXuxkShVQ/2aFO0A==", "1234567", false, "", false, "admin" });
+                values: new object[] { new Guid("f82493f3-ab61-477b-8bb8-daebc61cf148"), 0, "TPHCM", "1c2fde3f-0b21-47c6-9546-b9cb78b886fe", new DateTime(2020, 1, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), "webshop@gmail.com", true, "Super", "Admin", false, null, "webshop@gmail.com", "admin", "AQAAAAEAACcQAAAAEPyD6q8824Cv9hpNHAfj4ZEF9FdEqCDDWmuGV4pPlywh7nZvdEE70LHGJ4wUwXubrQ==", "1234567", false, "", false, "admin" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Carts_ProductId",
@@ -437,9 +469,14 @@ namespace Data.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ComponentDetails_DetailId",
-                table: "ComponentDetails",
-                column: "DetailId");
+                name: "IX_CategoryCategory_CatParentId",
+                table: "CategoryCategory",
+                column: "CatParentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ComponentProductDetail_ProductDetailsId",
+                table: "ComponentProductDetail",
+                column: "ProductDetailsId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_OrderDetails_ProductId",
@@ -507,7 +544,10 @@ namespace Data.Migrations
                 name: "Carts");
 
             migrationBuilder.DropTable(
-                name: "ComponentDetails");
+                name: "CategoryCategory");
+
+            migrationBuilder.DropTable(
+                name: "ComponentProductDetail");
 
             migrationBuilder.DropTable(
                 name: "OrderDetails");

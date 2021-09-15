@@ -5,7 +5,7 @@ namespace Data.Entities
 {
     public class Order
     {
-        public Guid Id { set; get; }
+        public int Id { set; get; }
         public DateTime OrderDate { set; get; }
         public Guid UserId { set; get; }
         public string ShipAddress { set; get; }

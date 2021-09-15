@@ -9,6 +9,7 @@ namespace Data.Configurations
         public void Configure(EntityTypeBuilder<Product> builder)
         {
             builder.HasKey(x => x.Id);
+            builder.Property(x => x.Id).UseIdentityColumn();
             builder.Property(x => x.Status).HasDefaultValue(false);
             builder.HasOne(x => x.User).WithMany(x => x.Products).HasForeignKey(x => x.UserId);
         }
