@@ -5,15 +5,21 @@ const handleClick = (id) => {
   alert(`Are you sure to lock this account, id: ${id}`);
 };
 
+const title = "title";
+const director = "director";
+const genres = "genres";
+const year = "year";
+const action = null;
+
 export const columns = [
   {
     name: "Title",
-    selector: "title",
+    selector: (row) => row[title],
     sortable: true,
   },
   {
     name: "Director",
-    selector: "director",
+    selector: (row) => row[director],
     sortable: true,
     cell: (d) => (
       <a
@@ -28,19 +34,19 @@ export const columns = [
   },
   {
     name: "Genres",
-    selector: "genres",
+    selector: (row) => row[genres],
     sortable: true,
     cell: (d) => <span>{d.genres.join(", ")}</span>,
   },
   {
     name: "Year",
-    selector: "year",
+    selector: (row) => row[year],
     sortable: true,
   },
   {
     name: "Action",
     sortable: false,
-    selector: "null",
+    selector: (row) => row[action],
     cell: (d) => [
       <>
         <FaIcon.FaLock

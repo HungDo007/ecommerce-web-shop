@@ -67,7 +67,7 @@ const Sidebar = () => {
                   <li key={index} className={item.cName}>
                     <Link to={item.path}>
                       {item.icon}
-                      <span className="title">{item.title}</span>
+                      <span className="title-for-sidebar">{item.title}</span>
                     </Link>
                   </li>
                 );
