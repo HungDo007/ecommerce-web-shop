@@ -1,7 +1,6 @@
 using Application;
 using Application.System;
 using Data.EF;
-using AutoMapper;
 using Data.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -14,8 +13,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Collections.Generic;
-using Application.ViewModels;
 using Application.Common;
+using Application.ViewModels.Common;
+using Application.Catalog;
 
 namespace WebAPI
 {
@@ -64,11 +64,12 @@ namespace WebAPI
 
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IMailService, MailService>();
-
+            services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IProductService, ProductService>();
 
             services.AddControllers();
 
-            
+
 
             services.AddAutoMapper(typeof(Startup));
 

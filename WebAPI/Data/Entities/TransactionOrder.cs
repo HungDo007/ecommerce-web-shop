@@ -5,8 +5,8 @@ namespace Data.Entities
 {
     public class TransactionOrder
     {
-        public Guid OrderId { get; set; }
-        public Guid TransactionId { set; get; }
+        public int OrderId { get; set; }
+        public int TransactionId { set; get; }
         public OrderStatus Status { set; get; }
         public DateTime ExpectedDate { get; set; }
 

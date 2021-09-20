@@ -5,9 +5,9 @@ namespace Data.Entities
 {
     public class Cart
     {
-        public Guid Id { set; get; }
+        public int Id { set; get; }
         public Guid UserId { get; set; }
-        public Guid ProductId { set; get; }
+        public int ProductId { set; get; }
         public int Quantity { set; get; }
         public decimal Price { set; get; }
         public DateTime DateCreated { get; set; }

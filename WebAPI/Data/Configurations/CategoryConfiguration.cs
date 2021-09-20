@@ -9,7 +9,9 @@ namespace Data.Configurations
         public void Configure(EntityTypeBuilder<Category> builder)
         {
             builder.HasKey(x => x.Id);
-            builder.Property(x => x.Status).HasDefaultValue(false);
+            builder.Property(x => x.Id).UseIdentityColumn();
+            builder.Property(x => x.Status).HasDefaultValue(true);
+            builder.HasMany(x => x.CatParent).WithMany(x => x.CatChildren);
         }
     }
 }

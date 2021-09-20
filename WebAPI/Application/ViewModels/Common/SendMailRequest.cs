@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 
-namespace Application.ViewModels
+namespace Application.ViewModels.Common
 {
     public class SendMailRequest
     {

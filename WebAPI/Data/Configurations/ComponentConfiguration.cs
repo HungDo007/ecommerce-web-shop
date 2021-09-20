@@ -9,6 +9,8 @@ namespace Data.Configurations
         public void Configure(EntityTypeBuilder<Component> builder)
         {
             builder.HasKey(x => x.ID);
+            builder.Property(x => x.ID).UseIdentityColumn();
+            builder.HasMany(x => x.ProductDetails).WithMany(x => x.Components);
         }
     }
 }
