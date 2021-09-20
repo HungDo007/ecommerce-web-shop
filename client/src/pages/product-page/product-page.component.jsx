@@ -7,7 +7,7 @@ import "./product-page.styles.scss";
 const ProductPage = () => {
   return (
     <div>
-      <Route path="/product" component={ProductDetailPage} />
+      <Route path="/product/:productId" component={ProductDetailPage} />
     </div>
   );
 };
