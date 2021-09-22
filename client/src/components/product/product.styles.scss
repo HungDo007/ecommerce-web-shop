@@ -1,0 +1,24 @@
+.product-title {
+  margin: 1rem;
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.product {
+  display: flex;
+  flex-direction: column;
+
+  .items {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-gap: 12px;
+
+    & .product-item {
+      margin-bottom: 15px;
+    }
+  }
+}
+
+.more-button {
+  margin-bottom: 3rem;
+}

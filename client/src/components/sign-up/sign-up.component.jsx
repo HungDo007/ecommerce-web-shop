@@ -35,10 +35,6 @@ const SignUp = () => {
       email: email,
       password: password,
     };
-    // console.log(data);
-    // callApi("Users/register", "post", data).then((item) => {
-    //   console.log(item);
-    // });
     axios
       .post("http://localhost:5000/api/Users/register", data)
       .then((response) => {
