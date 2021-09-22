@@ -34,19 +34,34 @@ namespace Data.Migrations
                     b.ToTable("CategoryCategory");
                 });
 
-            modelBuilder.Entity("ComponentProductDetail", b =>
+            modelBuilder.Entity("CategoryComponent", b =>
                 {
+                    b.Property<int>("CategoriesId")
+                        .HasColumnType("int");
+
                     b.Property<int>("ComponentsID")
+                        .HasColumnType("int");
+
+                    b.HasKey("CategoriesId", "ComponentsID");
+
+                    b.HasIndex("ComponentsID");
+
+                    b.ToTable("CategoryComponent");
+                });
+
+            modelBuilder.Entity("ComponentDetailProductDetail", b =>
+                {
+                    b.Property<int>("ComponentDetailsId")
                         .HasColumnType("int");
 
                     b.Property<int>("ProductDetailsId")
                         .HasColumnType("int");
 
-                    b.HasKey("ComponentsID", "ProductDetailsId");
+                    b.HasKey("ComponentDetailsId", "ProductDetailsId");
 
                     b.HasIndex("ProductDetailsId");
 
-                    b.ToTable("ComponentProductDetail");
+                    b.ToTable("ComponentDetailProductDetail");
                 });
 
             modelBuilder.Entity("Data.Entities.AppUser", b =>
@@ -124,7 +139,7 @@ namespace Data.Migrations
                             Id = new Guid("f82493f3-ab61-477b-8bb8-daebc61cf148"),
                             AccessFailedCount = 0,
                             Address = "TPHCM",
-                            ConcurrencyStamp = "1c2fde3f-0b21-47c6-9546-b9cb78b886fe",
+                            ConcurrencyStamp = "9b68e442-b810-4c66-b623-d678a85e0b1b",
                             Dob = new DateTime(2020, 1, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "webshop@gmail.com",
                             EmailConfirmed = true,
@@ -134,7 +149,7 @@ namespace Data.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "webshop@gmail.com",
                             NormalizedUserName = "admin",
-                            PasswordHash = "AQAAAAEAACcQAAAAEPyD6q8824Cv9hpNHAfj4ZEF9FdEqCDDWmuGV4pPlywh7nZvdEE70LHGJ4wUwXubrQ==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEC0rFeSLrEWCbxAEHzh9iyM91EqLzu6npRA3yeLGI3xH8IVOpfCxecCjS/KSEJ/p8A==",
                             PhoneNumber = "1234567",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
@@ -211,12 +226,29 @@ namespace Data.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Value")
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("ID");
 
                     b.ToTable("Components");
+                });
+
+            modelBuilder.Entity("Data.Entities.ComponentDetail", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("ComponentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ComponentId");
+
+                    b.ToTable("ComponentDetails");
                 });
 
             modelBuilder.Entity("Data.Entities.Order", b =>
@@ -283,6 +315,9 @@ namespace Data.Migrations
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
@@ -330,9 +365,6 @@ namespace Data.Migrations
                         .HasAnnotation("SqlServer:IdentityIncrement", 1)
                         .HasAnnotation("SqlServer:IdentitySeed", 1)
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
@@ -592,7 +624,7 @@ namespace Data.Migrations
                         new
                         {
                             Id = new Guid("ae7f2c5c-8241-4e88-9e2e-4e9342f98a51"),
-                            ConcurrencyStamp = "0c83b064-d060-4e05-bcc4-d02f79d44e39",
+                            ConcurrencyStamp = "2d188966-a50d-439d-bf56-60b4339d8cc6",
                             Name = "Admin",
                             NormalizedName = "admin",
                             Description = "Administrator"
@@ -600,7 +632,7 @@ namespace Data.Migrations
                         new
                         {
                             Id = new Guid("8daf1440-3444-416d-807c-edbe207f8fba"),
-                            ConcurrencyStamp = "8b8eff82-24ca-456b-8313-c161e80b26cf",
+                            ConcurrencyStamp = "fb8de8bb-3b4b-4a0e-8ebb-d402ea3e7d9c",
                             Name = "User",
                             NormalizedName = "user",
                             Description = "Website Users"
@@ -622,11 +654,26 @@ namespace Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("ComponentProductDetail", b =>
+            modelBuilder.Entity("CategoryComponent", b =>
                 {
+                    b.HasOne("Data.Entities.Category", null)
+                        .WithMany()
+                        .HasForeignKey("CategoriesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Data.Entities.Component", null)
                         .WithMany()
                         .HasForeignKey("ComponentsID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ComponentDetailProductDetail", b =>
+                {
+                    b.HasOne("Data.Entities.ComponentDetail", null)
+                        .WithMany()
+                        .HasForeignKey("ComponentDetailsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -654,6 +701,17 @@ namespace Data.Migrations
                     b.Navigation("AppUser");
 
                     b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("Data.Entities.ComponentDetail", b =>
+                {
+                    b.HasOne("Data.Entities.Component", "Component")
+                        .WithMany("ComponentDetails")
+                        .HasForeignKey("ComponentId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Component");
                 });
 
             modelBuilder.Entity("Data.Entities.Order", b =>
@@ -782,6 +840,11 @@ namespace Data.Migrations
             modelBuilder.Entity("Data.Entities.Category", b =>
                 {
                     b.Navigation("ProductCategories");
+                });
+
+            modelBuilder.Entity("Data.Entities.Component", b =>
+                {
+                    b.Navigation("ComponentDetails");
                 });
 
             modelBuilder.Entity("Data.Entities.Order", b =>

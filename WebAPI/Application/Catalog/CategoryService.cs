@@ -3,10 +3,8 @@ using AutoMapper;
 using Data.EF;
 using Data.Entities;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Application.Catalog
@@ -85,9 +83,7 @@ namespace Application.Catalog
 
             var cat = await _context.Categories.Where(x => x.Id == request.Id).Include(x=>x.CatParent).FirstOrDefaultAsync();
 
-            cat.Name = request.Name;
-
-            //cat.ParentId = request.ParentId;
+            cat.Name = request.Name;                       
             cat.CatParent.Clear();
             if (request.Parent.Count != 0)
             {
@@ -97,8 +93,6 @@ namespace Application.Catalog
                     cat.CatParent.Add(parent);
                 }
             }
-
-
             cat.IsShowAtHome = request.IsShowAtHome;
 
             try

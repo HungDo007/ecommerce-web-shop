@@ -16,7 +16,7 @@ namespace Data.Configurations
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id).UseIdentityColumn();
             builder.HasOne(x => x.Product).WithMany(x => x.ProductDetails).HasForeignKey(x => x.ProductId);
-            builder.HasMany(x => x.Components).WithMany(x => x.ProductDetails);
+            builder.HasMany(x => x.ComponentDetails).WithMany(x => x.ProductDetails);
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Data.Entities
 {
@@ -13,6 +12,7 @@ namespace Data.Entities
         public List<ProductCategory> ProductCategories { get; set; } = new List<ProductCategory>();
         public List<Category> CatParent { set; get; } = new List<Category>();
         public List<Category> CatChildren { set; get; } = new List<Category>();
+        public List<Component> Components { get; set; }
 
         public override string ToString()
         {

@@ -21,7 +21,14 @@ namespace WebAPI.Mapping
 
             CreateMap<Product, ProductVm>()
                 .ForMember(x => x.Seller, opt => opt.MapFrom(s => s.User.UserName))
-                .ForMember(x => x.Image, opt => opt.MapFrom(s => s.ProductImages.Where(ss => ss.IsPoster == true).FirstOrDefault()));
+                .ForMember(x => x.Poster, opt => opt.MapFrom(s => s.ProductImages.Where(ss => ss.IsPoster == true).FirstOrDefault()))
+                .ForMember(x => x.Images, opt => opt.MapFrom(s => s.ProductImages));
+
+            CreateMap<ProductDetail, ProductDetailVm>();
+
+            CreateMap<ComponentDetail, ComponentVm>()
+                .ForMember(x => x.Id, opt => opt.MapFrom(s => s.ComponentId));
+                //.ForMember(x => x.Type, opt => opt.MapFrom(s => s.Component.Name));
         }
     }
 }

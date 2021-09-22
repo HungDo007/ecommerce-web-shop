@@ -1,10 +1,5 @@
 ﻿using Application.Catalog;
-using Application.ViewModels.Catalog;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace WebAPI.Controllers
@@ -29,10 +24,19 @@ namespace WebAPI.Controllers
         }
 
 
+        [HttpGet("product/{id}")]
+        public async Task<IActionResult> GetDetail(int id)
+        {
+            return Ok(await _productService.GetProductDetail(id));
+        }
+
+
         [HttpGet("category")]
         public async Task<IActionResult> GetAllCat()
-        {            
+        {
             return Ok(await _categoryService.GetAll());
         }
+
+
     }
 }

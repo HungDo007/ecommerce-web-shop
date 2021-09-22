@@ -12,6 +12,7 @@ namespace Data.Configurations
             builder.Property(x => x.Id).UseIdentityColumn();
             builder.Property(x => x.Status).HasDefaultValue(true);
             builder.HasMany(x => x.CatParent).WithMany(x => x.CatChildren);
+            builder.HasMany(x => x.Components).WithMany(x => x.Categories);
         }
     }
 }
