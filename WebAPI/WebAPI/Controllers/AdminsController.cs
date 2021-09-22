@@ -26,16 +26,13 @@ namespace WebAPI.Controllers
         }
 
 
-        [HttpPost("addAdmin")]
-        public async Task<IActionResult> Register([FromBody] RegisterRequest request)
+        [HttpGet("allUser")]
+        public async Task<IActionResult> GetAllUser()
         {
-            var result = await _userService.Register(request, true);
-
-            if (result == null)
-                return Ok();
-            else
-                return BadRequest(result);
+            List<UserResponse> res = await _userService.GetAll();
+            return Ok(res);
         }
+
 
         [HttpGet("{username}")]
         public async Task<IActionResult> GetByName(string username)
@@ -48,6 +45,18 @@ namespace WebAPI.Controllers
         }
 
 
+        [HttpPost("addAdmin")]
+        public async Task<IActionResult> Register([FromBody] RegisterRequest request)
+        {
+            var result = await _userService.Register(request, true);
+
+            if (result == null)
+                return Ok();
+            else
+                return BadRequest(result);
+        }
+
+        
         [HttpGet("user/paging")]
         public async Task<IActionResult> GetUserPaging([FromQuery] UserPagingRequest request)
         {
@@ -55,12 +64,7 @@ namespace WebAPI.Controllers
             return Ok(result);
         }
 
-        [HttpGet("allUser")]
-        public async Task<IActionResult> GetAllUser()
-        {
-            List<UserResponse> res = await _userService.GetAll();
-            return Ok(res);
-        }
+        
 
         [HttpPost("category")]
         public async Task<IActionResult> AddCategory([FromBody] CategoryVm request)

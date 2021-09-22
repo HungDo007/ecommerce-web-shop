@@ -144,8 +144,7 @@ namespace Data.Migrations
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -209,6 +208,7 @@ namespace Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Status = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     ViewCount = table.Column<int>(type: "int", nullable: false),
                     Rate = table.Column<float>(type: "real", nullable: false),
@@ -267,6 +267,49 @@ namespace Data.Migrations
                         principalTable: "Categories",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CategoryComponent",
+                columns: table => new
+                {
+                    CategoriesId = table.Column<int>(type: "int", nullable: false),
+                    ComponentsID = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CategoryComponent", x => new { x.CategoriesId, x.ComponentsID });
+                    table.ForeignKey(
+                        name: "FK_CategoryComponent_Categories_CategoriesId",
+                        column: x => x.CategoriesId,
+                        principalTable: "Categories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CategoryComponent_Components_ComponentsID",
+                        column: x => x.ComponentsID,
+                        principalTable: "Components",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ComponentDetails",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ComponentId = table.Column<int>(type: "int", nullable: false),
+                    Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ComponentDetails", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ComponentDetails_Components_ComponentId",
+                        column: x => x.ComponentId,
+                        principalTable: "Components",
+                        principalColumn: "ID");
                 });
 
             migrationBuilder.CreateTable(
@@ -380,8 +423,7 @@ namespace Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ProductId = table.Column<int>(type: "int", nullable: false),
                     Stock = table.Column<int>(type: "int", nullable: false),
-                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -416,23 +458,23 @@ namespace Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ComponentProductDetail",
+                name: "ComponentDetailProductDetail",
                 columns: table => new
                 {
-                    ComponentsID = table.Column<int>(type: "int", nullable: false),
+                    ComponentDetailsId = table.Column<int>(type: "int", nullable: false),
                     ProductDetailsId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ComponentProductDetail", x => new { x.ComponentsID, x.ProductDetailsId });
+                    table.PrimaryKey("PK_ComponentDetailProductDetail", x => new { x.ComponentDetailsId, x.ProductDetailsId });
                     table.ForeignKey(
-                        name: "FK_ComponentProductDetail_Components_ComponentsID",
-                        column: x => x.ComponentsID,
-                        principalTable: "Components",
-                        principalColumn: "ID",
+                        name: "FK_ComponentDetailProductDetail_ComponentDetails_ComponentDetailsId",
+                        column: x => x.ComponentDetailsId,
+                        principalTable: "ComponentDetails",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ComponentProductDetail_ProductDetails_ProductDetailsId",
+                        name: "FK_ComponentDetailProductDetail_ProductDetails_ProductDetailsId",
                         column: x => x.ProductDetailsId,
                         principalTable: "ProductDetails",
                         principalColumn: "Id",
@@ -444,8 +486,8 @@ namespace Data.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Description", "Discriminator", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { new Guid("ae7f2c5c-8241-4e88-9e2e-4e9342f98a51"), "0c83b064-d060-4e05-bcc4-d02f79d44e39", "Administrator", "AppRole", "Admin", "admin" },
-                    { new Guid("8daf1440-3444-416d-807c-edbe207f8fba"), "8b8eff82-24ca-456b-8313-c161e80b26cf", "Website Users", "AppRole", "User", "user" }
+                    { new Guid("ae7f2c5c-8241-4e88-9e2e-4e9342f98a51"), "2d188966-a50d-439d-bf56-60b4339d8cc6", "Administrator", "AppRole", "Admin", "admin" },
+                    { new Guid("8daf1440-3444-416d-807c-edbe207f8fba"), "fb8de8bb-3b4b-4a0e-8ebb-d402ea3e7d9c", "Website Users", "AppRole", "User", "user" }
                 });
 
             migrationBuilder.InsertData(
@@ -456,7 +498,7 @@ namespace Data.Migrations
             migrationBuilder.InsertData(
                 table: "AppUsers",
                 columns: new[] { "Id", "AccessFailedCount", "Address", "ConcurrencyStamp", "Dob", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { new Guid("f82493f3-ab61-477b-8bb8-daebc61cf148"), 0, "TPHCM", "1c2fde3f-0b21-47c6-9546-b9cb78b886fe", new DateTime(2020, 1, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), "webshop@gmail.com", true, "Super", "Admin", false, null, "webshop@gmail.com", "admin", "AQAAAAEAACcQAAAAEPyD6q8824Cv9hpNHAfj4ZEF9FdEqCDDWmuGV4pPlywh7nZvdEE70LHGJ4wUwXubrQ==", "1234567", false, "", false, "admin" });
+                values: new object[] { new Guid("f82493f3-ab61-477b-8bb8-daebc61cf148"), 0, "TPHCM", "9b68e442-b810-4c66-b623-d678a85e0b1b", new DateTime(2020, 1, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), "webshop@gmail.com", true, "Super", "Admin", false, null, "webshop@gmail.com", "admin", "AQAAAAEAACcQAAAAEC0rFeSLrEWCbxAEHzh9iyM91EqLzu6npRA3yeLGI3xH8IVOpfCxecCjS/KSEJ/p8A==", "1234567", false, "", false, "admin" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Carts_ProductId",
@@ -474,9 +516,19 @@ namespace Data.Migrations
                 column: "CatParentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ComponentProductDetail_ProductDetailsId",
-                table: "ComponentProductDetail",
+                name: "IX_CategoryComponent_ComponentsID",
+                table: "CategoryComponent",
+                column: "ComponentsID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ComponentDetailProductDetail_ProductDetailsId",
+                table: "ComponentDetailProductDetail",
                 column: "ProductDetailsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ComponentDetails_ComponentId",
+                table: "ComponentDetails",
+                column: "ComponentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_OrderDetails_ProductId",
@@ -547,7 +599,10 @@ namespace Data.Migrations
                 name: "CategoryCategory");
 
             migrationBuilder.DropTable(
-                name: "ComponentProductDetail");
+                name: "CategoryComponent");
+
+            migrationBuilder.DropTable(
+                name: "ComponentDetailProductDetail");
 
             migrationBuilder.DropTable(
                 name: "OrderDetails");
@@ -568,7 +623,7 @@ namespace Data.Migrations
                 name: "UserActiveEmails");
 
             migrationBuilder.DropTable(
-                name: "Components");
+                name: "ComponentDetails");
 
             migrationBuilder.DropTable(
                 name: "ProductDetails");
@@ -581,6 +636,9 @@ namespace Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Transactions");
+
+            migrationBuilder.DropTable(
+                name: "Components");
 
             migrationBuilder.DropTable(
                 name: "Products");

@@ -8,6 +8,7 @@ namespace Data.Entities
         public int Id { get; set; }
         public Guid UserId { get; set; }
         public string Name { get; set; }
+        public string Description { get; set; }
         public bool Status { get; set; }
         public int ViewCount { get; set; }
         public float Rate { get; set; }

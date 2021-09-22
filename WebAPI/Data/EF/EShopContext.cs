@@ -21,6 +21,7 @@ namespace Data.EF
             modelBuilder.ApplyConfiguration(new CartConfiguration());
             modelBuilder.ApplyConfiguration(new CategoryConfiguration());
             modelBuilder.ApplyConfiguration(new ComponentConfiguration());
+            modelBuilder.ApplyConfiguration(new ComponentDetailConfiguration());
             modelBuilder.ApplyConfiguration(new OrderConfiguration());
             modelBuilder.ApplyConfiguration(new OrderDetailConfiguration());
             modelBuilder.ApplyConfiguration(new ProductCategoryConfiguration());
@@ -46,6 +47,7 @@ namespace Data.EF
 
         public DbSet<Cart> Carts { get; set; }
         public DbSet<Component> Components { get; set; }
+        public DbSet<ComponentDetail> ComponentDetails { set; get; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
