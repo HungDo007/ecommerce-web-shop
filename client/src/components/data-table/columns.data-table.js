@@ -5,42 +5,41 @@ const handleClick = (id) => {
   alert(`Are you sure to lock this account, id: ${id}`);
 };
 
-const title = "title";
-const director = "director";
-const genres = "genres";
-const year = "year";
+const username = "username";
+const firstName = "firstName";
+const email = "email";
+const address = "address";
 const action = null;
 
 export const columns = [
   {
-    name: "Title",
-    selector: (row) => row[title],
-    sortable: true,
-  },
-  {
-    name: "Director",
-    selector: (row) => row[director],
+    name: "Username",
+    selector: (row) => row[username],
     sortable: true,
     cell: (d) => (
-      <a
-        href="https://google.com"
-        target="_blank"
-        rel="noreferrer"
-        className="dlink"
-      >
-        {d.director}
+      <a href="#" target="_blank" rel="noreferrer">
+        {d.username}
       </a>
     ),
   },
   {
-    name: "Genres",
-    selector: (row) => row[genres],
+    name: "Name",
+    selector: (row) => row[firstName],
     sortable: true,
-    cell: (d) => <span>{d.genres.join(", ")}</span>,
+    cell: (d) => (
+      <span>
+        {d.firstName} {d.lastName}
+      </span>
+    ),
   },
   {
-    name: "Year",
-    selector: (row) => row[year],
+    name: "Email",
+    selector: (row) => row[email],
+    sortable: true,
+  },
+  {
+    name: "Address",
+    selector: (row) => row[address],
     sortable: true,
   },
   {
