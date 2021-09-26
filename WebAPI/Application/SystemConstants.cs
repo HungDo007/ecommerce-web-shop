@@ -16,5 +16,9 @@ namespace Application
         public const string RoleAdmin = "Admin";
 
         public const string ActiveMail = "Verify Code";
+
+        public const string FolderCategory = "Category";
+        public const string FolderProduct = "Product";
+
     }
 }

@@ -1,38 +1,87 @@
 ﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using System;
 using System.IO;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace Application.Common
 {
     public class FileStorageService : IStorageService
     {
-        private readonly string _userContentFolder;
-        private const string USER_CONTENT_FOLDER_NAME = "user-content";
+        private readonly string _folder;
 
         public FileStorageService(IWebHostEnvironment webHostEnvironment)
         {
-            _userContentFolder = Path.Combine(webHostEnvironment.WebRootPath, USER_CONTENT_FOLDER_NAME);
+            //  _folder = Path.Combine(webHostEnvironment.WebRootPath, USER_CONTENT_FOLDER_NAME);
+            _folder = webHostEnvironment.WebRootPath;
         }
 
-        public string GetFileUrl(string fileName)
+
+        public async Task<string> SaveFile(bool categoryImg, IFormFile file)
         {
-            return $"/{USER_CONTENT_FOLDER_NAME}/{fileName}";
+            var originalFileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
+            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(originalFileName)}";
+            await SaveFileAsync(categoryImg, file.OpenReadStream(), fileName);
+
+
+            if (categoryImg)
+            {
+                return "/" + SystemConstants.FolderCategory + "/" + fileName;
+            }
+            else
+            {
+                return "/" + SystemConstants.FolderProduct + "/" + fileName;
+            }           
         }
 
-        public async Task SaveFileAsync(Stream mediaBinaryStream, string fileName)
+
+        public string GetFileUrl(bool categoryImg, string fileName)
         {
-            var filePath = Path.Combine(_userContentFolder, fileName);
-            using var output = new FileStream(filePath, FileMode.Create);
-            await mediaBinaryStream.CopyToAsync(output);
+            if (categoryImg)
+            {
+                return $"/{Path.Combine(_folder, SystemConstants.FolderCategory)}/{fileName}";
+            }
+            else
+            {
+                return $"/{Path.Combine(_folder, SystemConstants.FolderProduct)}/{fileName}";
+            }
         }
 
-        public async Task DeleteFileAsync(string fileName)
+        
+
+        public async Task DeleteFileAsync(bool categoryImg, string fileName)
         {
-            var filePath = Path.Combine(_userContentFolder, fileName);
+            string filePath = "";
+            if (categoryImg)
+            {
+                filePath = Path.Combine(Path.Combine(_folder, SystemConstants.FolderCategory), fileName);
+            }
+            else
+            {
+                filePath = Path.Combine(Path.Combine(_folder, SystemConstants.FolderProduct), fileName);
+            }
+
             if (File.Exists(filePath))
             {
                 await Task.Run(() => File.Delete(filePath));
             }
+        }
+
+
+        private async Task SaveFileAsync(bool categoryImg, Stream mediaBinaryStream, string fileName)
+        {
+            string filePath = "";
+            if (categoryImg)
+            {
+                filePath = Path.Combine(Path.Combine(_folder, SystemConstants.FolderCategory), fileName);
+            }
+            else
+            {
+                filePath = Path.Combine(Path.Combine(_folder, SystemConstants.FolderProduct), fileName);
+            }
+            using var output = new FileStream(filePath, FileMode.Create);
+            await mediaBinaryStream.CopyToAsync(output);
         }
     }
 }

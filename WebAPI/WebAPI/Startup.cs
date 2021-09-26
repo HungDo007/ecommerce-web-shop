@@ -61,7 +61,7 @@ namespace WebAPI
                 .AddDefaultTokenProviders();
 
             //Injecting interface
-
+            services.AddScoped<IStorageService, FileStorageService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IMailService, MailService>();
             services.AddScoped<ICategoryService, CategoryService>();

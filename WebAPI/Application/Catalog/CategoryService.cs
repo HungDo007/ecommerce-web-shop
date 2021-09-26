@@ -1,4 +1,5 @@
-﻿using Application.ViewModels.Catalog;
+﻿using Application.Common;
+using Application.ViewModels.Catalog;
 using AutoMapper;
 using Data.EF;
 using Data.Entities;
@@ -13,14 +14,16 @@ namespace Application.Catalog
     {
         private readonly EShopContext _context;
         private readonly IMapper _mapper;
+        private readonly IStorageService _storageService;
 
-        public CategoryService(EShopContext context, IMapper mapper)
+        public CategoryService(EShopContext context, IMapper mapper, IStorageService storageService)
         {
             _context = context;
             _mapper = mapper;
+            _storageService = storageService;
         }
 
-        public async Task<bool> AddCat(CategoryVm request)
+        public async Task<bool> AddCat(AddCategoryRequest request)
         {
             var check = await _context.Categories.AnyAsync(x => x.Name == request.Name);
             if (check)
@@ -36,6 +39,12 @@ namespace Application.Catalog
                     category.CatParent.Add(parent);
                 }
             }
+
+            if (request.Image != null)
+            {
+                category.Image = await _storageService.SaveFile(true, request.Image);
+            }
+
             try
             {
                 _context.Categories.Add(category);
