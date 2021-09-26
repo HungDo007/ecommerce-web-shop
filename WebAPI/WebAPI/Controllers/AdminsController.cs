@@ -67,7 +67,19 @@ namespace WebAPI.Controllers
         
 
         [HttpPost("category")]
-        public async Task<IActionResult> AddCategory([FromBody] CategoryVm request)
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> AddCategory([FromBody] AddCategoryRequest request)
+        {
+            if (await _categoryService.AddCat(request))
+                return Ok();
+            else
+                return BadRequest("Category is exists");
+        }
+
+
+        [HttpPost("category/form")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> AddCategoryForm([FromForm] AddCategoryRequest request)
         {
             if (await _categoryService.AddCat(request))
                 return Ok();

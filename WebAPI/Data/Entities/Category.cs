@@ -6,7 +6,8 @@ namespace Data.Entities
     {
         public int Id { set; get; }
         public string Name { set; get; }
-        public bool Status { set; get; }        
+        public bool Status { set; get; }
+        public string Image { get; set; }
         public bool IsShowAtHome { set; get; }
 
         public List<ProductCategory> ProductCategories { get; set; } = new List<ProductCategory>();

@@ -14,7 +14,7 @@ namespace Application.Catalog
         /// </summary>
         /// <param name="request"></param>
         /// <returns>true if add successed; otherwise, false.</returns>
-        Task<bool> AddCat(CategoryVm request);
+        Task<bool> AddCat(AddCategoryRequest request);
 
 
         /// <summary>

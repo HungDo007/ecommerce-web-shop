@@ -1,12 +1,12 @@
-﻿using System.IO;
+﻿using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 
 namespace Application.Common
 {
     public interface IStorageService
     {
-        string GetFileUrl(string fileName);
-        Task SaveFileAsync(Stream mediaBinaryStream, string fileName);
-        Task DeleteFileAsync(string fileName);
+        string GetFileUrl(bool categoryImg, string fileName);
+        Task<string> SaveFile(bool categoryImg, IFormFile file);
+        Task DeleteFileAsync(bool categoryImg, string fileName);
     }
 }
