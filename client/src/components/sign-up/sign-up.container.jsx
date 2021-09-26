@@ -1,6 +1,5 @@
-import WithModal from "../modal-backdrop/modal.component";
-
 import SignUp from "./sign-up.component";
+import WithModal from "../modal-backdrop/modal.component";
 
 const SignUpContainer = WithModal(SignUp);
 

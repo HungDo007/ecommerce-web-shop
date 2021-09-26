@@ -1,22 +1,24 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
 import DataTable from "react-data-table-component";
 import DataTableExtensions from "react-data-table-component-extensions";
 
-import Backdrop from "../../components/modal-backdrop/backdrop.component";
-import CustomButton from "../../components/custom-button/custom-button.component";
-import SignUpContainer from "../../components/sign-up/sign-up.container";
+import Backdrop from "../../../components/modal-backdrop/backdrop.component";
+import CustomButton from "../../../components/custom-button/custom-button.component";
+import SignUpContainer from "../../../components/sign-up/sign-up.container";
 
-import { columns } from "../../components/data-table/columns.data-table";
+import { columns } from "../../../components/data-table/columns.data-table";
+import { toggleModal } from "../../../redux/modal/modal.actions";
 
 import "react-data-table-component-extensions/dist/index.css";
 import "./manage-account-page.styles.scss";
 
 const ManageAccountPage = () => {
   const currentUser = useSelector((state) => state.user.currentUser);
-  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const modalIsOpen = useSelector((state) => state.modal.isOpen);
+  const dispatch = useDispatch();
   const [listUser, setListUser] = useState([]);
 
   const tableData = {
@@ -27,11 +29,7 @@ const ManageAccountPage = () => {
   };
 
   const handleAddAdmin = () => {
-    setModalIsOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setModalIsOpen(false);
+    dispatch(toggleModal(true));
   };
 
   const getListUser = async () => {
@@ -41,6 +39,7 @@ const ManageAccountPage = () => {
         { headers: { Authorization: "Bearer " + currentUser.jwtToken } }
       );
       setListUser(response.data);
+      //listUser = response.data;
     } catch (error) {
       console.log(error);
     }
@@ -48,9 +47,9 @@ const ManageAccountPage = () => {
 
   useEffect(() => {
     getListUser();
-    console.log(listUser);
   }, []);
 
+  console.log(listUser);
   return (
     <div className="main">
       <div className="btn-add-admin">
@@ -66,7 +65,7 @@ const ManageAccountPage = () => {
         />
       </DataTableExtensions>
       {modalIsOpen && <SignUpContainer />}
-      {modalIsOpen && <Backdrop onClickCancel={handleCloseModal} />}
+      {modalIsOpen && <Backdrop />}
     </div>
   );
 };
