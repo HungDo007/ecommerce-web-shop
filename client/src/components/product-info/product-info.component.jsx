@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import "./product-info.styles.css";
 
 const ProductInfo = ({ productId }) => {
-  console.log(productId);
+  //console.log(productId);
   const product = {
     _id: "1",
     title:
@@ -13,6 +13,7 @@ const ProductInfo = ({ productId }) => {
       "https://rubystore.com.vn/wp-content/uploads/2020/07/giay-nike-air-jordan-1-high-x-dior-sieu-cap.jpg",
       "https://hanghieuvip.net/wp-content/uploads/2021/03/Nike-Air-Force-1-Shadow-Aura-Green-88.jpg",
       "https://lakbay.vn/cdn/images/Nike/Nike%20n%E1%BB%AF/giay-nike-air-force-1-high-utility.jpg",
+      "http://hystore.vn/wp-content/uploads/2020/11/xam-1.jpg",
     ],
     description: "UI/UX designing, html css tutorials",
     content:
@@ -22,101 +23,34 @@ const ProductInfo = ({ productId }) => {
     size: ["36", "37", "38", "39", "40", "41", "42", "43"],
     count: 1,
 
-    anotherClassify: [
+    productDetails: [
       {
-        name: "color",
-        class1: [
+        id: 1,
+        stock: 10,
+        price: 100000,
+        componentDetails: [
           {
-            value: "red",
+            id: 1,
+            value: "40",
           },
           {
-            value: "blue",
-          },
-          {
-            value: "green",
+            id: 2,
+            value: "Red",
           },
         ],
       },
       {
-        name: "size",
-        class2: [
+        id: 2,
+        stock: 15,
+        price: 100000,
+        componentDetails: [
           {
-            value: "S",
+            id: 3,
+            value: "41",
           },
           {
-            value: "M",
-          },
-          {
-            value: "L",
-          },
-        ],
-      },
-    ],
-
-    classify: [
-      {
-        nameClass1: "color",
-        nameClass2: "size",
-        class1: [
-          {
-            value: "red",
-            class2: [
-              {
-                value: "S",
-                price: 1000,
-                stock: 50,
-              },
-              {
-                value: "M",
-                price: 50000,
-                stock: 10,
-              },
-              {
-                value: "L",
-                price: 100000,
-                stock: 25,
-              },
-            ],
-          },
-          {
-            value: "blue",
-            class2: [
-              {
-                value: "S",
-                price: 1000,
-                stock: 50,
-              },
-              {
-                value: "M",
-                price: 50000,
-                stock: 10,
-              },
-              {
-                value: "L",
-                price: 100000,
-                stock: 25,
-              },
-            ],
-          },
-          {
-            value: "green",
-            class2: [
-              {
-                value: "S",
-                price: 1000,
-                stock: 50,
-              },
-              {
-                value: "M",
-                price: 50000,
-                stock: 10,
-              },
-              {
-                value: "L",
-                price: 100000,
-                stock: 25,
-              },
-            ],
+            id: 4,
+            value: "White",
           },
         ],
       },
@@ -125,37 +59,40 @@ const ProductInfo = ({ productId }) => {
 
   const [index, setIndex] = useState(0);
 
-  const myRef = useRef(null);
+  const imgRef = useRef(null);
+
   const handleTab = (index) => {
     setIndex(index);
-    const images = myRef.current.children;
+    const images = imgRef.current.children;
     for (let i = 0; i < images.length; i++) {
       images[i].className = images[i].className.replace("active", "");
     }
     images[index].className = "active";
+    console.log(imgRef.current.children);
   };
 
   useEffect(() => {
-    myRef.current.children[index].className = "active";
+    imgRef.current.children[index].className = "active";
   }, []);
 
   return (
     <div className="app">
       <div className="details">
-        <div className="big-img">
-          <img src={product.src[index]} alt="" />
-          <div className="thumb" ref={myRef}>
-            {product.src.map((img, index) => (
-              <img
-                key={index}
-                src={img}
-                alt=""
-                onClick={() => handleTab(index)}
-              />
-            ))}
+        <div>
+          <div className="big-img">
+            <img src={product.src[index]} alt="" />
+            <div className="thumb" ref={imgRef}>
+              {product.src.map((img, index) => (
+                <img
+                  key={index}
+                  src={img}
+                  alt=""
+                  onClick={() => handleTab(index)}
+                />
+              ))}
+            </div>
           </div>
         </div>
-
         <div className="box">
           <div className="row">
             <h2>{product.title}</h2>

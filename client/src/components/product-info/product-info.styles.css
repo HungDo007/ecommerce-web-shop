@@ -76,14 +76,14 @@
   width: 100%;
   height: 100px;
   display: flex;
-  cursor: pointer;
   margin: 10px 0;
   overflow: auto;
 }
 .thumb img {
-  width: 90px;
+  width: 95px;
   height: 100%;
   display: block;
+  cursor: pointer;
   object-fit: cover;
   border: 1px solid #ddd;
   margin-right: 5px;

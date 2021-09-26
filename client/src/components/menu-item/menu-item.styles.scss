@@ -42,7 +42,8 @@
   }
 
   .content {
-    height: 90px;
+    min-height: 90px;
+    max-width: 175px;
     padding: 0 25px;
     display: flex;
     flex-direction: column;
@@ -52,6 +53,7 @@
     background-color: white;
     opacity: 0.7;
     position: absolute;
+    text-align: center;
 
     .title {
       font-weight: bold;

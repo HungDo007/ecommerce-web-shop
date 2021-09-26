@@ -18,6 +18,26 @@ const SignIn = ({ setCurrentUser }) => {
 
   const { email, password } = userInfo;
 
+  const data = {
+    username: email,
+    password: password,
+  };
+
+  const signIn = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/Users/authenticate",
+        data
+      );
+      const user = jwtDecode(response.data);
+      user["jwtToken"] = response.data;
+      //console.log(user);
+      setCurrentUser(user);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const handleChange = (event) => {
     const { name, value } = event.target;
 
@@ -26,21 +46,7 @@ const SignIn = ({ setCurrentUser }) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const data = {
-      username: email,
-      password: password,
-    };
-    axios
-      .post("http://localhost:5000/api/Users/authenticate", data)
-      .then((response) => {
-        const user = jwtDecode(response.data);
-        user["jwtToken"] = response.data;
-        //console.log(user);
-        setCurrentUser(user);
-      })
-      .catch((error) => {
-        console.log(error.response.data);
-      });
+    signIn();
   };
 
   return (

@@ -7,6 +7,7 @@ import { IconContext } from "react-icons";
 import * as FaIcons from "react-icons/fa";
 import * as AiIcons from "react-icons/ai";
 
+import CartDropDown from "../cart-dropdown/cart-dropdown.component";
 import CartIcon from "../cart-icon/cart-icon.component";
 import { setCurrentUser } from "../../redux/user/user.actions";
 import { DataArr } from "./sidebarData";
@@ -16,6 +17,9 @@ import "./sidebar.styles.css";
 const Sidebar = () => {
   const [sidebar, setSidebar] = useState(false);
   const showSideBar = () => setSidebar(!sidebar);
+
+  const [cartDrop, setCartDrop] = useState(false);
+  const showCartDrop = () => setCartDrop(!cartDrop);
 
   const currentUser = useSelector((state) => state.user.currentUser);
   const dispatch = useDispatch();
@@ -52,8 +56,11 @@ const Sidebar = () => {
               >
                 setUser
               </div>
-              <CartIcon></CartIcon>
+              <div onClick={showCartDrop}>
+                <CartIcon />
+              </div>
             </div>
+            {cartDrop ? <CartDropDown /> : null}
           </div>
           <nav className={sidebar ? "nav-menu active" : "nav-menu"}>
             <ul className="nav-menu-items" onClick={showSideBar}>

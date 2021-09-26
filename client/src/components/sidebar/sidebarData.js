@@ -44,6 +44,12 @@ export const DataArr = () => {
       cName: "nav-text",
     },
     {
+      title: "Directory",
+      path: "/admin/directory",
+      icon: <AiIcons.AiOutlineBars />,
+      cName: "nav-text",
+    },
+    {
       title: "Product",
       path: "/admin/product",
       icon: <RiIcons.RiProductHuntFill />,

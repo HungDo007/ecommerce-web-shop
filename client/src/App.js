@@ -11,7 +11,8 @@ import SignInAndSignUpPage from "./pages/sign-in-and-sign-up/sign-in-and-sign-up
 import Sidebar from "./components/sidebar/sidebar.component";
 
 const App = ({ currentUser }) => {
-  // currentUser ? console.log("có user") : console.log("user is null");
+  //currentUser ? console.log("có user") : console.log("user is null");
+  console.log(currentUser);
   // user.currentUser
   //   ? user.currentUser.role == "Admin"
   //     ? console.log("is admin")

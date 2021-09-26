@@ -1,13 +1,16 @@
-import SignUp from "../sign-up/sign-up.component";
-
 import "./modal.styles.scss";
 
-const Modal = () => {
-  return (
-    <div className="modal">
-      <SignUp />
-    </div>
-  );
+const WithModal = (WrapComponent) => {
+  const Modal = ({ ...otherProps }) => {
+    return (
+      <div className="modal">
+        <div className="modal-center">
+          <WrapComponent {...otherProps} />
+        </div>
+      </div>
+    );
+  };
+  return Modal;
 };
 
-export default Modal;
+export default WithModal;

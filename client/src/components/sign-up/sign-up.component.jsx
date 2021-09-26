@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSelector } from "react-redux";
 import axios from "axios";
 
 import CustomButton from "../custom-button/custom-button.component";
@@ -7,6 +8,25 @@ import FormInput from "../form-input/form-input.component";
 import "./sign-up.styles.scss";
 
 const SignUp = () => {
+  const currentUser = useSelector((state) => state.user.currentUser);
+  let url = "";
+  let config = null;
+  currentUser
+    ? currentUser.role === "Admin"
+      ? (url = "http://localhost:5000/api/Admins/addAdmin") &&
+        (config = {
+          headers: {
+            Authorization: "Bearer " + currentUser.jwtToken,
+          },
+        })
+      : (url = "http://localhost:5000/api/Users/register") &&
+        (config = {
+          headers: {
+            Authorization: "Bearer " + currentUser.jwtToken,
+          },
+        })
+    : (url = "http://localhost:5000/api/Users/register");
+
   const [userInfo, setUserInfo] = useState({
     username: "",
     email: "",
@@ -15,6 +35,21 @@ const SignUp = () => {
   });
 
   const { username, email, password, confirmPassword } = userInfo;
+
+  const data = {
+    userName: username,
+    email: email,
+    password: password,
+  };
+
+  const signUp = async () => {
+    try {
+      const response = await axios.post(url, data, config);
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -30,19 +65,8 @@ const SignUp = () => {
       return;
     }
 
-    const data = {
-      userName: username,
-      email: email,
-      password: password,
-    };
-    axios
-      .post("http://localhost:5000/api/Users/register", data)
-      .then((response) => {
-        console.log(response);
-      })
-      .catch((error) => {
-        console.log(error.response.data);
-      });
+    signUp();
+    //console.log(config, url);
   };
 
   return (
