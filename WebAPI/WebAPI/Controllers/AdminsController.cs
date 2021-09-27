@@ -67,7 +67,7 @@ namespace WebAPI.Controllers
         
 
         [HttpPost("category")]
-        [Consumes("multipart/form-data")]
+        
         public async Task<IActionResult> AddCategory([FromBody] AddCategoryRequest request)
         {
             if (await _categoryService.AddCat(request))
@@ -79,6 +79,7 @@ namespace WebAPI.Controllers
 
         [HttpPost("category/form")]
         [Consumes("multipart/form-data")]
+        [AllowAnonymous]
         public async Task<IActionResult> AddCategoryForm([FromForm] AddCategoryRequest request)
         {
             if (await _categoryService.AddCat(request))

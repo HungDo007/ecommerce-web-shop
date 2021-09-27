@@ -35,8 +35,11 @@ namespace Application.Catalog
             {
                 foreach (var item in request.Parent)
                 {
-                    var parent = await _context.Categories.FindAsync(int.Parse(item));
-                    category.CatParent.Add(parent);
+                    if (item != null)
+                    {
+                        var parent = await _context.Categories.FindAsync(int.Parse(item));
+                        category.CatParent.Add(parent);
+                    }
                 }
             }
 
