@@ -1,4 +1,6 @@
+import axios from "axios";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { toggleModal } from "../../../redux/modal/modal.actions";
 import CustomButton from "../../custom-button/custom-button.component";
@@ -23,9 +25,31 @@ const AddDirectory = ({ item }) => {
     initialFieldValues.directoryName = item.title;
     initialFieldValues.imageSrc = item.imageUrl;
   }
+  let url = "";
+  let config = null;
 
+  const currentUser = useSelector((state) => state.user.currentUser);
+  if (currentUser !== null) {
+    if (currentUser.role === "Admin") {
+      url = "http://localhost:5000/api/Admins/category";
+      config = {
+        headers: {
+          Authorization: "Bearer " + currentUser.jwtToken,
+        },
+      };
+    }
+  }
   const [values, setValues] = useState(initialFieldValues);
   const { directoryId, directoryName, imageSrc, imageFile } = values;
+
+  const data = {
+    name: directoryName,
+    image: imageFile,
+  };
+
+  const formData = new FormData();
+  formData.append("name", directoryName);
+  formData.append("image", imageFile);
 
   const dispatch = useDispatch();
 
@@ -60,20 +84,21 @@ const AddDirectory = ({ item }) => {
     }
   };
 
-  // const addDirectoryAPI = async () => {
-  //   try {
-  //     const response = await axios.post("http://localhost:5000/api/", data);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
+  const addDirectoryAPI = async () => {
+    try {
+      const response = await axios.post(url, formData, config);
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-
-    const formData = new FormData();
-    formData.append("directoryName", directoryName);
-    formData.append("imageFile", imageFile);
+    addDirectoryAPI();
+    // const formData = new FormData();
+    // formData.append("directoryName", directoryName);
+    // formData.append("imageFile", imageFile);
   };
 
   console.log("add-directory has re rendered");
