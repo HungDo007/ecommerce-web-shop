@@ -18,6 +18,7 @@ namespace WebAPI.Mapping
                 .ForMember(x => x.Parent, opt => opt.MapFrom(s => s.CatParent));
 
             CreateMap<CategoryVm, Category>();
+            CreateMap<AddCategoryRequest, Category>();
 
             CreateMap<Product, ProductVm>()
                 .ForMember(x => x.Seller, opt => opt.MapFrom(s => s.User.UserName))
