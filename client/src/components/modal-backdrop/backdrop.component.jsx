@@ -5,7 +5,7 @@ import "./backdrop.styles.scss";
 const Backdrop = () => {
   const dispatch = useDispatch();
   const handleCloseModal = () => {
-    dispatch(toggleModal(false));
+    dispatch(toggleModal());
   };
   return <div className="backdrop" onClick={handleCloseModal}></div>;
 };

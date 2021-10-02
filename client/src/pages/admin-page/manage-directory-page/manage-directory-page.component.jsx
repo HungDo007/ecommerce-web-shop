@@ -12,9 +12,11 @@ import CustomButton from "../../../components/custom-button/custom-button.compon
 import { data } from "../../../components/directory/data";
 //import { columns } from "../../../components/data-table/columns-directory";
 import { toggleModal } from "../../../redux/modal/modal.actions";
-import * as FaIcon from "react-icons/fa";
 import * as BiIcon from "react-icons/bi";
+import * as MdIcon from "react-icons/md";
+import * as FaIcon from "react-icons/fa";
 import { useState } from "react";
+import AddComponentToDirectoryContainer from "../../../components/directory/add-directory/add-component-to-directory/add-component-to-directory.container";
 
 const ManageDirectoryPage = () => {
   const [action, setAction] = useState("add-directory");
@@ -29,8 +31,9 @@ const ManageDirectoryPage = () => {
   const listDirectory = data.sections;
   const title = "title";
   const imageUrl = "imageUrl";
-  const hide = null;
   const update = null;
+  const addComponent = null;
+  const hide = null;
 
   const columns = [
     {
@@ -56,20 +59,6 @@ const ManageDirectoryPage = () => {
       },
     },
     {
-      name: "Hide",
-      sortable: false,
-      selector: (row) => row[hide],
-      cell: (d) => [
-        <>
-          <BiIcon.BiHide
-            key={d.id}
-            onClick={() => handleHideDirectory(d.id)}
-            style={{ cursor: "pointer" }}
-          />
-        </>,
-      ],
-    },
-    {
       name: "Edit",
       sortable: false,
       selector: (row) => row[update],
@@ -78,6 +67,34 @@ const ManageDirectoryPage = () => {
           <FaIcon.FaEdit
             key={d.id}
             onClick={() => handleDirectory(d.id, d.title, d.imageUrl)}
+            style={{ cursor: "pointer" }}
+          />
+        </>,
+      ],
+    },
+    {
+      name: "Add Component",
+      sortable: false,
+      selector: (row) => row[addComponent],
+      cell: (d) => [
+        <>
+          <MdIcon.MdAddCircle
+            key={d.id}
+            onClick={() => handleAddComponent(d.id)}
+            style={{ cursor: "pointer" }}
+          />
+        </>,
+      ],
+    },
+    {
+      name: "Hide",
+      sortable: false,
+      selector: (row) => row[hide],
+      cell: (d) => [
+        <>
+          <BiIcon.BiHide
+            key={d.id}
+            onClick={() => handleHideDirectory(d.id)}
             style={{ cursor: "pointer" }}
           />
         </>,
@@ -92,16 +109,22 @@ const ManageDirectoryPage = () => {
     print: false,
   };
 
+  const handleAddComponent = (id) => {
+    setAction("add-component-to-directory");
+    setDirectoryItem({ direcId: id });
+    dispatch(toggleModal());
+  };
+
   const handleHideDirectory = (id) => {
     setAction("hide-directory");
     setDirectoryItem({ direcId: id });
-    dispatch(toggleModal(true));
+    dispatch(toggleModal());
   };
 
   const handleDirectory = (id, title, imageUrl) => {
     setAction("add-directory");
     setDirectoryItem({ id, title, imageUrl });
-    dispatch(toggleModal(true));
+    dispatch(toggleModal());
   };
 
   console.log("manage-directory-page has re rendered");
@@ -125,8 +148,14 @@ const ManageDirectoryPage = () => {
       {modalIsOpen && action === "add-directory" && (
         <AddDirectoryContainer item={directoryItem} />
       )}
+      {modalIsOpen && action === "add-component-to-directory" && (
+        <AddComponentToDirectoryContainer item={directoryItem} />
+      )}
       {modalIsOpen && action === "hide-directory" && (
-        <ConfirmContainer id={directoryItem.direcId} />
+        <ConfirmContainer
+          id={directoryItem.direcId}
+          title="Are you sure to hide this item?"
+        />
       )}
       {modalIsOpen && <Backdrop />}
     </div>

@@ -31,7 +31,7 @@ const AddDirectory = ({ item }) => {
   const currentUser = useSelector((state) => state.user.currentUser);
   if (currentUser !== null) {
     if (currentUser.role === "Admin") {
-      url = "http://localhost:5000/api/Admins/category";
+      url = "http://localhost:5000/api/Admins/category/form";
       config = {
         headers: {
           Authorization: "Bearer " + currentUser.jwtToken,
@@ -41,11 +41,6 @@ const AddDirectory = ({ item }) => {
   }
   const [values, setValues] = useState(initialFieldValues);
   const { directoryId, directoryName, imageSrc, imageFile } = values;
-
-  const data = {
-    name: directoryName,
-    image: imageFile,
-  };
 
   const formData = new FormData();
   formData.append("name", directoryName);
@@ -57,10 +52,6 @@ const AddDirectory = ({ item }) => {
     const { name, value } = event.target;
 
     setValues({ ...values, [name]: value });
-  };
-
-  const handleConfirm = () => {
-    dispatch(toggleModal(true));
   };
 
   const handleReview = (event) => {
@@ -96,17 +87,16 @@ const AddDirectory = ({ item }) => {
   const handleSubmit = (event) => {
     event.preventDefault();
     addDirectoryAPI();
-    // const formData = new FormData();
-    // formData.append("directoryName", directoryName);
-    // formData.append("imageFile", imageFile);
+    dispatch(toggleModal());
   };
 
   console.log("add-directory has re rendered");
+  console.log(item);
   return (
     <form onSubmit={handleSubmit}>
       Directory
       <div>
-        <img className="image" src={imageSrc} />
+        <img className="image" src={imageSrc} alt="directory" />
       </div>
       <div>
         <input type="file" accept="image/*" onChange={handleReview} required />

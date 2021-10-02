@@ -1,0 +1,20 @@
+.shop-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.shop-name {
+  margin-bottom: 1rem;
+}
+
+.shop-input {
+  width: 400px;
+  height: 28px;
+  border: 1px solid #e5e5e5;
+  border-radius: 4px;
+  padding: 12px;
+}
+
+.shop-input:focus {
+  border: 2px solid #e5e5e5;
+}

@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useSelector } from "react-redux";
 import axios from "axios";
 
 import CustomButton from "../custom-button/custom-button.component";
@@ -7,8 +6,7 @@ import FormInput from "../form-input/form-input.component";
 
 import "./sign-up.styles.scss";
 
-const SignUp = () => {
-  const currentUser = useSelector((state) => state.user.currentUser);
+const SignUp = ({ currentUser }) => {
   let url = "";
   let config = null;
   currentUser
@@ -19,12 +17,7 @@ const SignUp = () => {
             Authorization: "Bearer " + currentUser.jwtToken,
           },
         })
-      : (url = "http://localhost:5000/api/Users/register") &&
-        (config = {
-          headers: {
-            Authorization: "Bearer " + currentUser.jwtToken,
-          },
-        })
+      : (url = "http://localhost:5000/api/Users/register")
     : (url = "http://localhost:5000/api/Users/register");
 
   const [userInfo, setUserInfo] = useState({
@@ -66,9 +59,9 @@ const SignUp = () => {
     }
 
     signUp();
-    //console.log(config, url);
   };
 
+  console.log(config, url);
   return (
     <div className="sign-up">
       <h2>I do not have a account</h2>

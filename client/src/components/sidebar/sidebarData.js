@@ -1,9 +1,10 @@
-import { useEffect } from "react";
-import { useState } from "react";
-import * as AiIcons from "react-icons/ai";
-import * as RiIcons from "react-icons/ri";
-import * as FaIcons from "react-icons/fa";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+
+import * as AiIcons from "react-icons/ai";
+import * as FaIcons from "react-icons/fa";
+import * as RiIcons from "react-icons/ri";
+import * as GiIcons from "react-icons/gi";
 
 export const DataArr = () => {
   const currentUser = useSelector((state) => state.user.currentUser);
@@ -47,6 +48,12 @@ export const DataArr = () => {
       title: "Directory",
       path: "/admin/directory",
       icon: <AiIcons.AiOutlineBars />,
+      cName: "nav-text",
+    },
+    {
+      title: "Component",
+      path: "/admin/component",
+      icon: <GiIcons.GiPapers />,
       cName: "nav-text",
     },
     {
