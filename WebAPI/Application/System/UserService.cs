@@ -50,7 +50,7 @@ namespace Application.System
             SendMailRequest mailRequest = new SendMailRequest();
             mailRequest.Subject = SystemConstants.ActiveMail;
             mailRequest.ToEmail = email;
-            mailRequest.Body = $"Mã xác thực của bạn là: {code}";
+            mailRequest.Body = $"Mã xác thực của bạn là:\n {code}";
 
             await _mailService.SendMail(mailRequest);
 
@@ -70,6 +70,9 @@ namespace Application.System
             {
                 user = await _userManager.FindByEmailAsync(request.Username) != null ? await _userManager.FindByEmailAsync(request.Username) : null;
             }
+
+            if (user == null || user.Status == false)
+                return null;
 
             var result = await _signInManager.PasswordSignInAsync(user, request.Password, request.Remember, true);
             if (!result.Succeeded)
@@ -95,7 +98,7 @@ namespace Application.System
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity((claims)),
+                Subject = new ClaimsIdentity(claims),
                 Expires = DateTime.Now.AddMonths(2),
                 SigningCredentials = creds,
             };
@@ -119,16 +122,34 @@ namespace Application.System
             return false;
         }
 
-        public async Task<List<UserResponse>> GetAll()
+        public async Task<List<UserResponse>> GetAllAdmin()
         {
-            var data = await _userManager.Users.ToListAsync();
+            var data = await _userManager.GetUsersInRoleAsync(SystemConstants.RoleAdmin);
+
+            return _mapper.Map<List<UserResponse>>(data);
+        }
+
+        public async Task<List<UserResponse>> GetAllUser()
+        {
+            var data = await _userManager.GetUsersInRoleAsync(SystemConstants.RoleUser);
+
+            data = data.Where(x => x.Status == true).ToList();
+            return _mapper.Map<List<UserResponse>>(data);
+        }
+
+
+        public async Task<List<UserResponse>> GetAllUserLocked()
+        {
+            var data = await _userManager.GetUsersInRoleAsync(SystemConstants.RoleUser);
+
+            data = data.Where(x => x.Status == false).ToList();
             return _mapper.Map<List<UserResponse>>(data);
         }
 
         public async Task<UserResponse> GetByName(string username)
         {
             var user = await _userManager.FindByNameAsync(username);
-            if (user == null)
+            if (user == null || user.Status == false)
                 return null;
 
             UserResponse res = _mapper.Map<UserResponse>(user);
@@ -163,6 +184,28 @@ namespace Application.System
                 Items = responses
             };
             return pagedResult;
+        }
+
+        public async Task<bool> LockAccount(LockAccountRequest request)
+        {
+            var user = await _userManager.FindByNameAsync(request.Username);
+
+            if (user == null)
+                return false;
+
+            user.Status = false;
+
+            SendMailRequest mailRequest = new SendMailRequest();
+            mailRequest.Subject = SystemConstants.LockAccount;
+            mailRequest.ToEmail = user.Email;
+            mailRequest.Body = $"Tài khoản của bạn đã bị khóa vì: {request.Reason}\n Vui lòng liên hệ quản trị viên để làm việc và lấy lại tài khoản";
+
+            await _mailService.SendMail(mailRequest);
+
+            var result = await _userManager.UpdateAsync(user);
+            if (result.Succeeded)
+                return true;
+            return false;
         }
 
         public async Task<List<string>> Register(RegisterRequest request, bool IsAdmin)

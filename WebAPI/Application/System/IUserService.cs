@@ -57,10 +57,25 @@ namespace Application.System
 
 
         /// <summary>
-        /// Return all user.
+        /// Return all user in role Admin.
         /// </summary>
         /// <returns></returns>
-        Task<List<UserResponse>> GetAll();
+        Task<List<UserResponse>> GetAllAdmin();
+
+
+        /// <summary>
+        /// Return all user in role User.
+        /// </summary>
+        /// <returns></returns>
+        Task<List<UserResponse>> GetAllUser();
+
+
+        /// <summary>
+        /// Return all user in role User is locked.
+        /// </summary>
+        /// <returns></returns>
+        Task<List<UserResponse>> GetAllUserLocked();
+
 
 
         /// <summary>
@@ -78,5 +93,8 @@ namespace Application.System
         /// <param name="code"></param>
         /// <returns>true if verify successed when match code; otherwise, false</returns>
         Task<bool> VerifyEmail(string email, string code);
+
+
+        Task<bool> LockAccount(LockAccountRequest request);
     }
 }

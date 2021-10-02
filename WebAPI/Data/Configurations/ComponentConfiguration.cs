@@ -10,7 +10,7 @@ namespace Data.Configurations
         {
             builder.HasKey(x => x.ID);
             builder.Property(x => x.ID).UseIdentityColumn();
-            
+            builder.Property(x => x.Status).HasDefaultValue(true);
             builder.HasMany(x => x.Categories).WithMany(x => x.Components);
         }
     }

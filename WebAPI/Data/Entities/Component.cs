@@ -7,6 +7,7 @@ namespace Data.Entities
     {
         public int ID { set; get; }
         public string Name { get; set; }
+        public bool Status { set; get; }
 
 
         public List<ComponentDetail> ComponentDetails { get; set; }

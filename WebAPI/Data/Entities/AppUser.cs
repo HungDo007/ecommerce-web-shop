@@ -11,6 +11,7 @@ namespace Data.Entities
         public DateTime Dob { get; set; }
         public string Address { set; get; }
         public bool IsSale { get; set; }
+        public bool Status { set; get; }
 
 
         public List<Product> Products { get; set; }

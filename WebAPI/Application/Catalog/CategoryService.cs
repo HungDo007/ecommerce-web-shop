@@ -23,14 +23,14 @@ namespace Application.Catalog
             _storageService = storageService;
         }
 
-        public async Task<bool> AddCat(AddCategoryRequest request)
+        public async Task<bool> AddCat(CategoryRequest request)
         {
             var check = await _context.Categories.AnyAsync(x => x.Name == request.Name);
             if (check)
                 return false;
 
             Category category = _mapper.Map<Category>(request);
-            
+
             if (request.Parent.Count != 0)
             {
                 foreach (var item in request.Parent)
@@ -45,12 +45,46 @@ namespace Application.Catalog
 
             if (request.Image != null)
             {
-                category.Image = await _storageService.SaveFile(true, request.Image);
+                try
+                {
+                    category.Image = await _storageService.SaveFile(true, request.Image);
+                }
+                catch
+                {
+                    category.Image = null;
+                }
             }
 
             try
             {
                 _context.Categories.Add(category);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> AssignCompToCat(AssignCompToCatRequest request)
+        {
+            var cat = await _context.Categories
+                .Include(x => x.Components)
+                .Where(x => x.Id == request.CatId)
+                .FirstOrDefaultAsync();
+
+            if (cat == null)
+                return false;
+
+            cat.Components.Clear();
+            foreach (var item in request.Comps)
+            {
+                var comp = await _context.Components.FindAsync(item);
+                cat.Components.Add(comp);
+            }
+            try
+            {
                 await _context.SaveChangesAsync();
                 return true;
             }
@@ -84,18 +118,18 @@ namespace Application.Catalog
 
         public async Task<List<CategoryVm>> GetAll()
         {
-            var cat = await _context.Categories.Include(x=>x.CatParent).ToListAsync();
+            var cat = await _context.Categories.Include(x => x.CatParent).ToListAsync();
             return _mapper.Map<List<CategoryVm>>(cat);
         }
 
-        public async Task<bool> UpdateCat(CategoryVm request)
-        {           
+        public async Task<bool> UpdateCat(CategoryRequest request)
+        {
             if (await _context.Categories.AnyAsync(x => x.Id != request.Id && x.Name == request.Name))
                 return false;
 
-            var cat = await _context.Categories.Where(x => x.Id == request.Id).Include(x=>x.CatParent).FirstOrDefaultAsync();
+            var cat = await _context.Categories.Where(x => x.Id == request.Id).Include(x => x.CatParent).FirstOrDefaultAsync();
 
-            cat.Name = request.Name;                       
+            cat.Name = request.Name;
             cat.CatParent.Clear();
             if (request.Parent.Count != 0)
             {
@@ -106,7 +140,17 @@ namespace Application.Catalog
                 }
             }
             cat.IsShowAtHome = request.IsShowAtHome;
-
+            if (request.Image != null)
+            {
+                try
+                {
+                    cat.Image = await _storageService.SaveFile(true, request.Image);
+                }
+                catch
+                {
+                    cat.Image = null;
+                }
+            }
             try
             {
                 await _context.SaveChangesAsync();

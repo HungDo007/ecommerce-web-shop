@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Application
+﻿namespace Application
 {
     public class SystemConstants
     {
@@ -15,10 +9,10 @@ namespace Application
         public const string RoleUser = "User";
         public const string RoleAdmin = "Admin";
 
-        public const string ActiveMail = "Verify Code";
+        public const string ActiveMail = "Verify Code"; 
+        public const string LockAccount = "Lock Account";
 
         public const string FolderCategory = "Category";
-        public const string FolderProduct = "Product";
-
+        public const string FolderProduct = "Product";        
     }
 }

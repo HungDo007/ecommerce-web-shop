@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Application.ViewModels.Catalog
 {
-    public class AddCategoryRequest
+    public class CategoryRequest
     {
         public int Id { set; get; }
         public string Name { set; get; }
