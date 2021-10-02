@@ -4,14 +4,16 @@ using Data.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Data.Migrations
 {
     [DbContext(typeof(EShopContext))]
-    partial class EShopContextModelSnapshot : ModelSnapshot
+    [Migration("20210929081502_update-2")]
+    partial class update2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -144,7 +146,7 @@ namespace Data.Migrations
                             Id = new Guid("f82493f3-ab61-477b-8bb8-daebc61cf148"),
                             AccessFailedCount = 0,
                             Address = "TPHCM",
-                            ConcurrencyStamp = "30ad2249-5432-4039-a549-014fd8bcb7ee",
+                            ConcurrencyStamp = "6e927b49-5a3b-4f68-9c68-4a1c98b035b2",
                             Dob = new DateTime(2020, 1, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "webshop@gmail.com",
                             EmailConfirmed = true,
@@ -154,7 +156,7 @@ namespace Data.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "webshop@gmail.com",
                             NormalizedUserName = "admin",
-                            PasswordHash = "AQAAAAEAACcQAAAAEFJy1K64pWG81+kf6hhrHBq4JifEw+Mcgw37N5y3uNFS+nbdBF3nytM1bWirAq+R7w==",
+                            PasswordHash = "AQAAAAEAACcQAAAAECLcRC/ljTqTg4GzmfcQcmnjXZj7/1rquuKSxXw/oUDOXvyJmFHd38FeFOd3LzHs1g==",
                             PhoneNumber = "1234567",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
@@ -234,11 +236,6 @@ namespace Data.Migrations
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("Status")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
 
                     b.HasKey("ID");
 
@@ -638,7 +635,7 @@ namespace Data.Migrations
                         new
                         {
                             Id = new Guid("ae7f2c5c-8241-4e88-9e2e-4e9342f98a51"),
-                            ConcurrencyStamp = "22e20350-d481-480c-81b9-e8f06cc1aea4",
+                            ConcurrencyStamp = "7ee5fa49-35bb-44cf-ad46-dd507fa0f872",
                             Name = "Admin",
                             NormalizedName = "admin",
                             Description = "Administrator"
@@ -646,7 +643,7 @@ namespace Data.Migrations
                         new
                         {
                             Id = new Guid("8daf1440-3444-416d-807c-edbe207f8fba"),
-                            ConcurrencyStamp = "b1bee148-2007-422a-9007-eb67098eeb96",
+                            ConcurrencyStamp = "a6f9e2ee-195b-42a3-a8f8-bedbc2977453",
                             Name = "User",
                             NormalizedName = "user",
                             Description = "Website Users"

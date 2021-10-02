@@ -7,6 +7,6 @@ namespace Application.ViewModels.Catalog
         public int Id { get; set; }
         public int Stock { get; set; }
         public decimal Price { get; set; }        
-        public List<ComponentVm> ComponentDetails { get; set; } = new List<ComponentVm>();
+        public List<ComponentDetailVm> ComponentDetails { get; set; } = new List<ComponentDetailVm>();
     }
 }

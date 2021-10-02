@@ -14,7 +14,7 @@ namespace Application.Catalog
         /// </summary>
         /// <param name="request"></param>
         /// <returns>true if add successed; otherwise, false.</returns>
-        Task<bool> AddCat(AddCategoryRequest request);
+        Task<bool> AddCat(CategoryRequest request);
 
 
         /// <summary>
@@ -30,12 +30,14 @@ namespace Application.Catalog
         /// </summary>
         /// <param name="request"></param>
         /// <returns>true if add successed; otherwise, false.</returns>
-        Task<bool> UpdateCat(CategoryVm request);
+        Task<bool> UpdateCat(CategoryRequest request);
 
         /// <summary>
         /// Get all Category.
         /// </summary>
         /// <returns></returns>
         Task<List<CategoryVm>> GetAll();
+
+        Task<bool> AssignCompToCat(AssignCompToCatRequest request);        
     }
 }
