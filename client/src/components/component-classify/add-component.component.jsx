@@ -1,34 +1,23 @@
-import axios from "axios";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+
+import adminApi from "../../api/admin-api";
+
 import { toggleModal } from "../../redux/modal/modal.actions";
 import CustomButton from "../custom-button/custom-button.component";
 import FormInput from "../form-input/form-input.component";
 
 const AddComponent = ({ item }) => {
   const initialFieldValues = {
-    componentId: "0",
+    componentId: 0,
     componentName: "",
   };
 
   if (item.id !== undefined && item.name !== undefined) {
-    initialFieldValues.componentId = item.Id;
+    initialFieldValues.componentId = item.id;
     initialFieldValues.componentName = item.name;
   }
-  let url = "";
-  let config = null;
 
-  const currentUser = useSelector((state) => state.user.currentUser);
-  if (currentUser !== null) {
-    if (currentUser.role === "Admin") {
-      url = "http://localhost:5000/api/Admins/category/form";
-      config = {
-        headers: {
-          Authorization: "Bearer " + currentUser.jwtToken,
-        },
-      };
-    }
-  }
   const [values, setValues] = useState(initialFieldValues);
   const { componentId, componentName } = values;
 
@@ -40,32 +29,44 @@ const AddComponent = ({ item }) => {
     setValues({ ...values, [name]: value });
   };
 
-  const data = {
-    componentId,
-    componentName,
-  };
-
-  const addCompoAPI = async () => {
-    try {
-      const response = await axios.post(url, data, config);
-      console.log(response);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    //addDirectoryAPI();
+    const payload = {
+      id: componentId,
+      name: componentName,
+    };
+    if (item.id === undefined) {
+      const addComponent = async () => {
+        try {
+          const response = await adminApi.addComponent(payload);
+          console.log(response);
+        } catch (error) {
+          console.log("Fail to add component: ", error);
+        }
+      };
+
+      addComponent();
+    } else {
+      const editComponent = async () => {
+        try {
+          const response = await adminApi.editComponent(payload);
+          console.log(response);
+        } catch (error) {
+          console.log("Fail to add component: ", error);
+        }
+      };
+
+      editComponent();
+    }
+
     dispatch(toggleModal());
   };
 
   console.log("add-compo has re rendered");
-  console.log(item);
   return (
     <form onSubmit={handleSubmit}>
-      Component
+      <h3>Component</h3>
       <FormInput
         type="text"
         name="componentName"

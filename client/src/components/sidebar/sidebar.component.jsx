@@ -27,6 +27,7 @@ const Sidebar = ({ currentUser }) => {
   const history = useHistory();
   const handleSignOut = () => {
     dispatch(setCurrentUser(null));
+    localStorage.removeItem("jwtToken");
     history.push("/");
   };
 
@@ -48,14 +49,6 @@ const Sidebar = ({ currentUser }) => {
                   SIGN IN
                 </Link>
               )}
-              <div
-                className="option"
-                onClick={() =>
-                  dispatch(setCurrentUser({ hung: "name", role: "Admin" }))
-                }
-              >
-                setUser
-              </div>
               <div onClick={showCartDrop}>
                 <CartIcon />
               </div>

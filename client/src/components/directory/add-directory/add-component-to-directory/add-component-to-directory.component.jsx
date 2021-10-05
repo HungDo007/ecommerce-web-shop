@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Checkbox from "../../../checkbox-item/checkbox-item.component";
 import CustomButton from "../../../custom-button/custom-button.component";
-
+import adminApi from "../../../../api/admin-api";
 import "./add-component-to-directory.styles.scss";
 
 const AddComponentToDirectory = ({ item }) => {
@@ -23,6 +23,20 @@ const AddComponentToDirectory = ({ item }) => {
       name: "Rom",
     },
   ];
+
+  const [componentList, setComponentList] = useState([]);
+  useEffect(() => {
+    const fetchComponentList = async () => {
+      try {
+        const response = await adminApi.getAllComponent();
+        setComponentList(response);
+      } catch (error) {
+        console.log("Failed to fetch component list: ", error);
+      }
+    };
+
+    fetchComponentList();
+  }, []);
 
   const [checkedState, setCheckedState] = useState(
     new Array(listComponent.length).fill(false)
@@ -65,7 +79,7 @@ const AddComponentToDirectory = ({ item }) => {
     <div>
       <h3 className="add-component-to-directory-title">Add Component</h3>
       <div className="add-component-to-directory-container">
-        {listComponent.map((item, index) => (
+        {componentList.map((item, index) => (
           <Checkbox
             item={item}
             onChange={() => handleOnChange(index)}

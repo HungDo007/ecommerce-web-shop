@@ -5,21 +5,10 @@ import CustomButton from "../custom-button/custom-button.component";
 import FormInput from "../form-input/form-input.component";
 
 import "./sign-up.styles.scss";
+import adminApi from "../../api/admin-api";
+import userApi from "../../api/user-api";
 
 const SignUp = ({ currentUser }) => {
-  let url = "";
-  let config = null;
-  currentUser
-    ? currentUser.role === "Admin"
-      ? (url = "http://localhost:5000/api/Admins/addAdmin") &&
-        (config = {
-          headers: {
-            Authorization: "Bearer " + currentUser.jwtToken,
-          },
-        })
-      : (url = "http://localhost:5000/api/Users/register")
-    : (url = "http://localhost:5000/api/Users/register");
-
   const [userInfo, setUserInfo] = useState({
     username: "",
     email: "",
@@ -28,21 +17,6 @@ const SignUp = ({ currentUser }) => {
   });
 
   const { username, email, password, confirmPassword } = userInfo;
-
-  const data = {
-    userName: username,
-    email: email,
-    password: password,
-  };
-
-  const signUp = async () => {
-    try {
-      const response = await axios.post(url, data, config);
-      console.log(response);
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -53,15 +27,42 @@ const SignUp = ({ currentUser }) => {
   const handleSubmit = (event) => {
     event.preventDefault();
 
+    const data = {
+      userName: username,
+      email: email,
+      password: password,
+    };
+
     if (password !== confirmPassword) {
       alert("Password don't match");
       return;
     }
 
-    signUp();
+    if (currentUser) {
+      if (currentUser.role === "Admin") {
+        const addAdmin = async () => {
+          try {
+            const response = await adminApi.addAmin(data);
+            console.log(response);
+          } catch (error) {
+            console.log(error);
+          }
+        };
+        addAdmin();
+      }
+    } else {
+      const signUp = async () => {
+        try {
+          const response = await userApi.signUp(data);
+          console.log(response);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+      signUp();
+    }
   };
 
-  console.log(config, url);
   return (
     <div className="sign-up">
       <h2>I do not have a account</h2>

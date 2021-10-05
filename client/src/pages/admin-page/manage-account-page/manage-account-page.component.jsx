@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -15,16 +14,16 @@ import { toggleModal } from "../../../redux/modal/modal.actions";
 
 import "react-data-table-component-extensions/dist/index.css";
 import "./manage-account-page.styles.scss";
+import adminApi from "../../../api/admin-api";
 
 const ManageAccountPage = () => {
-  const [listUser, setListUser] = useState([]);
+  const [listData, setListData] = useState([]);
   const [action, setAction] = useState("sign-up");
-  const [userId, setUserID] = useState(0);
+  const [username, setUsername] = useState("");
   const currentUser = useSelector((state) => state.user.currentUser);
   const modalIsOpen = useSelector((state) => state.modal.isOpen);
   const dispatch = useDispatch();
 
-  const username = "username";
   const firstName = "firstName";
   const email = "email";
   const address = "address";
@@ -62,14 +61,14 @@ const ManageAccountPage = () => {
       sortable: true,
     },
     {
-      name: "Action",
+      name: "Lock",
       sortable: false,
       selector: (row) => row[lockAction],
       cell: (d) => [
         <>
           <FaIcon.FaLock
             key={d.id}
-            onClick={() => handleLockAccount(d.id)}
+            onClick={() => handleLockAccount(d.username)}
             style={{ cursor: "pointer" }}
           />
         </>,
@@ -79,7 +78,7 @@ const ManageAccountPage = () => {
 
   const tableData = {
     columns,
-    data: listUser,
+    data: listData,
     export: false,
     print: false,
   };
@@ -89,39 +88,75 @@ const ManageAccountPage = () => {
     dispatch(toggleModal());
   };
 
-  const handleLockAccount = (id) => {
-    setUserID(id);
+  const handleLockAccount = (username) => {
+    setUsername(username);
     setAction("lock-user");
     dispatch(toggleModal());
   };
 
-  const getListUser = async () => {
+  const fetchListAdmin = async () => {
     try {
-      const response = await axios.get(
-        "http://localhost:5000/api/Admins/allUser",
-        { headers: { Authorization: "Bearer " + currentUser.jwtToken } }
-      );
-      setListUser(response.data);
-      //listUser = response.data;
+      const response = await adminApi.getAllAdmin();
+      setListData(response);
     } catch (error) {
-      console.log(error);
+      console.log("Failed to fetch list: ", error);
     }
   };
 
   useEffect(() => {
-    getListUser();
+    fetchListAdmin();
   }, []);
 
-  console.log(listUser);
+  const handleFetchAdmin = () => {
+    fetchListAdmin();
+  };
+
+  const handleFetchUser = () => {
+    const fetchListUser = async () => {
+      try {
+        const response = await adminApi.getAllUser();
+        setListData(response);
+      } catch (error) {
+        console.log("Failed to fetch list: ", error);
+      }
+    };
+
+    fetchListUser();
+  };
+
+  const handleFetchLockedUser = () => {
+    const fetchListLockedUser = async () => {
+      try {
+        const response = await adminApi.getAllLockedUser();
+        setListData(response);
+      } catch (error) {
+        console.log("Failed to fetch list: ", error);
+      }
+    };
+
+    fetchListLockedUser();
+  };
+
   return (
     <div className="main">
-      <div className="btn-add-admin">
-        <CustomButton onClick={handleAddAdmin}>Add new admin</CustomButton>
+      <div className="account-page-buttons">
+        <div className="account-page-navigate">
+          <CustomButton isGoogleSignIn onClick={handleFetchAdmin}>
+            All Admin
+          </CustomButton>
+          <CustomButton onClick={handleFetchUser}>All User</CustomButton>
+          <CustomButton onClick={handleFetchLockedUser}>
+            Locked User
+          </CustomButton>
+        </div>
+        <div>
+          <CustomButton onClick={handleAddAdmin}>Add new admin</CustomButton>
+        </div>
       </div>
       <DataTableExtensions {...tableData}>
         <DataTable
           columns={columns}
-          data={listUser}
+          data={listData}
           defaultSorField="id"
           pagination
           highlightOnHover
@@ -132,7 +167,7 @@ const ManageAccountPage = () => {
       )}
       {modalIsOpen && action === "lock-user" && (
         <ConfirmContainer
-          id={userId}
+          data={username}
           title="Are you sure to lock this account?"
         />
       )}

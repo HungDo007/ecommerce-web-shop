@@ -1,7 +1,7 @@
 import { useState } from "react";
-import axios from "axios";
 import { connect } from "react-redux";
 import jwtDecode from "jwt-decode";
+import userApi from "../../api/user-api";
 
 import CustomButton from "../custom-button/custom-button.component";
 import FormInput from "../form-input/form-input.component";
@@ -18,26 +18,6 @@ const SignIn = ({ setCurrentUser }) => {
 
   const { email, password } = userInfo;
 
-  const data = {
-    username: email,
-    password: password,
-  };
-
-  const signIn = async () => {
-    try {
-      const response = await axios.post(
-        "http://localhost:5000/api/Users/authenticate",
-        data
-      );
-      const user = jwtDecode(response.data);
-      user["jwtToken"] = response.data;
-      //console.log(user);
-      setCurrentUser(user);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const handleChange = (event) => {
     const { name, value } = event.target;
 
@@ -46,6 +26,21 @@ const SignIn = ({ setCurrentUser }) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    const payload = {
+      username: email,
+      password: password,
+    };
+    const signIn = async () => {
+      try {
+        const response = await userApi.authenticate(payload);
+        const user = jwtDecode(response);
+        localStorage.setItem("jwtToken", response);
+        //user["jwtToken"] = response;
+        setCurrentUser(user);
+      } catch (error) {
+        console.log("Fail to authenticate: ", error);
+      }
+    };
     signIn();
   };
 

@@ -8,32 +8,28 @@ import CustomButton from "../../../components/custom-button/custom-button.compon
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { toggleModal } from "../../../redux/modal/modal.actions";
-import { useState } from "react";
-import AddComponentContainer from "../../../components/componet-classify/add-component.container";
+import { useEffect, useState } from "react";
+import AddComponentContainer from "../../../components/component-classify/add-component.container";
+import adminApi from "../../../api/admin-api";
 
 const ManageComponentPage = () => {
   const name = "name";
   const update = null;
   const deleteCompo = null;
 
-  const data = [
-    {
-      id: 1,
-      name: "Color",
-    },
-    {
-      id: 2,
-      name: "Size",
-    },
-    {
-      id: 3,
-      name: "Ram",
-    },
-    {
-      id: 4,
-      name: "Rom",
-    },
-  ];
+  const [componentList, setComponentList] = useState([]);
+  useEffect(() => {
+    const fetchComponentList = async () => {
+      try {
+        const response = await adminApi.getAllComponent();
+        setComponentList(response);
+      } catch (error) {
+        console.log("Failed to fetch component list: ", error);
+      }
+    };
+
+    fetchComponentList();
+  }, []);
 
   const columns = [
     {
@@ -73,7 +69,7 @@ const ManageComponentPage = () => {
 
   const tableData = {
     columns,
-    data,
+    data: componentList,
     export: false,
     print: false,
   };
@@ -95,8 +91,8 @@ const ManageComponentPage = () => {
 
   const handleCompo = (id, name) => {
     setAction("add-compo");
-    setComponentItem({ id, name });
     dispatch(toggleModal());
+    setComponentItem({ id, name });
   };
 
   console.log("manage-component-page has re rendered");
@@ -110,7 +106,7 @@ const ManageComponentPage = () => {
       <DataTableExtensions {...tableData}>
         <DataTable
           columns={columns}
-          data={data}
+          data={componentList}
           defaultSorField="id"
           pagination
           highlightOnHover
