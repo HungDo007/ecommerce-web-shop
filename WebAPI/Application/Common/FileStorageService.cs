@@ -32,7 +32,7 @@ namespace Application.Common
             else
             {
                 return "/" + SystemConstants.FolderProduct + "/" + fileName;
-            }           
+            }
         }
 
 
@@ -48,19 +48,22 @@ namespace Application.Common
             }
         }
 
-        
+
 
         public async Task DeleteFileAsync(bool categoryImg, string fileName)
         {
-            string filePath = "";
-            if (categoryImg)
-            {
-                filePath = Path.Combine(Path.Combine(_folder, SystemConstants.FolderCategory), fileName);
-            }
-            else
-            {
-                filePath = Path.Combine(Path.Combine(_folder, SystemConstants.FolderProduct), fileName);
-            }
+            //string filePath = "";
+            //fileName = fileName.Replace("/","\\")
+            //if (categoryImg)
+            //{
+            //    filePath = Path.Combine(Path.Combine(_folder, SystemConstants.FolderCategory), fileName);
+            //}
+            //else
+            //{
+            //    filePath = Path.Combine(Path.Combine(_folder, SystemConstants.FolderProduct), fileName);
+            //}
+            fileName = fileName.Replace("/", "\\");
+            string filePath = _folder + fileName;
 
             if (File.Exists(filePath))
             {

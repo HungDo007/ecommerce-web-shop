@@ -144,6 +144,7 @@ namespace Application.Catalog
             {
                 try
                 {
+                    await _storageService.DeleteFileAsync(true, cat.Image);
                     cat.Image = await _storageService.SaveFile(true, request.Image);
                 }
                 catch
