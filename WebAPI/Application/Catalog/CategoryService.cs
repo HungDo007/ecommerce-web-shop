@@ -118,7 +118,7 @@ namespace Application.Catalog
 
         public async Task<List<CategoryVm>> GetAll()
         {
-            var cat = await _context.Categories.Include(x => x.CatParent).ToListAsync();
+            var cat = await _context.Categories.Where(x => x.Status == true).Include(x => x.CatParent).ToListAsync();
             return _mapper.Map<List<CategoryVm>>(cat);
         }
 
@@ -144,6 +144,7 @@ namespace Application.Catalog
             {
                 try
                 {
+                    await _storageService.DeleteFileAsync(true, cat.Image);
                     cat.Image = await _storageService.SaveFile(true, request.Image);
                 }
                 catch

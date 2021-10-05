@@ -2,7 +2,6 @@
 using Application.Catalog;
 using Application.System;
 using Application.ViewModels.Catalog;
-using Application.ViewModels.Common;
 using Application.ViewModels.System;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -111,7 +110,7 @@ namespace WebAPI.Controllers
 
         [HttpPost("category/update")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> UpdateCategory([FromBody] CategoryRequest request)
+        public async Task<IActionResult> UpdateCategory([FromForm] CategoryRequest request)
         {
             if (await _categoryService.UpdateCat(request))
                 return Ok();
