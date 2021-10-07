@@ -38,6 +38,16 @@ const adminApi = {
     return axiosClient.post(url, data);
   },
 
+  removeDirectory: (id) => {
+    const url = `/Admins/category/delete/${id}`;
+    return axiosClient.delete(url);
+  },
+
+  addComponentToDirectory: (data) => {
+    const url = "/Admins/category/assignComp";
+    return axiosClient.post(url, data);
+  },
+
   //manage component
   getAllComponent: () => {
     const url = "/Admins/component";
@@ -52,6 +62,11 @@ const adminApi = {
   editComponent: (data) => {
     const url = "/Admins/component/update";
     return axiosClient.post(url, data);
+  },
+
+  removeComponent: (id) => {
+    const url = `/Admins/component/${id}`;
+    return axiosClient.delete(url);
   },
 };
 

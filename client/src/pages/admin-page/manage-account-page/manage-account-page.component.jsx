@@ -156,7 +156,6 @@ const ManageAccountPage = () => {
       <DataTableExtensions {...tableData}>
         <DataTable
           columns={columns}
-          data={listData}
           defaultSorField="id"
           pagination
           highlightOnHover

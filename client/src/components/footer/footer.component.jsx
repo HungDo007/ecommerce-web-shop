@@ -8,8 +8,8 @@ const Footer = () => {
   return (
     <IconContext.Provider value={{ color: "#fff" }} s>
       <footer>
-        <div class="footer-container">
-          <div class="content about">
+        <div className="footer-container">
+          <div className="content about">
             <h2>OUR INFO</h2>
             <p>
               Lorem ipsum, dolor sit amet consectetur adipisicing elit.
@@ -21,46 +21,46 @@ const Footer = () => {
               Molestiae cupiditate mollitia pariatur error ea, debitis eaque quo
               dolorum.
             </p>
-            <ul class="social-icon">
+            <ul className="social-icon">
               <li>
-                <a href="#">
+                <a href="/">
                   <ImIcons.ImFacebook />
                 </a>
               </li>
               <li>
-                <a href="#">
+                <a href="/">
                   <ImIcons.ImTwitter />
                 </a>
               </li>
               <li>
-                <a href="#">
+                <a href="/">
                   <FiIcons.FiInstagram />
                 </a>
               </li>
               <li>
-                <a href="#">
+                <a href="/">
                   <ImIcons.ImYoutube2 />
                 </a>
               </li>
             </ul>
           </div>
-          <div class="content links">
+          <div className="content links">
             <h2>LINK</h2>
             <ul>
               <li>
-                <a href="#">Home</a>
+                <a href="/">Home</a>
               </li>
               <li>
-                <a href="#">About Us</a>
+                <a href="/">About Us</a>
               </li>
               <li>
-                <a href="#">Service</a>
+                <a href="/">Service</a>
               </li>
             </ul>
           </div>
-          <div class="content contact">
+          <div className="content contact">
             <h2>CONTACT</h2>
-            <ul class="info">
+            <ul className="info">
               <li>
                 <span>
                   <FaIcons.FaMapMarkerAlt />
@@ -74,9 +74,9 @@ const Footer = () => {
                   <ImIcons.ImPhone />
                 </span>
                 <p>
-                  <a href="#">+84 123 456 789</a>
+                  <a href="/">+84 123 456 789</a>
                   <br />
-                  <a href="#">+84 987 654 321</a>
+                  <a href="/">+84 987 654 321</a>
                 </p>
               </li>
               <li>
@@ -84,17 +84,17 @@ const Footer = () => {
                   <FaIcons.FaEnvelope />
                 </span>
                 <p>
-                  <a href="#">email@gmail.com</a>
+                  <a href="/">email@gmail.com</a>
                 </p>
               </li>
               <li>
-                <form class="form">
+                <form className="form">
                   <input
                     type="email"
-                    class="form__field"
+                    className="form__field"
                     placeholder="Subscribe Email"
                   />
-                  <button type="button" class="btn btn--primary  uppercase">
+                  <button type="button" className="btn btn--primary  uppercase">
                     Send
                   </button>
                 </form>

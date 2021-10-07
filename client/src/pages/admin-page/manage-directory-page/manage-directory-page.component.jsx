@@ -7,15 +7,17 @@ import "react-data-table-component-extensions/dist/index.css";
 
 import AddComponentToDirectoryContainer from "../../../components/directory/add-directory/add-component-to-directory/add-component-to-directory.container";
 import AddDirectoryContainer from "../../../components/directory/add-directory/add-directory.container";
-import ConfirmContainer from "../../../components/confirm/confirm.container";
 import Backdrop from "../../../components/modal-backdrop/backdrop.component";
+import ConfirmContainer from "../../../components/confirm/confirm.container";
 import CustomButton from "../../../components/custom-button/custom-button.component";
 
 import { toggleModal } from "../../../redux/modal/modal.actions";
-import * as BiIcon from "react-icons/bi";
+
 import * as MdIcon from "react-icons/md";
 import * as FaIcon from "react-icons/fa";
+
 import catalogApi from "../../../api/catalog";
+import adminApi from "../../../api/admin-api";
 
 const ManageDirectoryPage = () => {
   const [action, setAction] = useState("add-directory");
@@ -26,13 +28,11 @@ const ManageDirectoryPage = () => {
   });
   const dispatch = useDispatch();
   const modalIsOpen = useSelector((state) => state.modal.isOpen);
-  //const { direcId, directTitle, directImageUrl } = directoryItem;
-  //const listDirectory = data.sections;
   const name = "name";
   const imageUrl = "image";
   const update = null;
   const addComponent = null;
-  const hide = null;
+  const remove = null;
 
   const [directoryList, setDirectoryList] = useState([]);
   useEffect(() => {
@@ -100,14 +100,14 @@ const ManageDirectoryPage = () => {
       ],
     },
     {
-      name: "Hide",
+      name: "Remove",
       sortable: false,
-      selector: (row) => row[hide],
+      selector: (row) => row[remove],
       cell: (d) => [
         <>
-          <BiIcon.BiHide
+          <MdIcon.MdDelete
             key={d.id}
-            onClick={() => handleHideDirectory(d.id)}
+            onClick={() => handleRemoveDirectory(d.id)}
             style={{ cursor: "pointer" }}
           />
         </>,
@@ -128,7 +128,7 @@ const ManageDirectoryPage = () => {
     dispatch(toggleModal());
   };
 
-  const handleHideDirectory = (id) => {
+  const handleRemoveDirectory = (id) => {
     setAction("hide-directory");
     setDirectoryItem({ direcId: id });
     dispatch(toggleModal());
@@ -138,6 +138,18 @@ const ManageDirectoryPage = () => {
     setAction("add-directory");
     setDirectoryItem({ id, name, imageUrl });
     dispatch(toggleModal());
+  };
+
+  const handleSubmitRemove = () => {
+    const removeDirectory = async () => {
+      try {
+        const response = await adminApi.removeDirectory(directoryItem.direcId);
+        console.log(response);
+      } catch (error) {
+        console.log("Failed to remove directory: ", error);
+      }
+    };
+    removeDirectory();
   };
 
   console.log("manage-directory-page has re rendered");
@@ -166,8 +178,8 @@ const ManageDirectoryPage = () => {
       )}
       {modalIsOpen && action === "hide-directory" && (
         <ConfirmContainer
-          id={directoryItem.direcId}
           title="Are you sure to hide this item?"
+          onSubmit={handleSubmitRemove}
         />
       )}
       {modalIsOpen && <Backdrop />}

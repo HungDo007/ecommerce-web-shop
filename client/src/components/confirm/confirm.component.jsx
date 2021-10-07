@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
+
 import adminApi from "../../api/admin-api";
+
 import { toggleModal } from "../../redux/modal/modal.actions";
+
 import CustomButton from "../custom-button/custom-button.component";
 import FormInput from "../form-input/form-input.component";
 
@@ -17,20 +20,24 @@ const Confirm = (props) => {
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    const data = {
-      username: props.data,
-      reason: reason,
-    };
-    const lockAccount = () => {
-      try {
-        const response = adminApi.lockAccount(data);
-        console.log(response);
-      } catch (error) {
-        console.log("Failed to lock account: ", error);
-      }
-    };
-    lockAccount();
-    dispatch(toggleModal());
+    if (props.title === "Are you sure to lock this account?") {
+      const data = {
+        username: props.data,
+        reason: reason,
+      };
+      const lockAccount = () => {
+        try {
+          const response = adminApi.lockAccount(data);
+          console.log(response);
+        } catch (error) {
+          console.log("Failed to lock account: ", error);
+        }
+      };
+      lockAccount();
+      dispatch(toggleModal());
+    } else {
+      props.onSubmit();
+    }
   };
   return (
     <form onSubmit={handleSubmit}>
@@ -44,7 +51,6 @@ const Confirm = (props) => {
           required
         />
       ) : null}
-
       <div>
         <CustomButton>Confirm</CustomButton>
       </div>

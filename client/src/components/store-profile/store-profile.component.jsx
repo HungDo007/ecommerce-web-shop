@@ -4,7 +4,7 @@ import CustomButton from "../../components/custom-button/custom-button.component
 import "./store-profile.styles.scss";
 const defaultImg = "/img/default-img.png";
 
-const StoreProfile = () => {
+const StoreProfile = ({ match }) => {
   const storeInfo = {
     name: "hungdo",
     phoneNumber: "01234567",
@@ -45,6 +45,7 @@ const StoreProfile = () => {
       });
     }
   };
+
   return (
     <div className="store-container">
       <h3 className="store-main-title">Store Profile</h3>
@@ -60,7 +61,7 @@ const StoreProfile = () => {
           />
           <div className="store-links">
             <div className="store-link">
-              <Link to="/allProduct">Product</Link>
+              <Link to={`${match.path}/manageProduct`}>Product</Link>
             </div>
             <div className="store-link">
               <Link to="/allProduct">Purchase order</Link>

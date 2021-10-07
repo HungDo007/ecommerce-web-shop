@@ -1,21 +1,25 @@
-import * as FaIcon from "react-icons/fa";
+import { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+
+import { toggleModal } from "../../../redux/modal/modal.actions";
+
 import DataTable from "react-data-table-component";
 import DataTableExtensions from "react-data-table-component-extensions";
 
+import * as FaIcon from "react-icons/fa";
+import * as MdIcon from "react-icons/md";
+
+import AddComponentContainer from "../../../components/component-classify/add-component.container";
 import Backdrop from "../../../components/modal-backdrop/backdrop.component";
 import ConfirmContainer from "../../../components/confirm/confirm.container";
 import CustomButton from "../../../components/custom-button/custom-button.component";
-import { useDispatch } from "react-redux";
-import { useSelector } from "react-redux";
-import { toggleModal } from "../../../redux/modal/modal.actions";
-import { useEffect, useState } from "react";
-import AddComponentContainer from "../../../components/component-classify/add-component.container";
+
 import adminApi from "../../../api/admin-api";
 
 const ManageComponentPage = () => {
   const name = "name";
   const update = null;
-  const deleteCompo = null;
+  const remove = null;
 
   const [componentList, setComponentList] = useState([]);
   useEffect(() => {
@@ -52,14 +56,14 @@ const ManageComponentPage = () => {
       ],
     },
     {
-      name: "Delete",
+      name: "Remove",
       sortable: false,
-      selector: (row) => row[deleteCompo],
+      selector: (row) => row[remove],
       cell: (d) => [
         <>
-          <FaIcon.FaLock
+          <MdIcon.MdDelete
             key={d.id}
-            onClick={() => handleDeleteCompo(d.id)}
+            onClick={() => handleRemoveCompo(d.id)}
             style={{ cursor: "pointer" }}
           />
         </>,
@@ -83,8 +87,8 @@ const ManageComponentPage = () => {
   const dispatch = useDispatch();
   const modalIsOpen = useSelector((state) => state.modal.isOpen);
 
-  const handleDeleteCompo = (id) => {
-    setAction("delete-compo");
+  const handleRemoveCompo = (id) => {
+    setAction("remove-compo");
     setComponentItem({ compoId: id });
     dispatch(toggleModal());
   };
@@ -93,6 +97,19 @@ const ManageComponentPage = () => {
     setAction("add-compo");
     dispatch(toggleModal());
     setComponentItem({ id, name });
+  };
+
+  const handleSubmitRemove = () => {
+    const removeComponent = async () => {
+      try {
+        const id = componentItem.compoId;
+        const response = await adminApi.removeComponent(id);
+        console.log(response);
+      } catch (error) {
+        console.log("Failed to remove component: ", error);
+      }
+    };
+    removeComponent();
   };
 
   console.log("manage-component-page has re rendered");
@@ -104,19 +121,16 @@ const ManageComponentPage = () => {
         </CustomButton>
       </div>
       <DataTableExtensions {...tableData}>
-        <DataTable
-          columns={columns}
-          data={componentList}
-          defaultSorField="id"
-          pagination
-          highlightOnHover
-        />
+        <DataTable pagination highlightOnHover />
       </DataTableExtensions>
       {modalIsOpen && action === "add-compo" && (
         <AddComponentContainer item={componentItem} />
       )}
-      {modalIsOpen && action === "delete-compo" && (
-        <ConfirmContainer title="Are you sure to delete this component?" />
+      {modalIsOpen && action === "remove-compo" && (
+        <ConfirmContainer
+          title="Are you sure to remove this component?"
+          onSubmit={handleSubmitRemove}
+        />
       )}
       {modalIsOpen && <Backdrop />}
     </div>
