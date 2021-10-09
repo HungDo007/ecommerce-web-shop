@@ -67,6 +67,31 @@ namespace Application.Catalog
             }
         }
 
+        public async Task<List<CompVm>> AllCompInCat(int catId)
+        {
+            var cat = await _context.Categories.Include(x => x.CatParent).Where(x => x.Id == catId).FirstOrDefaultAsync();
+            if (cat == null)
+                return null;
+
+            List<Component> components = await _context.Components
+                .Include(x => x.Categories)
+                .Where(x => x.Categories.Contains(cat))
+                .ToListAsync();
+
+            if (components.Count == 0 || components == null)
+            {
+                foreach (var item in cat.CatParent)
+                {
+                    components.AddRange(await _context.Components
+                        .Include(x => x.Categories)
+                        .Where(x => x.Categories.Contains(item))
+                        .ToListAsync());
+                }
+            }
+
+            return _mapper.Map<List<CompVm>>(components.Distinct());
+        }
+
         public async Task<bool> AssignCompToCat(AssignCompToCatRequest request)
         {
             var cat = await _context.Categories
@@ -129,10 +154,14 @@ namespace Application.Catalog
 
             var cat = await _context.Categories.Where(x => x.Id == request.Id).Include(x => x.CatParent).FirstOrDefaultAsync();
 
-            cat.Name = request.Name;
-            cat.CatParent.Clear();
+            if (!string.IsNullOrEmpty(request.Name))
+            {
+                cat.Name = request.Name;
+            }
+
             if (request.Parent.Count != 0)
             {
+                cat.CatParent.Clear();
                 foreach (var item in request.Parent)
                 {
                     var parent = await _context.Categories.FindAsync(int.Parse(item));

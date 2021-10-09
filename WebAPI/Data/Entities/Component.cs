@@ -12,5 +12,10 @@ namespace Data.Entities
 
         public List<ComponentDetail> ComponentDetails { get; set; }
         public List<Category> Categories { set; get; }
+
+        public override string ToString()
+        {
+            return ID.ToString();
+        }
     }
 }

@@ -1,7 +1,12 @@
-﻿using Application.ViewModels.Catalog;
+﻿using Application.Common;
+using Application.ViewModels.Catalog;
 using AutoMapper;
 using Data.EF;
+using Data.Entities;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,11 +17,119 @@ namespace Application.Catalog
     {
         private readonly IMapper _mapper;
         private readonly EShopContext _context;
+        private readonly UserManager<AppUser> _userManager;
+        private readonly IStorageService _storageService;
 
-        public ProductService(IMapper mapper, EShopContext context)
+        public ProductService(IMapper mapper,
+            EShopContext context,
+            UserManager<AppUser> userManager,
+            IStorageService storageService)
         {
             _mapper = mapper;
             _context = context;
+            _userManager = userManager;
+            _storageService = storageService;
+        }
+
+        public async Task<bool> Add(ProductRequest request)
+        {
+            Product pro = new Product();
+            pro.Name = request.Name;
+            pro.Description = request.Description;
+            pro.UserId = (await _userManager.FindByNameAsync(request.Seller)).Id;
+            pro.DateCreated = DateTime.Now;
+
+            pro.ProductImages.Add(await AddImage(pro.Id, true, request.Poster));
+
+            foreach (var item in request.Images)
+            {
+                pro.ProductImages.Add(await AddImage(pro.Id, false, item));
+            }
+
+            foreach (var item in request.Details)
+            {
+                pro.ProductDetails.Add(await AddProDetail(pro.Id, item));
+            }
+
+            foreach (var item in request.Categories)
+            {
+                ProductCategory pc = new ProductCategory()
+                {
+                    CategoryId = item,
+                    ProductId = pro.Id
+                };
+                pro.ProductCategories.Add(pc);
+            }
+            _context.Products.Add(pro);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        private async Task<int> AddProduct(ProductRequest request)
+        {
+            Product pro = new Product();
+            pro.Name = request.Name;
+            pro.Description = request.Description;
+            pro.UserId = (await _userManager.FindByNameAsync(request.Seller)).Id;
+
+            try
+            {
+                _context.Products.Add(pro);
+                await _context.SaveChangesAsync();
+                return pro.Id;
+            }
+            catch
+            {
+                return pro.Id;
+            }
+        }
+
+        private async Task<ProductImage> AddImage(int proId, bool IsPoster, IFormFile file)
+        {
+            ProductImage pi = new ProductImage();
+            pi.ProductId = proId;
+            pi.Path = await _storageService.SaveFile(false, file);
+            pi.IsPoster = IsPoster;
+
+            return pi;
+        }
+
+        private async Task<ProductDetail> AddProDetail(int proId, ProductDetailRequest detailVm)
+        {
+            ProductDetail pd = new ProductDetail();
+            pd.Price = detailVm.Price;
+            pd.Stock = detailVm.Stock;
+            pd.ProductId = proId;
+
+            List<ComponentDetail> details = new List<ComponentDetail>();
+            foreach (var item in detailVm.ComponentDetails)
+            {
+                ComponentDetail comp = await _context.ComponentDetails
+                    .Where(x => x.ComponentId == item.CompId && x.Value == item.Value)
+                    .FirstOrDefaultAsync();
+
+                if (comp == null)
+                    comp = new ComponentDetail() { ComponentId = item.CompId, Value = item.Value };
+
+                details.Add(comp);
+            }
+
+            pd.ComponentDetails = details;
+            return pd;
+        }
+
+        public async Task AddViewCount(int proId)
+        {
+            var product = await _context.Products.FindAsync(proId);
+            if (product != null)
+                product.ViewCount += 1;
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+            }
         }
 
         public async Task<List<ProductVm>> GetAll()

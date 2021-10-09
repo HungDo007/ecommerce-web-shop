@@ -22,6 +22,8 @@ namespace Application.Catalog
 
         public async Task<int> Add(ComponentRequest request)
         {
+            if (await _context.Components.AnyAsync(x => x.Name == request.Name))
+                return 0;
             Component component = _mapper.Map<Component>(request);
 
             try
@@ -58,12 +60,13 @@ namespace Application.Catalog
 
         public async Task<bool> Update(ComponentRequest request)
         {
-            var comp = await _context.Components.FindAsync(request.Id);
-
-            if (_context.Components.Any(x => x.Name == request.Name))
+            if (_context.Components.Any(x => x.ID != request.Id && x.Name == request.Name))
             {
                 return false;
             }
+
+            var comp = await _context.Components.FindAsync(request.Id);
+
             comp.Name = request.Name;
 
             try
