@@ -98,6 +98,13 @@ namespace WebAPI.Controllers
 
         //--------------------------------------------------------------------------------------
         #region Category
+        [HttpGet("category/comp/{id}")]
+        public async Task<IActionResult> CompInCat(int id)
+        {
+            return Ok(await _categoryService.AllCompInCat(id));
+        }
+
+
         [HttpPost("category/add")]
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> AddCategoryForm([FromForm] CategoryRequest request)

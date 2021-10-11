@@ -15,10 +15,10 @@ namespace Data.Entities
         public DateTime DateCreated { set; get; }
 
         public AppUser User { get; set; }
-        public List<ProductCategory> ProductCategories { get; set; }
-        public List<ProductDetail> ProductDetails { get; set; }
-        public List<ProductImage> ProductImages { get; set; }
-        public List<Cart> Carts { get; set; }
-        public List<OrderDetail> OrderDetails { get; set; }
+        public List<ProductCategory> ProductCategories { get; set; } = new List<ProductCategory>();
+        public List<ProductDetail> ProductDetails { get; set; } = new List<ProductDetail>();
+        public List<ProductImage> ProductImages { get; set; } = new List<ProductImage>();
+        public List<Cart> Carts { get; set; } = new List<Cart>();
+        public List<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
     }
 }

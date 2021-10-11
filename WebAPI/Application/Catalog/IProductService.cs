@@ -19,5 +19,10 @@ namespace Application.Catalog
         /// <param name="id"></param>
         /// <returns></returns>
         Task<ProductVm> GetProductDetail(int id);
+
+
+        Task<bool> Add(ProductRequest request);
+
+        Task AddViewCount(int proId);
     }
 }

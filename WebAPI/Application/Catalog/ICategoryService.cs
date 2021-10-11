@@ -38,6 +38,8 @@ namespace Application.Catalog
         /// <returns></returns>
         Task<List<CategoryVm>> GetAll();
 
-        Task<bool> AssignCompToCat(AssignCompToCatRequest request);        
+        Task<bool> AssignCompToCat(AssignCompToCatRequest request);
+
+        Task<List<CompVm>> AllCompInCat(int catId);
     }
 }
