@@ -1,9 +1,12 @@
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
 import adminApi from "../../api/admin-api";
 
-import { toggleModal } from "../../redux/modal/modal.actions";
+import {
+  toggleModal,
+  toggleNotification,
+} from "../../redux/modal/modal.actions";
 import CustomButton from "../custom-button/custom-button.component";
 import FormInput from "../form-input/form-input.component";
 
@@ -41,6 +44,7 @@ const AddComponent = ({ item }) => {
         try {
           const response = await adminApi.addComponent(payload);
           console.log(response);
+          dispatch(toggleNotification());
         } catch (error) {
           console.log("Fail to add component: ", error);
         }
@@ -52,6 +56,7 @@ const AddComponent = ({ item }) => {
         try {
           const response = await adminApi.editComponent(payload);
           console.log(response);
+          dispatch(toggleNotification());
         } catch (error) {
           console.log("Fail to add component: ", error);
         }
@@ -59,7 +64,6 @@ const AddComponent = ({ item }) => {
 
       editComponent();
     }
-
     dispatch(toggleModal());
   };
 

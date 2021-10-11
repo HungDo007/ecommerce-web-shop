@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
-import { toggleModal } from "../../../redux/modal/modal.actions";
+import {
+  toggleModal,
+  toggleNotification,
+} from "../../../redux/modal/modal.actions";
 
 import DataTable from "react-data-table-component";
 import DataTableExtensions from "react-data-table-component-extensions";
@@ -13,6 +16,7 @@ import AddComponentContainer from "../../../components/component-classify/add-co
 import Backdrop from "../../../components/modal-backdrop/backdrop.component";
 import ConfirmContainer from "../../../components/confirm/confirm.container";
 import CustomButton from "../../../components/custom-button/custom-button.component";
+import Notification from "../../../components/notification/notification.component";
 
 import adminApi from "../../../api/admin-api";
 
@@ -22,6 +26,17 @@ const ManageComponentPage = () => {
   const remove = null;
 
   const [componentList, setComponentList] = useState([]);
+  const [componentItem, setComponentItem] = useState({
+    compoId: 0,
+    compoName: "",
+  });
+
+  const [action, setAction] = useState("add-compo");
+  const dispatch = useDispatch();
+  const modalIsOpen = useSelector((state) => state.modal.isOpen);
+  const showNotification = useSelector(
+    (state) => state.modal.notificationIsOpen
+  );
   useEffect(() => {
     const fetchComponentList = async () => {
       try {
@@ -33,7 +48,7 @@ const ManageComponentPage = () => {
     };
 
     fetchComponentList();
-  }, []);
+  }, [showNotification]);
 
   const columns = [
     {
@@ -78,15 +93,6 @@ const ManageComponentPage = () => {
     print: false,
   };
 
-  const [componentItem, setComponentItem] = useState({
-    compoId: 0,
-    compoName: "",
-  });
-
-  const [action, setAction] = useState("add-compo");
-  const dispatch = useDispatch();
-  const modalIsOpen = useSelector((state) => state.modal.isOpen);
-
   const handleRemoveCompo = (id) => {
     setAction("remove-compo");
     setComponentItem({ compoId: id });
@@ -105,6 +111,8 @@ const ManageComponentPage = () => {
         const id = componentItem.compoId;
         const response = await adminApi.removeComponent(id);
         console.log(response);
+        dispatch(toggleModal());
+        dispatch(toggleNotification());
       } catch (error) {
         console.log("Failed to remove component: ", error);
       }
@@ -133,6 +141,7 @@ const ManageComponentPage = () => {
         />
       )}
       {modalIsOpen && <Backdrop />}
+      {showNotification && <Notification message="Successful" />}
     </div>
   );
 };

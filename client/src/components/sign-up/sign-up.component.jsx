@@ -1,11 +1,19 @@
 import { useState } from "react";
 
 import CustomButton from "../custom-button/custom-button.component";
+import Notification from "../notification/notification.component";
 import FormInput from "../form-input/form-input.component";
 
-import "./sign-up.styles.scss";
 import adminApi from "../../api/admin-api";
 import userApi from "../../api/user-api";
+
+import "./sign-up.styles.scss";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import {
+  toggleNotification,
+  toggleModal,
+} from "../../redux/modal/modal.actions";
 
 const SignUp = ({ currentUser }) => {
   const [userInfo, setUserInfo] = useState({
@@ -17,6 +25,8 @@ const SignUp = ({ currentUser }) => {
 
   const { username, email, password, confirmPassword } = userInfo;
 
+  const [showNotification, setNotification] = useState(false);
+  const dispatch = useDispatch();
   const handleChange = (event) => {
     const { name, value } = event.target;
 
@@ -43,6 +53,8 @@ const SignUp = ({ currentUser }) => {
           try {
             const response = await adminApi.addAmin(data);
             console.log(response);
+            // dispatch(toggleNotification());
+            dispatch(toggleModal());
           } catch (error) {
             console.log(error);
           }
@@ -54,6 +66,10 @@ const SignUp = ({ currentUser }) => {
         try {
           const response = await userApi.signUp(data);
           console.log(response);
+          setNotification(true);
+          setTimeout(() => {
+            setNotification(false);
+          }, 1000);
         } catch (error) {
           console.log(error);
         }
@@ -101,6 +117,7 @@ const SignUp = ({ currentUser }) => {
         />
         <CustomButton type="submit">SIGN UP</CustomButton>
       </form>
+      {showNotification && <Notification message="Successfully" />}
     </div>
   );
 };

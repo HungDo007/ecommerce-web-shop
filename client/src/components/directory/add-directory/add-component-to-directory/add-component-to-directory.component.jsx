@@ -1,10 +1,15 @@
 import { useEffect, useState } from "react";
+
+import { toggleModal } from "../../../../redux/modal/modal.actions";
+
 import Checkbox from "../../../checkbox-item/checkbox-item.component";
 import CustomButton from "../../../custom-button/custom-button.component";
+
 import adminApi from "../../../../api/admin-api";
+
 import "./add-component-to-directory.styles.scss";
 
-const AddComponentToDirectory = ({ item }) => {
+const AddComponentToDirectory = ({ item, dispatch }) => {
   const [checkedState, setCheckedState] = useState([]);
 
   const [componentList, setComponentList] = useState([]);
@@ -24,11 +29,14 @@ const AddComponentToDirectory = ({ item }) => {
 
   const [listCompoId, setListCompoId] = useState([]);
 
-  const handleSubmit = () => {
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
     const data = {
       catId: item.direcId,
       comps: listCompoId,
     };
+
     const addComponentToDirectory = async () => {
       try {
         const response = await adminApi.addComponentToDirectory(data);
@@ -37,6 +45,9 @@ const AddComponentToDirectory = ({ item }) => {
         console.log("Failed to add component to directory: ", error);
       }
     };
+
+    addComponentToDirectory();
+    dispatch(toggleModal());
   };
 
   const handleOnChange = (position) => {
@@ -62,21 +73,19 @@ const AddComponentToDirectory = ({ item }) => {
 
   console.log("add-component-to-directory has re rendered");
   return (
-    <div>
+    <form onSubmit={handleSubmit}>
       <h3 className="add-component-to-directory-title">Add Component</h3>
       <div className="add-component-to-directory-container">
         {componentList.map((item, index) => (
           <Checkbox
             item={item}
             onChange={() => handleOnChange(index)}
-            checked={checkedState[index]}
+            checked={checkedState[index] || false}
           />
         ))}
       </div>
-      <div onClick={handleSubmit}>
-        <CustomButton>Submit</CustomButton>
-      </div>
-    </div>
+      <CustomButton>Submit</CustomButton>
+    </form>
   );
 };
 

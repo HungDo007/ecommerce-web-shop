@@ -103,9 +103,12 @@ const ManageAccountPage = () => {
     }
   };
 
+  const showNotification = useSelector(
+    (state) => state.modal.notificationIsOpen
+  );
   useEffect(() => {
     fetchListAdmin();
-  }, []);
+  }, [showNotification]);
 
   const handleFetchAdmin = () => {
     fetchListAdmin();

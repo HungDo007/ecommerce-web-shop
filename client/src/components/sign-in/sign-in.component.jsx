@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { connect } from "react-redux";
 import jwtDecode from "jwt-decode";
 import userApi from "../../api/user-api";
 
@@ -9,14 +8,23 @@ import FormInput from "../form-input/form-input.component";
 import { setCurrentUser } from "../../redux/user/user.actions";
 
 import "./sign-in.styles.scss";
+import Notification from "../notification/notification.component";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import { toggleNotification } from "../../redux/modal/modal.actions";
 
-const SignIn = ({ setCurrentUser }) => {
+const SignIn = () => {
   const [userInfo, setUserInfo] = useState({
     email: "",
     password: "",
   });
 
   const { email, password } = userInfo;
+  const showNotification = useSelector(
+    (state) => state.modal.notificationIsOpen
+  );
+
+  const dispatch = useDispatch();
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -33,10 +41,13 @@ const SignIn = ({ setCurrentUser }) => {
     const signIn = async () => {
       try {
         const response = await userApi.authenticate(payload);
-        const user = jwtDecode(response);
         localStorage.setItem("jwtToken", response);
+        const user = jwtDecode(response);
         //user["jwtToken"] = response;
-        setCurrentUser(user);
+        dispatch(toggleNotification());
+        setTimeout(() => {
+          dispatch(setCurrentUser(user));
+        }, 1005);
       } catch (error) {
         console.log("Fail to authenticate: ", error);
       }
@@ -71,12 +82,9 @@ const SignIn = ({ setCurrentUser }) => {
           </CustomButton>
         </div>
       </form>
+      {showNotification && <Notification message="Sign in successfully" />}
     </div>
   );
 };
 
-const mapDispatchToProps = (dispatch) => ({
-  setCurrentUser: (user) => dispatch(setCurrentUser(user)),
-});
-
-export default connect(null, mapDispatchToProps)(SignIn);
+export default SignIn;

@@ -16,7 +16,7 @@ import { toggleModal } from "../../../redux/modal/modal.actions";
 import * as MdIcon from "react-icons/md";
 import * as FaIcon from "react-icons/fa";
 
-import catalogApi from "../../../api/catalog";
+import catalogApi from "../../../api/catalog-api";
 import adminApi from "../../../api/admin-api";
 
 const ManageDirectoryPage = () => {
@@ -174,7 +174,10 @@ const ManageDirectoryPage = () => {
         <AddDirectoryContainer item={directoryItem} />
       )}
       {modalIsOpen && action === "add-component-to-directory" && (
-        <AddComponentToDirectoryContainer item={directoryItem} />
+        <AddComponentToDirectoryContainer
+          item={directoryItem}
+          dispatch={dispatch}
+        />
       )}
       {modalIsOpen && action === "hide-directory" && (
         <ConfirmContainer
