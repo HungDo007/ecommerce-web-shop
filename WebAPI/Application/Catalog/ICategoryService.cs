@@ -41,5 +41,6 @@ namespace Application.Catalog
         Task<bool> AssignCompToCat(AssignCompToCatRequest request);
 
         Task<List<CompVm>> AllCompInCat(int catId);
+        Task<List<CompAdminVm>> AllCompInCatAdmin(int catId);
     }
 }

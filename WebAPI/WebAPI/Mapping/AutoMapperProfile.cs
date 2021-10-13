@@ -2,6 +2,8 @@
 using Application.ViewModels.System;
 using AutoMapper;
 using Data.Entities;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace WebAPI.Mapping
@@ -33,6 +35,10 @@ namespace WebAPI.Mapping
 
             CreateMap<ComponentRequest, Component>();
             CreateMap<Component, CompVm>();
+
+            CreateMap<Component, CompAdminVm>();
+
+
         }
     }
 }

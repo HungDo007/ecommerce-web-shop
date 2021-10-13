@@ -4,6 +4,7 @@ using AutoMapper;
 using Data.EF;
 using Data.Entities;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -90,6 +91,19 @@ namespace Application.Catalog
             }
 
             return _mapper.Map<List<CompVm>>(components.Distinct());
+        }
+
+        public async Task<List<CompAdminVm>> AllCompInCatAdmin(int catId)
+        {
+            var coms = await AllCompInCat(catId);
+
+            var cats = await _context.Components.ToListAsync();
+            var response = _mapper.Map<List<CompAdminVm>>(cats);
+            foreach (var item in response)
+            {
+                item.IsExists = coms.Any(x => x.ID == item.ID);
+            }
+            return response;
         }
 
         public async Task<bool> AssignCompToCat(AssignCompToCatRequest request)

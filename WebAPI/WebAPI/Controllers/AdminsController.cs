@@ -12,7 +12,7 @@ namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = SystemConstants.RoleAdmin)]
+    //[Authorize(Roles = SystemConstants.RoleAdmin)]
     public class AdminsController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -101,7 +101,7 @@ namespace WebAPI.Controllers
         [HttpGet("category/comp/{id}")]
         public async Task<IActionResult> CompInCat(int id)
         {
-            return Ok(await _categoryService.AllCompInCat(id));
+            return Ok(await _categoryService.AllCompInCatAdmin(id));
         }
 
 
