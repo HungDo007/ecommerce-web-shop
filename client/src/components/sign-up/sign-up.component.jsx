@@ -1,32 +1,21 @@
 import { useState } from "react";
-import { useSelector } from "react-redux";
-import axios from "axios";
 
 import CustomButton from "../custom-button/custom-button.component";
+import Notification from "../notification/notification.component";
 import FormInput from "../form-input/form-input.component";
 
+import adminApi from "../../api/admin-api";
+import userApi from "../../api/user-api";
+
 import "./sign-up.styles.scss";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import {
+  toggleNotification,
+  toggleModal,
+} from "../../redux/modal/modal.actions";
 
-const SignUp = () => {
-  const currentUser = useSelector((state) => state.user.currentUser);
-  let url = "";
-  let config = null;
-  currentUser
-    ? currentUser.role === "Admin"
-      ? (url = "http://localhost:5000/api/Admins/addAdmin") &&
-        (config = {
-          headers: {
-            Authorization: "Bearer " + currentUser.jwtToken,
-          },
-        })
-      : (url = "http://localhost:5000/api/Users/register") &&
-        (config = {
-          headers: {
-            Authorization: "Bearer " + currentUser.jwtToken,
-          },
-        })
-    : (url = "http://localhost:5000/api/Users/register");
-
+const SignUp = ({ currentUser }) => {
   const [userInfo, setUserInfo] = useState({
     username: "",
     email: "",
@@ -36,21 +25,8 @@ const SignUp = () => {
 
   const { username, email, password, confirmPassword } = userInfo;
 
-  const data = {
-    userName: username,
-    email: email,
-    password: password,
-  };
-
-  const signUp = async () => {
-    try {
-      const response = await axios.post(url, data, config);
-      console.log(response);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
+  const [showNotification, setNotification] = useState(false);
+  const dispatch = useDispatch();
   const handleChange = (event) => {
     const { name, value } = event.target;
 
@@ -60,13 +36,46 @@ const SignUp = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
 
+    const data = {
+      userName: username,
+      email: email,
+      password: password,
+    };
+
     if (password !== confirmPassword) {
       alert("Password don't match");
       return;
     }
 
-    signUp();
-    //console.log(config, url);
+    if (currentUser) {
+      if (currentUser.role === "Admin") {
+        const addAdmin = async () => {
+          try {
+            const response = await adminApi.addAmin(data);
+            console.log(response);
+            // dispatch(toggleNotification());
+            dispatch(toggleModal());
+          } catch (error) {
+            console.log(error);
+          }
+        };
+        addAdmin();
+      }
+    } else {
+      const signUp = async () => {
+        try {
+          const response = await userApi.signUp(data);
+          console.log(response);
+          setNotification(true);
+          setTimeout(() => {
+            setNotification(false);
+          }, 1000);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+      signUp();
+    }
   };
 
   return (
@@ -108,6 +117,7 @@ const SignUp = () => {
         />
         <CustomButton type="submit">SIGN UP</CustomButton>
       </form>
+      {showNotification && <Notification message="Successfully" />}
     </div>
   );
 };

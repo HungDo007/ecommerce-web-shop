@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
+import adminApi from "../../../api/admin-api";
 import { toggleModal } from "../../../redux/modal/modal.actions";
 import CustomButton from "../../custom-button/custom-button.component";
 import FormInput from "../../form-input/form-input.component";
@@ -8,7 +9,7 @@ const defaultImg = "/img/default-img.png";
 
 const AddDirectory = ({ item }) => {
   const initialFieldValues = {
-    directoryId: "0",
+    directoryId: 0,
     directoryName: "",
     imageSrc: defaultImg,
     imageFile: null,
@@ -16,12 +17,13 @@ const AddDirectory = ({ item }) => {
 
   if (
     item.id !== undefined &&
-    item.title !== undefined &&
+    item.name !== undefined &&
     item.imageUrl !== undefined
   ) {
-    initialFieldValues.directoryId = item.Id;
-    initialFieldValues.directoryName = item.title;
-    initialFieldValues.imageSrc = item.imageUrl;
+    initialFieldValues.directoryId = item.id;
+    initialFieldValues.directoryName = item.name;
+    initialFieldValues.imageSrc =
+      process.env.REACT_APP_IMAGE_URL + item.imageUrl;
   }
 
   const [values, setValues] = useState(initialFieldValues);
@@ -33,10 +35,6 @@ const AddDirectory = ({ item }) => {
     const { name, value } = event.target;
 
     setValues({ ...values, [name]: value });
-  };
-
-  const handleConfirm = () => {
-    dispatch(toggleModal(true));
   };
 
   const handleReview = (event) => {
@@ -60,20 +58,35 @@ const AddDirectory = ({ item }) => {
     }
   };
 
-  // const addDirectoryAPI = async () => {
-  //   try {
-  //     const response = await axios.post("http://localhost:5000/api/", data);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
   const handleSubmit = (event) => {
     event.preventDefault();
-
     const formData = new FormData();
-    formData.append("directoryName", directoryName);
-    formData.append("imageFile", imageFile);
+    formData.append("name", directoryName);
+    formData.append("image", imageFile);
+
+    if (item.id === undefined) {
+      const addDirectory = async () => {
+        try {
+          const response = await adminApi.addDirectory(formData);
+          console.log(response);
+        } catch (error) {
+          console.log("Failed to add directory: ", error);
+        }
+      };
+
+      addDirectory();
+    } else {
+      const editDirectory = async () => {
+        try {
+          const response = await adminApi.editDirectory(formData);
+          console.log(response);
+        } catch (error) {
+          console.log("Failed to edit directory: ", error);
+        }
+      };
+      editDirectory();
+    }
+    dispatch(toggleModal());
   };
 
   console.log("add-directory has re rendered");
@@ -81,7 +94,7 @@ const AddDirectory = ({ item }) => {
     <form onSubmit={handleSubmit}>
       Directory
       <div>
-        <img className="image" src={imageSrc} />
+        <img className="image" src={imageSrc} alt="directory" />
       </div>
       <div>
         <input type="file" accept="image/*" onChange={handleReview} required />

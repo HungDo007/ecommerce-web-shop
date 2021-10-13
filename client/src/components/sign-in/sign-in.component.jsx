@@ -1,7 +1,6 @@
 import { useState } from "react";
-import axios from "axios";
-import { connect } from "react-redux";
 import jwtDecode from "jwt-decode";
+import userApi from "../../api/user-api";
 
 import CustomButton from "../custom-button/custom-button.component";
 import FormInput from "../form-input/form-input.component";
@@ -9,34 +8,23 @@ import FormInput from "../form-input/form-input.component";
 import { setCurrentUser } from "../../redux/user/user.actions";
 
 import "./sign-in.styles.scss";
+import Notification from "../notification/notification.component";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import { toggleNotification } from "../../redux/modal/modal.actions";
 
-const SignIn = ({ setCurrentUser }) => {
+const SignIn = () => {
   const [userInfo, setUserInfo] = useState({
     email: "",
     password: "",
   });
 
   const { email, password } = userInfo;
+  const showNotification = useSelector(
+    (state) => state.modal.notificationIsOpen
+  );
 
-  const data = {
-    username: email,
-    password: password,
-  };
-
-  const signIn = async () => {
-    try {
-      const response = await axios.post(
-        "http://localhost:5000/api/Users/authenticate",
-        data
-      );
-      const user = jwtDecode(response.data);
-      user["jwtToken"] = response.data;
-      //console.log(user);
-      setCurrentUser(user);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const dispatch = useDispatch();
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -46,6 +34,24 @@ const SignIn = ({ setCurrentUser }) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    const payload = {
+      username: email,
+      password: password,
+    };
+    const signIn = async () => {
+      try {
+        const response = await userApi.authenticate(payload);
+        localStorage.setItem("jwtToken", response);
+        const user = jwtDecode(response);
+        //user["jwtToken"] = response;
+        dispatch(toggleNotification());
+        setTimeout(() => {
+          dispatch(setCurrentUser(user));
+        }, 1005);
+      } catch (error) {
+        console.log("Fail to authenticate: ", error);
+      }
+    };
     signIn();
   };
 
@@ -76,12 +82,9 @@ const SignIn = ({ setCurrentUser }) => {
           </CustomButton>
         </div>
       </form>
+      {showNotification && <Notification message="Sign in successfully" />}
     </div>
   );
 };
 
-const mapDispatchToProps = (dispatch) => ({
-  setCurrentUser: (user) => dispatch(setCurrentUser(user)),
-});
-
-export default connect(null, mapDispatchToProps)(SignIn);
+export default SignIn;

@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useHistory } from "react-router";
 
 import { IconContext } from "react-icons";
@@ -14,19 +14,20 @@ import { DataArr } from "./sidebarData";
 
 import "./sidebar.styles.css";
 
-const Sidebar = () => {
+const Sidebar = ({ currentUser }) => {
   const [sidebar, setSidebar] = useState(false);
   const showSideBar = () => setSidebar(!sidebar);
 
   const [cartDrop, setCartDrop] = useState(false);
   const showCartDrop = () => setCartDrop(!cartDrop);
 
-  const currentUser = useSelector((state) => state.user.currentUser);
+  // const currentUser = useSelector((state) => state.user.currentUser);
   const dispatch = useDispatch();
 
   const history = useHistory();
   const handleSignOut = () => {
     dispatch(setCurrentUser(null));
+    localStorage.removeItem("jwtToken");
     history.push("/");
   };
 
@@ -48,14 +49,6 @@ const Sidebar = () => {
                   SIGN IN
                 </Link>
               )}
-              <div
-                className="option"
-                onClick={() =>
-                  dispatch(setCurrentUser({ hung: "name", role: "Admin" }))
-                }
-              >
-                setUser
-              </div>
               <div onClick={showCartDrop}>
                 <CartIcon />
               </div>

@@ -1,7 +1,16 @@
 .main {
   margin: 0 5rem;
 
-  .btn-add-admin {
-    float: right;
+  .account-page-buttons {
+    display: flex;
+    justify-content: space-between;
+
+    .account-page-navigate {
+      display: flex;
+
+      button {
+        margin-right: 10px;
+      }
+    }
   }
 }
