@@ -2,13 +2,14 @@
 using Application.ViewModels.Catalog;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class StoresController : ControllerBase
     {
         private readonly IProductService _productService;
@@ -24,9 +25,18 @@ namespace WebAPI.Controllers
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> Add([FromForm] ProductRequest request)
         {
-            await _productService.Add(request);
-            return Ok();
+            int res = await _productService.Add(request);
+            return Ok(res);
         }
+
+        [HttpPost("{id}/addDetail")]
+        public async Task<IActionResult> AddComp(int id, [FromBody] List<ProductDetailRequest> requests)
+        {
+            if (await _productService.AddProDetail(id, requests))
+                return Ok();
+            return BadRequest();
+        }
+
 
         [HttpGet("compInCat/{catId}")]
         public async Task<IActionResult> CompInCat(int catId)

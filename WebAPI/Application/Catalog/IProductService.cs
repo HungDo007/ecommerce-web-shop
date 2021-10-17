@@ -21,8 +21,10 @@ namespace Application.Catalog
         Task<ProductVm> GetProductDetail(int id);
 
 
-        Task<bool> Add(ProductRequest request);
+        Task<int> Add(ProductRequest request);
 
         Task AddViewCount(int proId);
+
+        Task<bool> AddProDetail(int proId, List<ProductDetailRequest> detailVms);
     }
 }

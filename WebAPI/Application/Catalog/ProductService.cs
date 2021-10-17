@@ -31,7 +31,7 @@ namespace Application.Catalog
             _storageService = storageService;
         }
 
-        public async Task<bool> Add(ProductRequest request)
+        public async Task<int> Add(ProductRequest request)
         {
             Product pro = new Product();
             pro.Name = request.Name;
@@ -41,48 +41,35 @@ namespace Application.Catalog
 
             pro.ProductImages.Add(await AddImage(pro.Id, true, request.Poster));
 
-            foreach (var item in request.Images)
+            if (request.Images.Count > 0)
             {
-                pro.ProductImages.Add(await AddImage(pro.Id, false, item));
-            }
-
-            foreach (var item in request.Details)
-            {
-                pro.ProductDetails.Add(await AddProDetail(pro.Id, item));
-            }
-
-            foreach (var item in request.Categories)
-            {
-                ProductCategory pc = new ProductCategory()
+                foreach (var item in request.Images)
                 {
-                    CategoryId = item,
-                    ProductId = pro.Id
-                };
-                pro.ProductCategories.Add(pc);
+                    pro.ProductImages.Add(await AddImage(pro.Id, false, item));
+                }
+            }
+
+            //foreach (var item in request.Details)
+            //{
+            //    pro.ProductDetails.Add(await AddProDetail(pro.Id, item));
+            //}
+            if (request.Categories.Count > 0)
+            {
+                foreach (var item in request.Categories)
+                {
+                    ProductCategory pc = new ProductCategory()
+                    {
+                        CategoryId = item,
+                        ProductId = pro.Id
+                    };
+                    pro.ProductCategories.Add(pc);
+                }
             }
             _context.Products.Add(pro);
             await _context.SaveChangesAsync();
-            return true;
+            return pro.Id;
         }
 
-        private async Task<int> AddProduct(ProductRequest request)
-        {
-            Product pro = new Product();
-            pro.Name = request.Name;
-            pro.Description = request.Description;
-            pro.UserId = (await _userManager.FindByNameAsync(request.Seller)).Id;
-
-            try
-            {
-                _context.Products.Add(pro);
-                await _context.SaveChangesAsync();
-                return pro.Id;
-            }
-            catch
-            {
-                return pro.Id;
-            }
-        }
 
         private async Task<ProductImage> AddImage(int proId, bool IsPoster, IFormFile file)
         {
@@ -94,28 +81,41 @@ namespace Application.Catalog
             return pi;
         }
 
-        private async Task<ProductDetail> AddProDetail(int proId, ProductDetailRequest detailVm)
+        public async Task<bool> AddProDetail(int proId, List<ProductDetailRequest> detailVms)
         {
-            ProductDetail pd = new ProductDetail();
-            pd.Price = detailVm.Price;
-            pd.Stock = detailVm.Stock;
-            pd.ProductId = proId;
-
-            List<ComponentDetail> details = new List<ComponentDetail>();
-            foreach (var item in detailVm.ComponentDetails)
+            foreach (var detailVm in detailVms)
             {
-                ComponentDetail comp = await _context.ComponentDetails
-                    .Where(x => x.ComponentId == item.CompId && x.Value == item.Value)
-                    .FirstOrDefaultAsync();
+                ProductDetail pd = new ProductDetail();
+                pd.Price = detailVm.Price;
+                pd.Stock = detailVm.Stock;
+                pd.ProductId = proId;
 
-                if (comp == null)
-                    comp = new ComponentDetail() { ComponentId = item.CompId, Value = item.Value };
+                List<ComponentDetail> details = new List<ComponentDetail>();
+                foreach (var item in detailVm.ComponentDetails)
+                {
+                    ComponentDetail comp = await _context.ComponentDetails
+                        .Where(x => x.ComponentId == item.CompId && x.Value == item.Value)
+                        .FirstOrDefaultAsync();
 
-                details.Add(comp);
+                    if (comp == null)
+                        comp = new ComponentDetail() { ComponentId = item.CompId, Value = item.Value };
+
+                    details.Add(comp);
+                }
+
+                pd.ComponentDetails = details;
+                _context.ProductDetails.Add(pd);
             }
 
-            pd.ComponentDetails = details;
-            return pd;
+            try
+            {
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public async Task AddViewCount(int proId)
