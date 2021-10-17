@@ -16,11 +16,13 @@ const ProductColumns = () => {
   };
   const productColumns = [
     {
+      id: "name",
       name: "Name",
       selector: (row) => row[name],
       sortable: true,
     },
     {
+      id: "image",
       name: "Image",
       selector: (row) => row[imageUrl],
       cell: (d) => {
@@ -39,11 +41,13 @@ const ProductColumns = () => {
       },
     },
     {
+      id: "price",
       name: "Price",
       selector: (row) => row[price],
       sortable: true,
     },
     {
+      id: "edit",
       name: "Edit",
       sortable: false,
       selector: (row) => row[edit],
@@ -58,6 +62,7 @@ const ProductColumns = () => {
       ],
     },
     {
+      id: "remove",
       name: "Remove",
       sortable: false,
       selector: (row) => row[remove],

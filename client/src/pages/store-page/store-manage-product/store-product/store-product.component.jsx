@@ -23,15 +23,47 @@ const StoreProduct = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-
     const formData = new FormData();
+
+    for (let i = 0; i < productInfo.listImageFiles.length; i++) {
+      formData.append("images", productInfo.listImageFiles[i]);
+    }
+
+    for (let i = 0; i < productInfo.productDetail.length; i++) {
+      formData.append("details", JSON.stringify(productInfo.productDetail[i]));
+      //console.log(JSON.stringify(productInfo.productDetail[i]));
+    }
+
     formData.append("seller", currentUser.unique_name);
     formData.append("name", productInfo.name);
     formData.append("description", productInfo.description);
     formData.append("categories", productInfo.directoryId);
     formData.append("poster", productInfo.thumbnailFile);
-    formData.append("images", productInfo.listImageFiles);
-    formData.append("details", productInfo.productDetail);
+
+    // for (let i = 0; i < productInfo.productDetail.length; i++) {
+    //   const formDetail = new FormData();
+    //   formDetail.append("price", productInfo.productDetail[i].price);
+    //   formDetail.append("stock", productInfo.productDetail[i].stock);
+
+    //   for (
+    //     let j = 0;
+    //     j < productInfo.productDetail[i].componentDetails.length;
+    //     j++
+    //   ) {
+    //     const formCompo = new FormData();
+    //     formCompo.append(
+    //       "compId",
+    //       productInfo.productDetail[i].componentDetails[j].compId
+    //     );
+    //     formCompo.append(
+    //       "value",
+    //       productInfo.productDetail[i].componentDetails[j].value
+    //     );
+    //     formDetail.append("componentDetails", formCompo);
+    //   }
+    //   formData.append("details", formDetail);
+    // }
+    //formData.append("details", productInfo.productDetail);
 
     const addProduct = async () => {
       try {

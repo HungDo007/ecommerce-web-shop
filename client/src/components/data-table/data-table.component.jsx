@@ -9,10 +9,21 @@ const CustomDataTable = ({ columns, data }) => {
     export: false,
     print: false,
   };
+
+  const handleChange = ({ selectedRows }) => {
+    // You can set state or dispatch with something like Redux so we can use the retrieved data
+    console.log("Selected Rows: ", selectedRows);
+  };
+
   return (
     <div>
       <DataTableExtensions {...tableData}>
-        <DataTable pagination highlightOnHover />
+        <DataTable
+          pagination
+          highlightOnHover
+          selectableRows
+          onSelectedRowsChange={handleChange}
+        />
       </DataTableExtensions>
     </div>
   );

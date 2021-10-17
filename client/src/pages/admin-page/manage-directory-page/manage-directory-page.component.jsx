@@ -39,7 +39,6 @@ const ManageDirectoryPage = () => {
     const fetchDirectoryList = async () => {
       try {
         const response = await catalogApi.getAllDirectory();
-        console.log(response);
         setDirectoryList(response);
       } catch (error) {
         console.log("Failed to fetch component list: ", error);
@@ -182,7 +181,7 @@ const ManageDirectoryPage = () => {
       )}
       {modalIsOpen && action === "hide-directory" && (
         <ConfirmContainer
-          title="Are you sure to hide this item?"
+          title="Are you sure to remove this item?"
           onSubmit={handleSubmitRemove}
         />
       )}

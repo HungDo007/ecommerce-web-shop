@@ -8,48 +8,28 @@ import CustomButton from "../../../custom-button/custom-button.component";
 import adminApi from "../../../../api/admin-api";
 
 import "./add-component-to-directory.styles.scss";
-import storeApi from "../../../../api/store-api";
 
 const AddComponentToDirectory = ({ item, dispatch }) => {
-  const [checkedState, setCheckedState] = useState([]);
   const [compoOfDirect, setCompoOfDirect] = useState([]);
-  const [componentList, setComponentList] = useState([]);
   useEffect(() => {
-    const fetchComponentList = async () => {
-      try {
-        const response = await adminApi.getAllComponent();
-        setComponentList(response);
-        setCheckedState(new Array(response.length).fill(false));
-      } catch (error) {
-        console.log("Failed to fetch component list: ", error);
-      }
-    };
-
     const fetchComponentOfDirectory = async () => {
       try {
-        const response = await storeApi.getComponentOfDirectory(item.direcId);
+        const response = await adminApi.getComponentOfDirectory(item.direcId);
         setCompoOfDirect(response);
       } catch (error) {
         console.log("Failed to fetch component of directory: ", error);
       }
     };
 
-    fetchComponentList();
     fetchComponentOfDirectory();
   }, []);
 
   useEffect(() => {
-    if (componentList.length !== 0 && compoOfDirect.length !== 0) {
-      const arr = componentList.map((item) => {
-        if (compoOfDirect.some((e) => e.id === item.id)) {
-          return true;
-        }
-        return false;
-      });
-
-      setCheckedState(arr);
-    }
-  }, [componentList, compoOfDirect]);
+    const ls = compoOfDirect
+      .filter((item) => item.isExists === true)
+      .map((item) => item.id);
+    setListCompoId(ls);
+  }, [compoOfDirect]);
 
   const [listCompoId, setListCompoId] = useState([]);
 
@@ -60,6 +40,8 @@ const AddComponentToDirectory = ({ item, dispatch }) => {
       catId: item.direcId,
       comps: listCompoId,
     };
+
+    console.log(data);
 
     const addComponentToDirectory = async () => {
       try {
@@ -75,24 +57,13 @@ const AddComponentToDirectory = ({ item, dispatch }) => {
   };
 
   const handleOnChange = (position) => {
-    const updatedCheckedState = checkedState.map((item, index) =>
-      index === position ? !item : item
-    );
+    const newCompoOfDirect = [...compoOfDirect];
 
-    setCheckedState(updatedCheckedState);
-
-    const listCheckedCompo = updatedCheckedState.reduce(
-      (emptyArray, currentState, index) => {
-        if (currentState === true) {
-          emptyArray.push(componentList[index]);
-        }
-        return emptyArray;
-      },
-      []
-    );
-
-    const listCompoId = listCheckedCompo.map((item) => item.id);
-    setListCompoId(listCompoId);
+    newCompoOfDirect[position] = {
+      ...newCompoOfDirect[position],
+      isExists: !newCompoOfDirect[position].isExists,
+    };
+    setCompoOfDirect(newCompoOfDirect);
   };
 
   console.log("add-component-to-directory has re rendered");
@@ -100,11 +71,12 @@ const AddComponentToDirectory = ({ item, dispatch }) => {
     <form onSubmit={handleSubmit}>
       <h3 className="add-component-to-directory-title">Add Component</h3>
       <div className="add-component-to-directory-container">
-        {componentList.map((item, index) => (
+        {compoOfDirect.map((item, index) => (
           <Checkbox
+            key={item.id}
             item={item}
             onChange={() => handleOnChange(index)}
-            checked={checkedState[index] || false}
+            checked={item.isExists}
           />
         ))}
       </div>
