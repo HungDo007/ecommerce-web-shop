@@ -8,10 +8,11 @@ import CustomButton from "../../../custom-button/custom-button.component";
 import adminApi from "../../../../api/admin-api";
 
 import "./add-component-to-directory.styles.scss";
+import storeApi from "../../../../api/store-api";
 
 const AddComponentToDirectory = ({ item, dispatch }) => {
   const [checkedState, setCheckedState] = useState([]);
-
+  const [compoOfDirect, setCompoOfDirect] = useState([]);
   const [componentList, setComponentList] = useState([]);
   useEffect(() => {
     const fetchComponentList = async () => {
@@ -24,8 +25,31 @@ const AddComponentToDirectory = ({ item, dispatch }) => {
       }
     };
 
+    const fetchComponentOfDirectory = async () => {
+      try {
+        const response = await storeApi.getComponentOfDirectory(item.direcId);
+        setCompoOfDirect(response);
+      } catch (error) {
+        console.log("Failed to fetch component of directory: ", error);
+      }
+    };
+
     fetchComponentList();
+    fetchComponentOfDirectory();
   }, []);
+
+  useEffect(() => {
+    if (componentList.length !== 0 && compoOfDirect.length !== 0) {
+      const arr = componentList.map((item) => {
+        if (compoOfDirect.some((e) => e.id === item.id)) {
+          return true;
+        }
+        return false;
+      });
+
+      setCheckedState(arr);
+    }
+  }, [componentList, compoOfDirect]);
 
   const [listCompoId, setListCompoId] = useState([]);
 

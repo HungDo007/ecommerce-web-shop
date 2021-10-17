@@ -1,10 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
-import {
-  toggleModal,
-  toggleNotification,
-} from "../../../redux/modal/modal.actions";
+import { toggleModal } from "../../../redux/modal/modal.actions";
 
 import DataTable from "react-data-table-component";
 import DataTableExtensions from "react-data-table-component-extensions";
@@ -34,9 +31,6 @@ const ManageComponentPage = () => {
   const [action, setAction] = useState("add-compo");
   const dispatch = useDispatch();
   const modalIsOpen = useSelector((state) => state.modal.isOpen);
-  const showNotification = useSelector(
-    (state) => state.modal.notificationIsOpen
-  );
   useEffect(() => {
     const fetchComponentList = async () => {
       try {
@@ -48,7 +42,7 @@ const ManageComponentPage = () => {
     };
 
     fetchComponentList();
-  }, [showNotification]);
+  }, []);
 
   const columns = [
     {
@@ -112,7 +106,6 @@ const ManageComponentPage = () => {
         const response = await adminApi.removeComponent(id);
         console.log(response);
         dispatch(toggleModal());
-        dispatch(toggleNotification());
       } catch (error) {
         console.log("Failed to remove component: ", error);
       }
@@ -141,7 +134,6 @@ const ManageComponentPage = () => {
         />
       )}
       {modalIsOpen && <Backdrop />}
-      {showNotification && <Notification message="Successful" />}
     </div>
   );
 };

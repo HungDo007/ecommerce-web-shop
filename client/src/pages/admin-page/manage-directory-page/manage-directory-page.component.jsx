@@ -39,6 +39,7 @@ const ManageDirectoryPage = () => {
     const fetchDirectoryList = async () => {
       try {
         const response = await catalogApi.getAllDirectory();
+        console.log(response);
         setDirectoryList(response);
       } catch (error) {
         console.log("Failed to fetch component list: ", error);

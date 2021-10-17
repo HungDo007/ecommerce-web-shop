@@ -10,8 +10,6 @@ import { setCurrentUser } from "../../redux/user/user.actions";
 import "./sign-in.styles.scss";
 import Notification from "../notification/notification.component";
 import { useDispatch } from "react-redux";
-import { useSelector } from "react-redux";
-import { toggleNotification } from "../../redux/modal/modal.actions";
 
 const SignIn = () => {
   const [userInfo, setUserInfo] = useState({
@@ -20,9 +18,7 @@ const SignIn = () => {
   });
 
   const { email, password } = userInfo;
-  const showNotification = useSelector(
-    (state) => state.modal.notificationIsOpen
-  );
+  const [showNotification, setNotification] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -43,13 +39,16 @@ const SignIn = () => {
         const response = await userApi.authenticate(payload);
         localStorage.setItem("jwtToken", response);
         const user = jwtDecode(response);
-        //user["jwtToken"] = response;
-        dispatch(toggleNotification());
+        console.log(user);
+        setNotification(true);
+        setTimeout(() => {
+          setNotification(false);
+        }, 1000);
         setTimeout(() => {
           dispatch(setCurrentUser(user));
         }, 1005);
       } catch (error) {
-        console.log("Fail to authenticate: ", error);
+        console.log("Fail to authenticate: ", error.response);
       }
     };
     signIn();

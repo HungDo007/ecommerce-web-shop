@@ -8,12 +8,8 @@ import adminApi from "../../api/admin-api";
 import userApi from "../../api/user-api";
 
 import "./sign-up.styles.scss";
-import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
-import {
-  toggleNotification,
-  toggleModal,
-} from "../../redux/modal/modal.actions";
+import { toggleModal } from "../../redux/modal/modal.actions";
 
 const SignUp = ({ currentUser }) => {
   const [userInfo, setUserInfo] = useState({
@@ -53,7 +49,6 @@ const SignUp = ({ currentUser }) => {
           try {
             const response = await adminApi.addAmin(data);
             console.log(response);
-            // dispatch(toggleNotification());
             dispatch(toggleModal());
           } catch (error) {
             console.log(error);

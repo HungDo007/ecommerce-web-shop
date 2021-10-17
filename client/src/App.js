@@ -13,6 +13,7 @@ import StorePage from "./pages/store-page/store-page.component";
 
 import Footer from "./components/footer/footer.component";
 import Sidebar from "./components/sidebar/sidebar.component";
+import Test from "./pages/sign-in-and-sign-up/test-sign";
 
 const App = ({ currentUser }) => {
   //currentUser ? console.log("có user") : console.log("user is null");
