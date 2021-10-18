@@ -37,6 +37,11 @@ namespace WebAPI.Controllers
             return Ok(await _categoryService.GetAll());
         }
 
-
+        [HttpPost("addViewCount")]
+        public async Task<IActionResult> AddViewCount([FromBody] int id)
+        {
+            await _productService.AddViewCount(id);
+            return Ok();
+        }
     }
 }

@@ -2,6 +2,7 @@
 using Application.Catalog;
 using Application.System;
 using Application.ViewModels.Catalog;
+using Application.ViewModels.Common;
 using Application.ViewModels.System;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -87,12 +88,12 @@ namespace WebAPI.Controllers
             return BadRequest();
         }
 
-        //[HttpGet("user/paging")]
-        //public async Task<IActionResult> GetUserPaging([FromQuery] UserPagingRequest request)
-        //{
-        //    PagedResult<UserResponse> result = await _userService.GetUserPaging(request);
-        //    return Ok(result);
-        //}
+        [HttpGet("user/paging")]
+        public async Task<IActionResult> GetUserPaging([FromQuery] UserPagingRequest request)
+        {
+            PagedResult<UserResponse> result = await _userService.GetUserPaging(request);
+            return Ok(result);
+        }
         #endregion
 
 
