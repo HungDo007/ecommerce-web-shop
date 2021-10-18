@@ -23,22 +23,22 @@ const StoreProduct = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+
     const formData = new FormData();
 
-    for (let i = 0; i < productInfo.listImageFiles.length; i++) {
-      formData.append("images", productInfo.listImageFiles[i]);
-    }
-
-    for (let i = 0; i < productInfo.productDetail.length; i++) {
-      formData.append("details", JSON.stringify(productInfo.productDetail[i]));
-      //console.log(JSON.stringify(productInfo.productDetail[i]));
-    }
+    // for (let i = 0; i < productInfo.productDetail.length; i++) {
+    //   formData.append("details", JSON.stringify(productInfo.productDetail[i]));
+    //   //console.log(JSON.stringify(productInfo.productDetail[i]));
+    // }
 
     formData.append("seller", currentUser.unique_name);
     formData.append("name", productInfo.name);
     formData.append("description", productInfo.description);
     formData.append("categories", productInfo.directoryId);
     formData.append("poster", productInfo.thumbnailFile);
+    for (let i = 0; i < productInfo.listImageFiles.length; i++) {
+      formData.append("images", productInfo.listImageFiles[i]);
+    }
 
     // for (let i = 0; i < productInfo.productDetail.length; i++) {
     //   const formDetail = new FormData();
@@ -74,7 +74,7 @@ const StoreProduct = () => {
       }
     };
 
-    //addProduct();
+    addProduct();
     console.log(productInfo);
   };
 
