@@ -20,11 +20,14 @@ namespace Application.Catalog
         /// <returns></returns>
         Task<ProductVm> GetProductDetail(int id);
 
+        Task AddViewCount(int proId);
 
         Task<int> Add(ProductRequest request);
 
-        Task AddViewCount(int proId);
-
         Task<bool> AddProDetail(int proId, List<ProductDetailRequest> detailVms);
+
+        Task<bool> Update(ProductRequest request);
+
+        Task<bool> UpdateProDetail(List<ProductDetailRequest> detailVms);
     }
 }
