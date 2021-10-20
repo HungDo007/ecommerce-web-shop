@@ -11,7 +11,7 @@ namespace Data.Configurations
         {
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id).UseIdentityColumn();
-            builder.Property(x => x.Status).HasDefaultValue(false);
+            builder.Property(x => x.Status).HasDefaultValue(true);
             builder.Property(x => x.ViewCount).HasDefaultValue(0);
             builder.Property(x => x.Rate).HasDefaultValue(0);
             builder.Property(x => x.DateCreated).HasDefaultValue(DateTime.Now);

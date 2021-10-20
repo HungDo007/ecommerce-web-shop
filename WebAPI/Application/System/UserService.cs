@@ -234,6 +234,29 @@ namespace Application.System
                 return errorList;
         }
 
+        public async Task<StoreVm> StoreInfo(string username)
+        {
+            var user = await _userManager.FindByNameAsync(username);
+
+            if (!user.EmailConfirmed)
+                return null;
+
+            StoreVm storeVm = new StoreVm();
+            var store = await _context.Stores.Where(x => x.UserId == user.Id).FirstOrDefaultAsync();
+
+            storeVm.NameStore = store.Name;
+            storeVm.Address = store.Address;
+            storeVm.Description = store.Description;
+
+            storeVm.TotalProduct = _context.Products.Where(x => x.UserId == user.Id).Count();
+            if (storeVm.TotalProduct == 0)
+                storeVm.Rate = 0;
+            else
+                storeVm.Rate = Math.Round((_context.Products.Where(x => x.UserId == user.Id).Sum(x => x.Rate) / storeVm.TotalProduct), 1);
+
+            return storeVm;
+        }
+
         public async Task<bool> Update(string username, UserUpdateRequest request)
         {
             var user = await _userManager.FindByNameAsync(username);
@@ -253,6 +276,26 @@ namespace Application.System
             return false;
         }
 
+        public async Task<bool> UpdateStoreInfo(StoreRequest request)
+        {
+            var user = await _userManager.FindByNameAsync(request.Username);
+            var store = await _context.Stores.Where(x => x.UserId == user.Id).FirstOrDefaultAsync();
+
+            store.Name = request.NameStore;
+            store.Description = request.Description;
+            store.Address = request.Address;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         public async Task<bool> VerifyEmail(string email, string code)
         {
             var check = await _context.UserActiveEmails.FindAsync(email);
@@ -262,7 +305,13 @@ namespace Application.System
                 user.EmailConfirmed = true;
                 var result = await _userManager.UpdateAsync(user);
                 if (result.Succeeded)
+                {
+                    Store store = new Store();
+                    store.UserId = user.Id;
+                    _context.Stores.Add(store);
+                    await _context.SaveChangesAsync();
                     return true;
+                }
             }
             return false;
         }

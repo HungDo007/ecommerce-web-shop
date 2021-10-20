@@ -174,5 +174,90 @@ namespace Application.Catalog
             response.ProductDetails = productDetailVms;
             return response;
         }
+
+        public async Task<bool> Update(ProductRequest request)
+        {
+            var pro = await _context.Products
+                .Include(x => x.ProductImages)
+                .Include(x => x.ProductCategories)
+                .Where(x => x.Id == request.Id)
+                .FirstOrDefaultAsync();
+
+            pro.Name = request.Name;
+            pro.Description = request.Description;
+
+            var img = pro.ProductImages.Where(x => x.IsPoster == true).FirstOrDefault();
+
+            pro.ProductImages.Clear();
+            if (request.Poster != null)
+            {
+                try
+                {
+                    await _storageService.DeleteFileAsync(false, img.Path);
+                }
+                catch { }
+
+                pro.ProductImages.Add(await AddImage(pro.Id, true, request.Poster));
+            }
+            else
+            {
+                pro.ProductImages.Add(img);
+            }
+
+            if (request.Images.Count > 0)
+            {
+                foreach (var item in request.Images)
+                {
+                    pro.ProductImages.Add(await AddImage(pro.Id, false, item));
+                }
+            }
+
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> UpdateProDetail(List<ProductDetailRequest> detailVms)
+        {
+
+            foreach (var item in detailVms)
+            {
+                var pro = await _context.ProductDetails
+                    .Include(x => x.ComponentDetails)
+                    .Where(x => x.Id == item.Id).FirstOrDefaultAsync();
+
+                pro.Price = item.Price;
+                pro.Stock = item.Stock;
+                pro.ComponentDetails.Clear();
+                foreach (var cmp in item.ComponentDetails)
+                {
+                    ComponentDetail comp = await _context.ComponentDetails
+                        .Where(x => x.ComponentId == cmp.CompId && x.Value == cmp.Value)
+                        .FirstOrDefaultAsync();
+
+                    if (comp == null)
+                        comp = new ComponentDetail() { ComponentId = cmp.CompId, Value = cmp.Value };
+
+                    pro.ComponentDetails.Add(comp);
+                }
+            }
+            try
+            {
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+
+        }
     }
 }

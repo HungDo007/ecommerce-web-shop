@@ -97,7 +97,7 @@ namespace Application.Catalog
         {
             var coms = await AllCompInCat(catId);
 
-            var cats = await _context.Components.ToListAsync();
+            var cats = await _context.Components.Where(x => x.Status == true).ToListAsync();
             var response = _mapper.Map<List<CompAdminVm>>(cats);
             foreach (var item in response)
             {

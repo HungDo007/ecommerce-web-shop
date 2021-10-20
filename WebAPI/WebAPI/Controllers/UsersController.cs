@@ -10,14 +10,14 @@ namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
-        
+
         public UsersController(IUserService userService)
         {
-            _userService = userService;            
+            _userService = userService;
         }
 
         [HttpPost("authenticate")]
@@ -44,7 +44,7 @@ namespace WebAPI.Controllers
                 return BadRequest(result);
         }
 
-        
+
         [HttpPost("update")]
         public async Task<IActionResult> Update([FromBody] UserUpdateRequest request)
         {
@@ -76,7 +76,7 @@ namespace WebAPI.Controllers
             }
             return BadRequest("Bạn không có quyền chỉnh sửa thông tin cho tài khoản người khác.");
         }
-        
+
         [HttpPost("verifyEmail")]
         public async Task<IActionResult> VerifyEmail([FromBody] MailRequest request)
         {
@@ -93,7 +93,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("sendCode")]
-        public async Task<IActionResult> ActiveMail([FromBody]MailRequest request)
+        public async Task<IActionResult> ActiveMail([FromBody] MailRequest request)
         {
             string name = User.Identity.Name;
             if (request.Username == name)

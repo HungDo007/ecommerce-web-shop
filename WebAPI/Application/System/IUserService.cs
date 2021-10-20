@@ -96,5 +96,10 @@ namespace Application.System
 
 
         Task<bool> LockAccount(LockAccountRequest request);
+
+
+        Task<StoreVm> StoreInfo(string username);
+
+        Task<bool> UpdateStoreInfo(StoreRequest request);
     }
 }
