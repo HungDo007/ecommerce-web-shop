@@ -45,8 +45,8 @@ const AddComponent = ({ item }) => {
           console.log("Fail to add component: ", error);
         }
       };
-
-      addComponent();
+      console.log(payload);
+      //addComponent();
     } else {
       const editComponent = async () => {
         try {

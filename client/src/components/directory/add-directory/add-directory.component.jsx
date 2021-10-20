@@ -81,7 +81,7 @@ const AddDirectory = ({ item }) => {
           const response = await adminApi.editDirectory(formData);
           console.log(response);
         } catch (error) {
-          console.log("Failed to edit directory: ", error);
+          console.log("Failed to edit directory: ", error.response);
         }
       };
       editDirectory();

@@ -1,20 +1,22 @@
 import { useEffect, useState } from "react";
 
+import { Button, Checkbox, FormControlLabel } from "@material-ui/core";
+
 import { toggleModal } from "../../../../redux/modal/modal.actions";
 
-import Checkbox from "../../../checkbox-item/checkbox-item.component";
-import CustomButton from "../../../custom-button/custom-button.component";
+//import Checkbox from "../../../checkbox-item/checkbox-item.component";
 
 import adminApi from "../../../../api/admin-api";
 
 import "./add-component-to-directory.styles.scss";
+import CustomButton from "../../../custom-button/custom-button.component";
 
-const AddComponentToDirectory = ({ item, dispatch }) => {
+const AddComponentToDirectory = ({ directoryId, dispatch }) => {
   const [compoOfDirect, setCompoOfDirect] = useState([]);
   useEffect(() => {
     const fetchComponentOfDirectory = async () => {
       try {
-        const response = await adminApi.getComponentOfDirectory(item.direcId);
+        const response = await adminApi.getComponentOfDirectory(directoryId);
         setCompoOfDirect(response);
       } catch (error) {
         console.log("Failed to fetch component of directory: ", error);
@@ -37,7 +39,7 @@ const AddComponentToDirectory = ({ item, dispatch }) => {
     event.preventDefault();
 
     const data = {
-      catId: item.direcId,
+      catId: directoryId,
       comps: listCompoId,
     };
 
@@ -69,18 +71,39 @@ const AddComponentToDirectory = ({ item, dispatch }) => {
   console.log("add-component-to-directory has re rendered");
   return (
     <form onSubmit={handleSubmit}>
-      <h3 className="add-component-to-directory-title">Add Component</h3>
       <div className="add-component-to-directory-container">
         {compoOfDirect.map((item, index) => (
-          <Checkbox
+          <FormControlLabel
             key={item.id}
-            item={item}
-            onChange={() => handleOnChange(index)}
-            checked={item.isExists}
+            value="end"
+            control={
+              <Checkbox
+                color="primary"
+                size="medium"
+                onChange={() => handleOnChange(index)}
+                checked={item.isExists}
+              />
+            }
+            label={item.name}
+            labelPlacement="end"
           />
         ))}
       </div>
-      <CustomButton>Submit</CustomButton>
+      <div className="add-component-to-directory-button">
+        <Button
+          type="submit"
+          variant="contained"
+          style={{
+            borderRadius: 24,
+            backgroundColor: "rgb(45 42 212)",
+            padding: "10px 26px",
+            fontSize: "14px",
+            color: "white",
+          }}
+        >
+          Submit
+        </Button>
+      </div>
     </form>
   );
 };

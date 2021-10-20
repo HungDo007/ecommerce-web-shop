@@ -113,9 +113,7 @@ const SaleInformation = ({ productInfo, setBasicInformation }) => {
       }
     };
 
-    if (directoryId === 0) {
-      return;
-    } else {
+    if (directoryId != 0) {
       fetchComponentsOfDirectory(directoryId);
     }
   }, [directoryId]);
@@ -217,9 +215,6 @@ const SaleInformation = ({ productInfo, setBasicInformation }) => {
                   </div>
                 </div>
               ))}
-              <div style={{ marginTop: 20 }}>
-                {JSON.stringify(productDetail)}
-              </div>
             </div>
           </div>
         )}

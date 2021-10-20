@@ -6,15 +6,12 @@ import ManageDirectoryPage from "./manage-directory-page/manage-directory-page.c
 import ManageProductPage from "./manage-product-page/manage-product-page.component";
 import Profile from "../../components/profile/profile.component";
 
-import "./admin-page.styles.scss";
-import TestAccount from "./manage-account-page/test";
-
 const AdminPage = ({ match }) => {
   return (
     <div>
       <Switch>
         <Route exact path={match.path} component={Profile} />
-        <Route path={`${match.path}/account`} component={TestAccount} />
+        <Route path={`${match.path}/account`} component={ManageAccountPage} />
         <Route
           path={`${match.path}/component`}
           component={ManageComponentPage}

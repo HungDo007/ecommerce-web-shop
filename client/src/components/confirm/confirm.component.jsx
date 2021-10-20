@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 
+import { Button } from "@material-ui/core";
+
 import adminApi from "../../api/admin-api";
 
 import { toggleModal } from "../../redux/modal/modal.actions";
 
-import CustomButton from "../custom-button/custom-button.component";
 import FormInput from "../form-input/form-input.component";
 
 const Confirm = (props) => {
@@ -25,9 +26,9 @@ const Confirm = (props) => {
         username: props.data,
         reason: reason,
       };
-      const lockAccount = () => {
+      const lockAccount = async () => {
         try {
-          const response = adminApi.lockAccount(data);
+          const response = await adminApi.lockAccount(data);
           console.log(response);
         } catch (error) {
           console.log("Failed to lock account: ", error);
@@ -39,8 +40,9 @@ const Confirm = (props) => {
       props.onSubmit();
     }
   };
+
   return (
-    <form onSubmit={handleSubmit}>
+    <form style={{ width: 410 }} onSubmit={handleSubmit}>
       <div style={{ margin: "20px 0" }}>{props.title}</div>
       {props.title === "Are you sure to lock this account?" ? (
         <FormInput
@@ -51,8 +53,20 @@ const Confirm = (props) => {
           required
         />
       ) : null}
-      <div>
-        <CustomButton>Confirm</CustomButton>
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        <Button
+          variant="contained"
+          onClick={handleSubmit}
+          style={{
+            borderRadius: 24,
+            backgroundColor: "rgb(45 42 212)",
+            padding: "10px 26px",
+            fontSize: "14px",
+            color: "white",
+          }}
+        >
+          Submit
+        </Button>
       </div>
     </form>
   );

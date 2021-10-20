@@ -10,6 +10,11 @@ const storeApi = {
     const url = "/Stores";
     return axiosClient.post(url, data);
   },
+
+  addDetail: (id, data) => {
+    const url = `/Stores/${id}/addDetail`;
+    return axiosClient.post(url, data);
+  },
 };
 
 export default storeApi;
