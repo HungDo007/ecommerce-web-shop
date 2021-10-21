@@ -43,5 +43,11 @@ namespace WebAPI.Controllers
             await _productService.AddViewCount(id);
             return Ok();
         }
+
+        [HttpGet("allProductOfUser/{username}")]
+        public async Task<IActionResult> ProductOfUser(string username)
+        {
+            return Ok(await _productService.GetOfUser(username));
+        }
     }
 }

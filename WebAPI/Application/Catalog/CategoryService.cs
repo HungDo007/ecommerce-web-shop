@@ -48,7 +48,7 @@ namespace Application.Catalog
             {
                 try
                 {
-                    category.Image = await _storageService.SaveFile(true, request.Image);
+                    category.Image = await _storageService.SaveFile(SystemConstants.FolderCategory, request.Image);
                 }
                 catch
                 {
@@ -187,8 +187,8 @@ namespace Application.Catalog
             {
                 try
                 {
-                    await _storageService.DeleteFileAsync(true, cat.Image);
-                    cat.Image = await _storageService.SaveFile(true, request.Image);
+                    await _storageService.DeleteFileAsync(cat.Image);
+                    cat.Image = await _storageService.SaveFile(SystemConstants.FolderCategory, request.Image);
                 }
                 catch
                 {

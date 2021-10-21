@@ -5,8 +5,8 @@ namespace Application.Common
 {
     public interface IStorageService
     {
-        string GetFileUrl(bool categoryImg, string fileName);
-        Task<string> SaveFile(bool categoryImg, IFormFile file);
-        Task DeleteFileAsync(bool categoryImg, string fileName);
+        string GetFileUrl(string folderType, string fileName);
+        Task<string> SaveFile(string folderType, IFormFile file);
+        Task DeleteFileAsync(string fileName);
     }
 }

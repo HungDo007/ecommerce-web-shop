@@ -1,6 +1,4 @@
-﻿using Application;
-using Application.Common;
-using Application.System;
+﻿using Application.System;
 using Application.ViewModels.System;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +8,7 @@ namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -46,6 +44,7 @@ namespace WebAPI.Controllers
 
 
         [HttpPost("update")]
+        [Consumes("multipart/form-data")]
         public async Task<IActionResult> Update([FromBody] UserUpdateRequest request)
         {
             string username = User.Identity.Name;

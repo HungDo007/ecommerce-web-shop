@@ -10,6 +10,7 @@ namespace Data.Entities
         public string LastName { get; set; }
         public DateTime Dob { get; set; }
         public string Address { set; get; }
+        public string Avatar { get; set; }
         public bool IsSale { get; set; }
         public bool Status { set; get; }
 

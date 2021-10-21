@@ -9,10 +9,11 @@
         public const string RoleUser = "User";
         public const string RoleAdmin = "Admin";
 
-        public const string ActiveMail = "Verify Code"; 
+        public const string ActiveMail = "Verify Code";
         public const string LockAccount = "Lock Account";
 
         public const string FolderCategory = "Category";
-        public const string FolderProduct = "Product";        
+        public const string FolderProduct = "Product";
+        public const string FolderAvatar = "Avatar";
     }
 }

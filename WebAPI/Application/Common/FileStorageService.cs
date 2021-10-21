@@ -18,39 +18,26 @@ namespace Application.Common
         }
 
 
-        public async Task<string> SaveFile(bool categoryImg, IFormFile file)
+        public async Task<string> SaveFile(string folderType, IFormFile file)
         {
             var originalFileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
             var fileName = $"{Guid.NewGuid()}{Path.GetExtension(originalFileName)}";
-            await SaveFileAsync(categoryImg, file.OpenReadStream(), fileName);
+            await SaveFileAsync(folderType, file.OpenReadStream(), fileName);
 
 
-            if (categoryImg)
-            {
-                return "/" + SystemConstants.FolderCategory + "/" + fileName;
-            }
-            else
-            {
-                return "/" + SystemConstants.FolderProduct + "/" + fileName;
-            }
+
+            return "/" + folderType + "/" + fileName;
         }
 
 
-        public string GetFileUrl(bool categoryImg, string fileName)
+        public string GetFileUrl(string folderType, string fileName)
         {
-            if (categoryImg)
-            {
-                return $"/{Path.Combine(_folder, SystemConstants.FolderCategory)}/{fileName}";
-            }
-            else
-            {
-                return $"/{Path.Combine(_folder, SystemConstants.FolderProduct)}/{fileName}";
-            }
+            return $"/{Path.Combine(_folder, folderType)}/{fileName}";
         }
 
 
 
-        public async Task DeleteFileAsync(bool categoryImg, string fileName)
+        public async Task DeleteFileAsync(string fileName)
         {
             //string filePath = "";
             //fileName = fileName.Replace("/","\\")
@@ -72,17 +59,9 @@ namespace Application.Common
         }
 
 
-        private async Task SaveFileAsync(bool categoryImg, Stream mediaBinaryStream, string fileName)
+        private async Task SaveFileAsync(string folderType, Stream mediaBinaryStream, string fileName)
         {
-            string filePath = "";
-            if (categoryImg)
-            {
-                filePath = Path.Combine(Path.Combine(_folder, SystemConstants.FolderCategory), fileName);
-            }
-            else
-            {
-                filePath = Path.Combine(Path.Combine(_folder, SystemConstants.FolderProduct), fileName);
-            }
+            string filePath = Path.Combine(Path.Combine(_folder, folderType), fileName);
             using var output = new FileStream(filePath, FileMode.Create);
             await mediaBinaryStream.CopyToAsync(output);
         }

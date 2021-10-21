@@ -4,14 +4,16 @@ using Data.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Data.Migrations
 {
     [DbContext(typeof(EShopContext))]
-    partial class EShopContextModelSnapshot : ModelSnapshot
+    [Migration("20211021032556_update-6")]
+    partial class update6
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -74,9 +76,6 @@ namespace Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Address")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Avatar")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ConcurrencyStamp")
@@ -147,7 +146,7 @@ namespace Data.Migrations
                             Id = new Guid("f82493f3-ab61-477b-8bb8-daebc61cf148"),
                             AccessFailedCount = 0,
                             Address = "TPHCM",
-                            ConcurrencyStamp = "f66e9bc1-ba5a-4c1d-af39-a727530e7fd6",
+                            ConcurrencyStamp = "a7d3e654-754a-47e2-848f-8b48baab7219",
                             Dob = new DateTime(2020, 1, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "webshop@gmail.com",
                             EmailConfirmed = true,
@@ -157,7 +156,7 @@ namespace Data.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "webshop@gmail.com",
                             NormalizedUserName = "admin",
-                            PasswordHash = "AQAAAAEAACcQAAAAEO0FgS6tXe+BkOT9Uirz33WjD6GLHQo0NsQsB9MUA6AaoeTmpwUjm7E2atmgUuVfSQ==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEMyK4Gd374o8W3NdxHGLbDsUVh0uwV/lf6bWdQ7qeVCHjhM/HpYeHMEcSCNvp+uBmQ==",
                             PhoneNumber = "1234567",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
@@ -332,7 +331,7 @@ namespace Data.Migrations
                     b.Property<DateTime>("DateCreated")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2021, 10, 21, 14, 54, 31, 151, DateTimeKind.Local).AddTicks(5105));
+                        .HasDefaultValue(new DateTime(2021, 10, 21, 10, 25, 55, 578, DateTimeKind.Local).AddTicks(8758));
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -653,7 +652,7 @@ namespace Data.Migrations
                         new
                         {
                             Id = new Guid("ae7f2c5c-8241-4e88-9e2e-4e9342f98a51"),
-                            ConcurrencyStamp = "65e8b462-9601-4627-9b71-e4b21aa2d818",
+                            ConcurrencyStamp = "7e51414a-5499-41d8-ab4b-23b139026a5e",
                             Name = "Admin",
                             NormalizedName = "admin",
                             Description = "Administrator"
@@ -661,7 +660,7 @@ namespace Data.Migrations
                         new
                         {
                             Id = new Guid("8daf1440-3444-416d-807c-edbe207f8fba"),
-                            ConcurrencyStamp = "f2f244e0-ca6a-4376-a947-df743a473366",
+                            ConcurrencyStamp = "bdc118c4-d64a-4645-8728-281fd5d33d3b",
                             Name = "User",
                             NormalizedName = "user",
                             Description = "Website Users"
