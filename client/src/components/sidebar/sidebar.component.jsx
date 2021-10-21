@@ -21,7 +21,6 @@ const Sidebar = ({ currentUser }) => {
   const [cartDrop, setCartDrop] = useState(false);
   const showCartDrop = () => setCartDrop(!cartDrop);
 
-  // const currentUser = useSelector((state) => state.user.currentUser);
   const dispatch = useDispatch();
 
   const history = useHistory();

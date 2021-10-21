@@ -8,7 +8,7 @@ import FormInput from "../form-input/form-input.component";
 import { setCurrentUser } from "../../redux/user/user.actions";
 
 import "./sign-in.styles.scss";
-import Notification from "../notification/notification.component";
+
 import { useDispatch } from "react-redux";
 
 const SignIn = () => {
@@ -18,7 +18,6 @@ const SignIn = () => {
   });
 
   const { email, password } = userInfo;
-  const [showNotification, setNotification] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -40,13 +39,8 @@ const SignIn = () => {
         localStorage.setItem("jwtToken", response);
         const user = jwtDecode(response);
         console.log(user);
-        setNotification(true);
-        setTimeout(() => {
-          setNotification(false);
-        }, 1000);
-        setTimeout(() => {
-          dispatch(setCurrentUser(user));
-        }, 1005);
+
+        dispatch(setCurrentUser(user));
       } catch (error) {
         console.log("Fail to authenticate: ", error.response);
       }
@@ -81,7 +75,6 @@ const SignIn = () => {
           </CustomButton>
         </div>
       </form>
-      {showNotification && <Notification message="Sign in successfully" />}
     </div>
   );
 };

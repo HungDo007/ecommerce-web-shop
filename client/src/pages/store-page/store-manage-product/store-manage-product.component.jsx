@@ -1,62 +1,33 @@
-import CustomButton from "../../../components/custom-button/custom-button.component";
-import CustomDataTable from "../../../components/data-table/data-table.component";
-import ProductColumns from "../../../components/data-table/product-columns.component";
+import { Button } from "@material-ui/core";
+import MaterialTable from "material-table";
+import { useEffect } from "react";
+import { useState } from "react";
 
 const StoreManagesProduct = ({ history }) => {
-  const items = [
+  const [productList, setProductList] = useState([]);
+
+  const columns = [
     {
-      id: 1,
-      name: "Brown Brim",
-      imageUrl: "https://i.ibb.co/ZYW3VTp/brown-brim.png",
-      price: 10000000,
+      title: "Name",
+      field: "name",
     },
     {
-      id: 2,
-      name: "Blue Beanie",
-      imageUrl: "https://i.ibb.co/ypkgK0X/blue-beanie.png",
-      price: 18,
+      title: "Image",
+      field: "image",
+      render: (rowData) => (
+        <img
+          height="100"
+          width="150"
+          style={{ objectFit: "cover" }}
+          src={process.env.REACT_APP_IMAGE_URL + rowData.image}
+          aria-hidden
+          alt="image of directory"
+        />
+      ),
     },
     {
-      id: 3,
-      name: "Brown Cowboy",
-      imageUrl: "https://i.ibb.co/QdJwgmp/brown-cowboy.png",
-      price: 35,
-    },
-    {
-      id: 4,
-      name: "Grey Brim",
-      imageUrl: "https://i.ibb.co/RjBLWxB/grey-brim.png",
-      price: 25,
-    },
-    {
-      id: 5,
-      name: "Green Beanie",
-      imageUrl: "https://i.ibb.co/YTjW3vF/green-beanie.png",
-      price: 18,
-    },
-    {
-      id: 6,
-      name: "Palm Tree Cap",
-      imageUrl: "https://i.ibb.co/rKBDvJX/palm-tree-cap.png",
-      price: 14,
-    },
-    {
-      id: 7,
-      name: "Red Beanie",
-      imageUrl: "https://i.ibb.co/bLB646Z/red-beanie.png",
-      price: 18,
-    },
-    {
-      id: 8,
-      name: "Wolf Cap",
-      imageUrl: "https://i.ibb.co/1f2nWMM/wolf-cap.png",
-      price: 14,
-    },
-    {
-      id: 9,
-      name: "Blue Snapback",
-      imageUrl: "https://i.ibb.co/X2VJP2W/blue-snapback.png",
-      price: 16,
+      title: "Directory",
+      field: "directory",
     },
   ];
 
@@ -67,12 +38,21 @@ const StoreManagesProduct = ({ history }) => {
   return (
     <div className="main">
       <div className="btn-add-admin">
-        <CustomButton onClick={handleAddProduct}>Add new Product</CustomButton>
+        <Button
+          variant="contained"
+          onClick={handleAddProduct}
+          style={{
+            borderRadius: 24,
+            backgroundColor: "rgb(45 42 212)",
+            padding: "10px 26px",
+            fontSize: "14px",
+            color: "white",
+          }}
+        >
+          Add new product
+        </Button>
       </div>
-      <CustomDataTable
-        columns={ProductColumns()}
-        data={items}
-      ></CustomDataTable>
+      <MaterialTable data={productList} columns={columns} />
     </div>
   );
 };
