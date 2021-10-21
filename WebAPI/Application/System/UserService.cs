@@ -26,13 +26,15 @@ namespace Application.System
         private readonly IMapper _mapper;
         private readonly IMailService _mailService;
         private readonly EShopContext _context;
+        private readonly IStorageService _storageService;
 
         public UserService(UserManager<AppUser> userManager,
             SignInManager<AppUser> signInManager,
             IConfiguration config,
             IMapper mapper,
             IMailService mailService,
-            EShopContext context)
+            EShopContext context,
+            IStorageService storageService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -40,6 +42,7 @@ namespace Application.System
             _mapper = mapper;
             _mailService = mailService;
             _context = context;
+            _storageService = storageService;
         }
 
 
@@ -247,6 +250,8 @@ namespace Application.System
             storeVm.NameStore = store.Name;
             storeVm.Address = store.Address;
             storeVm.Description = store.Description;
+            storeVm.PhoneNumber = store.PhoneNumber;
+            storeVm.Avatar = store.Avatar;
 
             storeVm.TotalProduct = _context.Products.Where(x => x.UserId == user.Id).Count();
             if (storeVm.TotalProduct == 0)
@@ -269,6 +274,11 @@ namespace Application.System
             user.FirstName = request.FirstName;
             user.LastName = request.LastName;
             user.Dob = request.Dob;
+            try
+            {
+                user.Avatar = await _storageService.SaveFile(SystemConstants.FolderAvatar, request.Avatar);
+            }
+            catch { }
 
             var result = await _userManager.UpdateAsync(user);
             if (result.Succeeded)
@@ -284,7 +294,12 @@ namespace Application.System
             store.Name = request.NameStore;
             store.Description = request.Description;
             store.Address = request.Address;
-
+            store.PhoneNumber = request.PhoneNumber;
+            try
+            {
+                store.Avatar = await _storageService.SaveFile(SystemConstants.FolderAvatar, request.Avatar);
+            }
+            catch { }
             try
             {
                 await _context.SaveChangesAsync();

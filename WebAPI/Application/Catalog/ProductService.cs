@@ -75,7 +75,7 @@ namespace Application.Catalog
         {
             ProductImage pi = new ProductImage();
             pi.ProductId = proId;
-            pi.Path = await _storageService.SaveFile(false, file);
+            pi.Path = await _storageService.SaveFile(SystemConstants.FolderProduct, file);
             pi.IsPoster = IsPoster;
 
             return pi;
@@ -193,7 +193,7 @@ namespace Application.Catalog
             {
                 try
                 {
-                    await _storageService.DeleteFileAsync(false, img.Path);
+                    await _storageService.DeleteFileAsync(img.Path);
                 }
                 catch { }
 
@@ -258,6 +258,18 @@ namespace Application.Catalog
                 return false;
             }
 
+        }
+
+        public async Task<List<ProductVm>> GetOfUser(string username)
+        {
+            var data = await _context.Products
+                .Where(x => x.Status == true)
+                .Include(x => x.User)
+                .Include(x => x.ProductImages)
+                .Where(x => x.User.UserName == username)
+                .ToListAsync();
+
+            return _mapper.Map<List<ProductVm>>(data);
         }
     }
 }

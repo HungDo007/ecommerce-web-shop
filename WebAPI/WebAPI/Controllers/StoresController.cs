@@ -76,7 +76,8 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("storeInfo")]
-        public async Task<IActionResult> UpdateStoreInfo(StoreRequest request)
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> UpdateStoreInfo([FromForm] StoreRequest request)
         {
             if (await _userService.UpdateStoreInfo(request))
                 return Ok();

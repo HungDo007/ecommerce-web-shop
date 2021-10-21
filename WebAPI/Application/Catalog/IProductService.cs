@@ -20,6 +20,8 @@ namespace Application.Catalog
         /// <returns></returns>
         Task<ProductVm> GetProductDetail(int id);
 
+        Task<List<ProductVm>> GetOfUser(string username);
+
         Task AddViewCount(int proId);
 
         Task<int> Add(ProductRequest request);
