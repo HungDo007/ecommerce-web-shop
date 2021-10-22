@@ -56,16 +56,6 @@ namespace WebAPI.Controllers
         }
 
 
-        [HttpGet("user/{username}")]
-        public async Task<IActionResult> GetByName(string username)
-        {
-            if (string.IsNullOrEmpty(username))
-                return BadRequest();
-
-            UserResponse user = await _userService.GetByName(username);
-            return Ok(user);
-        }
-
 
         [HttpPost("user/addAdmin")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)

@@ -45,11 +45,16 @@ namespace WebAPI.Controllers
 
         [HttpPost("update")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> Update([FromBody] UserUpdateRequest request)
+        public async Task<IActionResult> Update([FromForm] UserUpdateRequest request)
         {
             string username = User.Identity.Name;
             if (username == request.Username)
             {
+                if (!await _userService.ChangeEmail(request.Username, request.Email))
+                {
+                    return BadRequest("Email đã được sử dụng.");
+                }
+
                 if (await _userService.Update(request.Username, request))
                 {
                     return Ok();
@@ -59,21 +64,14 @@ namespace WebAPI.Controllers
             return BadRequest("Bạn không có quyền chỉnh sửa thông tin cho tài khoản người khác.");
         }
 
-
-
-        [HttpPost("changeMail")]
-        public async Task<IActionResult> ChangeEmail([FromBody] MailRequest request)
+        [HttpGet("{username}")]
+        public async Task<IActionResult> GetByName(string username)
         {
-            string name = User.Identity.Name;
-            if (name == request.Username)
-            {
-                if (await _userService.ChangeEmail(request.Username, request.Email))
-                {
-                    return Ok();
-                }
+            if (string.IsNullOrEmpty(username))
                 return BadRequest();
-            }
-            return BadRequest("Bạn không có quyền chỉnh sửa thông tin cho tài khoản người khác.");
+
+            UserResponse user = await _userService.GetByName(username);
+            return Ok(user);
         }
 
         [HttpPost("verifyEmail")]
