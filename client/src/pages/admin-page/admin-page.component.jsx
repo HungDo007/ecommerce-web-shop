@@ -4,13 +4,13 @@ import ManageAccountPage from "./manage-account-page/manage-account-page.compone
 import ManageComponentPage from "./manage-component-page/manage-component-page.component";
 import ManageDirectoryPage from "./manage-directory-page/manage-directory-page.component";
 import ManageProductPage from "./manage-product-page/manage-product-page.component";
-import Profile from "../../components/profile/profile.component";
+import ProfileForm from "../../components/profile-form/profile-form.component";
 
 const AdminPage = ({ match }) => {
   return (
     <div>
       <Switch>
-        <Route exact path={match.path} component={Profile} />
+        <Route exact path={match.path} component={ProfileForm} />
         <Route path={`${match.path}/account`} component={ManageAccountPage} />
         <Route
           path={`${match.path}/component`}

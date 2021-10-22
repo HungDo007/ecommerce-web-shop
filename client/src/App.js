@@ -33,7 +33,7 @@ const App = ({ currentUser }) => {
         <Route path="/directory" component={DirectoryPage} />
         <Route path="/product" component={ProductPage} />
         <Route path="/store" component={StorePage} />
-        <Route path="/account" component={UserPage} />
+        <Route path="/user" component={UserPage} />
         <Route
           exact
           path="/signin"

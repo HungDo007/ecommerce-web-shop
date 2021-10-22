@@ -4,6 +4,18 @@
   box-shadow: 0 0 5px #ccc;
   padding: 20px;
 
+  .profile-user-avatar {
+    width: 225px;
+    margin-top: 10px;
+
+    .profile-user-avatar-image {
+      border-radius: 50%;
+      width: 225px;
+      height: 225px;
+      object-fit: cover;
+    }
+  }
+
   .profile-field {
     display: flex;
     align-items: center;

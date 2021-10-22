@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import MaterialTable from "material-table";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
@@ -9,7 +9,6 @@ import adminApi from "../../../api/admin-api";
 
 import CustomDialog from "../../../components/dialog/dialog.component";
 import AddComponentToDirectory from "../../../components/directory/add-directory/add-component-to-directory/add-component-to-directory.component";
-import { useDispatch } from "react-redux";
 import { toggleModal } from "../../../redux/modal/modal.actions";
 
 const defaultImg = "/img/default-img.png";
@@ -54,7 +53,7 @@ const ManageDirectoryPage = () => {
             style={{ display: "none" }}
             id="raised-button-file"
             type="file"
-            onChange={handleReview}
+            onChange={(e) => handleReview(e)}
           />
           <label htmlFor="raised-button-file">
             <img
@@ -126,6 +125,8 @@ const ManageDirectoryPage = () => {
   useEffect(() => {
     fetchDirectoryList();
   }, []);
+
+  console.log("manage-directory has re rendered");
 
   return (
     <div className="manage-account-block">
@@ -216,7 +217,11 @@ const ManageDirectoryPage = () => {
             }),
         }}
       />
-      <CustomDialog title="Add component to directory" open={modalIsOpen}>
+      <CustomDialog
+        title="Add component to directory"
+        open={modalIsOpen}
+        dispatch={dispatch}
+      >
         <AddComponentToDirectory
           directoryId={directoryId}
           dispatch={dispatch}

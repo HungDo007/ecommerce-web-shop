@@ -67,12 +67,20 @@ const ManageAccountPage = () => {
         <LockedUserTable />
       </TabPanel>
       {action === "sign-up" && (
-        <CustomDialog title="Add new admin" open={modalIsOpen}>
+        <CustomDialog
+          title="Add new admin"
+          open={modalIsOpen}
+          dispatch={dispatch}
+        >
           <SignUp />
         </CustomDialog>
       )}
       {action === "lock-user" && (
-        <CustomDialog title="Lock user account" open={modalIsOpen}>
+        <CustomDialog
+          title="Lock user account"
+          open={modalIsOpen}
+          dispatch={dispatch}
+        >
           <Confirm title="Are you sure to lock this account?" data={username} />
         </CustomDialog>
       )}

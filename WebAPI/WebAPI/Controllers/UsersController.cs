@@ -45,7 +45,7 @@ namespace WebAPI.Controllers
 
         [HttpPost("update")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> Update([FromBody] UserUpdateRequest request)
+        public async Task<IActionResult> Update([FromForm] UserUpdateRequest request)
         {
             string username = User.Identity.Name;
             if (username == request.Username)

@@ -9,18 +9,32 @@ import {
 
 import "./profile-form.styles.scss";
 
+const defaultImg = "/img/default-img.png";
+
 const ProfileForm = () => {
   const initialValues = {
+    avatarSrc: defaultImg,
+    avatarFile: null,
     firstName: "",
     lastName: "",
     dob: new Date(2000, 1, 1),
+    email: "",
     phoneNumber: "",
     address: "",
   };
-  const [values, setValue] = useState(initialValues);
+  const [values, setValues] = useState(initialValues);
   const [errors, setErrors] = useState({});
 
-  const { firstName, lastName, dob, phoneNumber, address } = values;
+  const {
+    avatarSrc,
+    avatarFile,
+    firstName,
+    lastName,
+    dob,
+    email,
+    phoneNumber,
+    address,
+  } = values;
 
   const validate = (fieldValues = values) => {
     let temp = { ...errors };
@@ -28,6 +42,13 @@ const ProfileForm = () => {
       temp.firstName = fieldValues.firstName ? "" : "This field is required";
     if ("lastName" in fieldValues)
       temp.lastName = fieldValues.lastName ? "" : "This field is required";
+    if ("email" in fieldValues) {
+      temp.email = fieldValues.email ? "" : "This field is required.";
+      if (fieldValues.email)
+        temp.email = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(fieldValues.email)
+          ? ""
+          : "Email is not valid.";
+    }
     if ("phoneNumber" in fieldValues)
       temp.phoneNumber =
         fieldValues.phoneNumber.length > 9 ? "" : "Minimum 10 numbers required";
@@ -42,12 +63,33 @@ const ProfileForm = () => {
   const handleInputChange = (event) => {
     const { name, value } = event.target;
 
-    setValue({ ...values, [name]: value });
+    setValues({ ...values, [name]: value });
     validate({ [name]: value });
   };
 
   const handleDateChange = (date) => {
-    setValue({ ...values, dob: date });
+    setValues({ ...values, dob: date });
+  };
+
+  const handleReview = (event) => {
+    if (event.target.files && event.target.files[0]) {
+      let imageFile = event.target.files[0];
+      const reader = new FileReader();
+      reader.onload = (x) => {
+        setValues({
+          ...values,
+          avatarFile: imageFile,
+          avatarSrc: x.target.result,
+        });
+      };
+      reader.readAsDataURL(imageFile);
+    } else {
+      setValues({
+        ...values,
+        avatarFile: null,
+        avatarSrc: defaultImg,
+      });
+    }
   };
 
   const handleSubmit = (event) => {
@@ -62,6 +104,33 @@ const ProfileForm = () => {
     <form onSubmit={handleSubmit}>
       <div className="profile-user-info">
         <h2>User Profile</h2>
+        <div className="profile-user-avatar">
+          <div>
+            <img
+              className="profile-user-avatar-image"
+              src={avatarSrc}
+              alt="store"
+            />
+          </div>
+          <div>
+            <input
+              id="raised-button-file"
+              hidden
+              type="file"
+              accept="image/*"
+              onChange={handleReview}
+            />
+            <label className="profile-button" htmlFor="raised-button-file">
+              <Button
+                className="profile-button-submit"
+                variant="contained"
+                component="span"
+              >
+                Upload
+              </Button>
+            </label>
+          </div>
+        </div>
         <div className="profile-field">
           <div className="profile-info">Username</div>
           <div className="profile-value">hungdo</div>
@@ -117,6 +186,22 @@ const ProfileForm = () => {
           </div>
         </div>
         <div className="profile-field">
+          <div className="profile-info">Email</div>
+          <div className="profile-value">
+            <TextField
+              name="email"
+              value={email}
+              variant="outlined"
+              fullWidth
+              onChange={handleInputChange}
+              {...(errors.email && {
+                error: true,
+                helperText: errors.email,
+              })}
+            />
+          </div>
+        </div>
+        <div className="profile-field">
           <div className="profile-info">Phone Number</div>
           <div className="profile-value">
             <TextField
@@ -156,7 +241,7 @@ const ProfileForm = () => {
             className="profile-button-submit"
             variant="contained"
           >
-            Save
+            Save Change
           </Button>
         </div>
       </div>

@@ -10,6 +10,15 @@ export const DataArr = () => {
   const currentUser = useSelector((state) => state.user.currentUser);
   const [sidebar, setSidebar] = useState([]);
 
+  const guestSidebar = [
+    {
+      title: "Dashboard",
+      path: "/",
+      icon: <AiIcons.AiFillHome />,
+      cName: "nav-text",
+    },
+  ];
+
   const userSidebar = [
     {
       title: "Dashboard",
@@ -19,7 +28,7 @@ export const DataArr = () => {
     },
     {
       title: "My Account",
-      path: "/account",
+      path: "/user",
       icon: <RiIcons.RiAccountCircleFill />,
       cName: "nav-text",
     },
@@ -69,7 +78,7 @@ export const DataArr = () => {
       ? currentUser.role === "Admin"
         ? setSidebar(adminSidebar)
         : setSidebar(userSidebar)
-      : setSidebar(userSidebar);
+      : setSidebar(guestSidebar);
   }, [currentUser]);
 
   return sidebar;

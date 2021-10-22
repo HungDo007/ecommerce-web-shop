@@ -50,9 +50,7 @@ BootstrapDialogTitle.propTypes = {
   onClose: PropTypes.func.isRequired,
 };
 
-export default function CustomDialog({ open, title, children }) {
-  const dispatch = useDispatch();
-
+export default function CustomDialog({ open, title, children, dispatch }) {
   const handleClose = () => {
     dispatch(toggleModal());
   };
