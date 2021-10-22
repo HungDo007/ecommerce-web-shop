@@ -119,7 +119,7 @@ namespace Application.System
 
             var user = await _userManager.FindByNameAsync(username);
             user.Email = email;
-            user.EmailConfirmed = false;
+
             if ((await _userManager.UpdateAsync(user)).Succeeded)
                 return true;
             return false;
