@@ -1,81 +1,180 @@
 import { useState } from "react";
-import jwtDecode from "jwt-decode";
-import userApi from "../../api/user-api";
+import { useDispatch } from "react-redux";
 
-import CustomButton from "../custom-button/custom-button.component";
-import FormInput from "../form-input/form-input.component";
+import jwtDecode from "jwt-decode";
+
+import { withStyles } from "@material-ui/styles";
+import {
+  Button,
+  IconButton,
+  TextField,
+  InputAdornment,
+} from "@material-ui/core";
+
+import { Visibility, VisibilityOff } from "@material-ui/icons";
 
 import { setCurrentUser } from "../../redux/user/user.actions";
 
+import userApi from "../../api/user-api";
+
 import "./sign-in.styles.scss";
 
-import { useDispatch } from "react-redux";
+const CssTextField = withStyles({
+  root: {
+    "& label.Mui-focused": {
+      color: "white",
+    },
+    "& label": {
+      color: "white",
+    },
+    "& .MuiInputBase-root": {
+      color: "white",
+    },
+    "& .MuiInput-underline:before": {
+      borderBottomColor: "white",
+    },
+    "& .MuiInput-underline:after": {
+      borderBottomColor: "white",
+    },
+    "& label.Mui-error": {
+      color: "red",
+    },
+    "& .MuiInput-underline.Mui-error:after": {
+      borderBottomColor: "red",
+    },
+  },
+})(TextField);
 
-const SignIn = () => {
+const SignIn = ({ setAction }) => {
   const [userInfo, setUserInfo] = useState({
     email: "",
     password: "",
+    showPassword: false,
   });
 
-  const { email, password } = userInfo;
+  const [errors, setErrors] = useState({});
+
+  const { email, password, showPassword } = userInfo;
 
   const dispatch = useDispatch();
+
+  const validate = (fieldValues = userInfo) => {
+    let temp = { ...errors };
+    if ("email" in fieldValues)
+      temp.email = fieldValues.email ? "" : "This field is required";
+    if ("password" in fieldValues)
+      temp.password = fieldValues.password ? "" : "This field is required";
+
+    setErrors({ ...temp });
+
+    if (fieldValues == userInfo)
+      return Object.values(temp).every((x) => x == "");
+  };
 
   const handleChange = (event) => {
     const { name, value } = event.target;
 
     setUserInfo({ ...userInfo, [name]: value });
+    validate({ [name]: value });
+  };
+
+  const handleSignUp = () => {
+    setAction(false);
+  };
+
+  const handleShowPassword = () => {
+    setUserInfo({ ...userInfo, showPassword: !showPassword });
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const payload = {
-      username: email,
-      password: password,
-    };
-    const signIn = async () => {
-      try {
-        const response = await userApi.authenticate(payload);
-        localStorage.setItem("jwtToken", response);
-        const user = jwtDecode(response);
-        console.log(user);
 
-        dispatch(setCurrentUser(user));
-      } catch (error) {
-        console.log("Fail to authenticate: ", error.response);
-      }
-    };
-    signIn();
+    if (validate()) {
+      const payload = {
+        username: email,
+        password: password,
+      };
+      const signIn = async () => {
+        try {
+          const response = await userApi.authenticate(payload);
+          localStorage.setItem("jwtToken", response);
+          const user = jwtDecode(response);
+          dispatch(setCurrentUser(user));
+        } catch (error) {
+          console.log("Fail to authenticate: ", error.response);
+          if (
+            error.response.data ===
+            "Tên đăng nhập hoặc mật khẩu không chính xác."
+          ) {
+            setErrors({
+              email: "Your username or password is incorrect",
+              password: "Your username or password is incorrect",
+            });
+          }
+        }
+      };
+      signIn();
+    }
   };
 
   return (
-    <div className="sign-in">
-      <h2>I already have an account</h2>
-      <span>Sign in with your email and password</span>
-      <form onSubmit={handleSubmit}>
-        <FormInput
-          name="email"
-          handleChange={handleChange}
-          value={email}
-          label="Email or Username"
-          required
-        />
-        <FormInput
-          name="password"
-          type="password"
-          value={password}
-          handleChange={handleChange}
-          label="Password"
-          required
-        />
-        <div className="buttons">
-          <CustomButton type="submit"> Sign in </CustomButton>
-          <CustomButton onClick={() => alert("Sign in with GG")} isGoogleSignIn>
-            Google
-          </CustomButton>
+    <form onSubmit={handleSubmit}>
+      <div className="sign-form">
+        <div className="sign-title">Sign in with your email and password</div>
+        <div className="sign-input">
+          <CssTextField
+            fullWidth
+            {...(errors.email && {
+              error: true,
+              helperText: errors.email,
+            })}
+            name="email"
+            value={email}
+            onChange={handleChange}
+            label="Username or Email"
+          />
         </div>
-      </form>
-    </div>
+        <div className="sign-input">
+          <CssTextField
+            {...(errors.password && {
+              error: true,
+              helperText: errors.password,
+            })}
+            fullWidth
+            name="password"
+            type={showPassword ? "text" : "password"}
+            value={password}
+            onChange={handleChange}
+            label="Password"
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={handleShowPassword}
+                    className="sign-button-pass"
+                    aria-label="toggle password visibility"
+                  >
+                    {showPassword ? <Visibility /> : <VisibilityOff />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
+        </div>
+        <div className="sign-button">
+          <Button type="submit" fullWidth variant="contained" color="secondary">
+            Sign in
+          </Button>
+        </div>
+        <div className="sign-text">Forgot password?</div>
+        <div className="sign-text-sign-up">
+          <p>Don't have an account?</p>
+          <p onClick={handleSignUp} className="sign-link">
+            Sign Up
+          </p>
+        </div>
+      </div>
+    </form>
   );
 };
 

@@ -10,6 +10,16 @@ const userApi = {
     const url = "/Users/register";
     return axiosClient.post(url, data);
   },
+
+  getProfile: (username) => {
+    const url = `/Users/${username}`;
+    return axiosClient.get(url);
+  },
+
+  editProfile: (data) => {
+    const url = "​/Users​/update";
+    return axiosClient.post(url, data);
+  },
 };
 
 export default userApi;

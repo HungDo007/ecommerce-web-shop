@@ -49,16 +49,11 @@ const StoreProfile = ({ match }) => {
   return (
     <div className="store-container">
       <h3 className="store-main-title">Store Profile</h3>
-      <hr />
       <div className="details">
         <div className="store-content-left">
           <img className="store-image" src={imageSrc} alt="store" />
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleReview}
-            required
-          />
+          <input type="file" accept="image/*" onChange={handleReview} />
+          <p>Choose Image</p>
           <div className="store-links">
             <div className="store-link">
               <Link to={`${match.path}/manageProduct`}>Product</Link>

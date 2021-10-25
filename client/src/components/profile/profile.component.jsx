@@ -9,6 +9,7 @@ import "./profile.styles.scss";
 
 const Profile = () => {
   const modalIsOpen = useSelector((state) => state.modal.isOpen);
+  const currentUser = useSelector((state) => state.user.currentUser);
   const dispatch = useDispatch();
 
   const handleActiveMail = () => {

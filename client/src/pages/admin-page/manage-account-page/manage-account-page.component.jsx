@@ -20,6 +20,7 @@ const ManageAccountPage = () => {
   const [username, setUsername] = useState("");
 
   const modalIsOpen = useSelector((state) => state.modal.isOpen);
+  const currentUser = useSelector((state) => state.user.currentUser);
   const dispatch = useDispatch();
 
   const handleChange = (event, value) => {
@@ -72,7 +73,7 @@ const ManageAccountPage = () => {
           open={modalIsOpen}
           dispatch={dispatch}
         >
-          <SignUp />
+          <SignUp currentUser={currentUser} />
         </CustomDialog>
       )}
       {action === "lock-user" && (

@@ -8,6 +8,9 @@ import {
 } from "@material-ui/pickers";
 
 import "./profile-form.styles.scss";
+import { useEffect } from "react";
+import userApi from "../../api/user-api";
+import { useSelector } from "react-redux";
 
 const defaultImg = "/img/default-img.png";
 
@@ -24,6 +27,8 @@ const ProfileForm = () => {
   };
   const [values, setValues] = useState(initialValues);
   const [errors, setErrors] = useState({});
+
+  const currentUser = useSelector((state) => state.user.currentUser);
 
   const {
     avatarSrc,
@@ -96,12 +101,46 @@ const ProfileForm = () => {
     event.preventDefault();
 
     if (validate()) {
+      // const formData = new FormData();
+      // formData.append("username", currentUser.unique_name);
+      // formData.append("firstName", firstName);
+      // formData.append("lastName", lastName);
+      // formData.append("dob", dob);
+      // formData.append("phoneNumber", phoneNumber);
+      // formData.append("address", address);
+      // formData.append("email", email);
+      // formData.append("avatar", avatarFile);
+
+      // const editUserProfile = async () => {
+      //   try {
+      //     const response = await userApi.editProfile(formData);
+      //     console.log(response);
+      //   } catch (error) {
+      //     console.log("Failed to edit profile: ", error);
+      //   }
+      // };
       alert("submit");
     }
   };
 
+  useEffect(() => {
+    const getUserProfile = async () => {
+      try {
+        const response = await userApi.getProfile(currentUser.unique_name);
+        console.log(response);
+        setValues(response);
+      } catch (error) {
+        console.log("Failed to get user profile: ", error);
+      }
+    };
+
+    getUserProfile();
+  }, []);
+
+  console.log("profile form has re rendered");
+
   return (
-    <form onSubmit={handleSubmit}>
+    <form className="profile-block" onSubmit={handleSubmit}>
       <div className="profile-user-info">
         <h2>User Profile</h2>
         <div className="profile-user-avatar">
@@ -133,7 +172,7 @@ const ProfileForm = () => {
         </div>
         <div className="profile-field">
           <div className="profile-info">Username</div>
-          <div className="profile-value">hungdo</div>
+          <div className="profile-value">{currentUser.unique_name}</div>
         </div>
         <div className="profile-field">
           <div className="profile-info">First Name</div>
