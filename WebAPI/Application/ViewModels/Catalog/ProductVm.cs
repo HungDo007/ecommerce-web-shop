@@ -9,6 +9,7 @@ namespace Application.ViewModels.Catalog
         public string Seller { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+        public int Category { get; set; }
         public int ViewCount { get; set; }
         public float Rate { get; set; }
         public DateTime DateCreated { set; get; }

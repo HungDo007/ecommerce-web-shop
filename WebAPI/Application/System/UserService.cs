@@ -57,12 +57,21 @@ namespace Application.System
 
             await _mailService.SendMail(mailRequest);
 
-            UserActiveEmail uae = new UserActiveEmail()
+            UserActiveEmail uae = await _context.UserActiveEmails.FindAsync(email);
+            if (uae == null)
             {
-                Email = email,
-                Code = code
-            };
-            _context.UserActiveEmails.Add(uae);
+                uae = new UserActiveEmail()
+                {
+                    Code = code,
+                    Email = email
+                };
+                _context.UserActiveEmails.Add(uae);
+            }
+            else
+            {
+                uae.Code = code;
+            }
+
             await _context.SaveChangesAsync();
         }
 
