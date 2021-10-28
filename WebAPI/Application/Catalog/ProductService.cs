@@ -134,7 +134,12 @@ namespace Application.Catalog
 
         public async Task<List<ProductVm>> GetAll()
         {
-            var data = await _context.Products.Where(x => x.Status == true).Include(x => x.User).Include(x => x.ProductImages).ToListAsync();
+            var data = await _context.Products
+                .Where(x => x.Status == true)
+                .Include(x => x.User)
+                .Include(x => x.ProductImages)
+                .Include(x => x.ProductCategories)
+                .ToListAsync();
 
             return _mapper.Map<List<ProductVm>>(data);
         }
@@ -146,6 +151,7 @@ namespace Application.Catalog
                 .Where(x => x.Status == true && x.Id == id)
                 .Include(x => x.User)
                 .Include(x => x.ProductImages)
+                .Include(x => x.ProductCategories)
                 .FirstOrDefaultAsync();
 
             if (product == null)
@@ -266,6 +272,7 @@ namespace Application.Catalog
                 .Where(x => x.Status == true)
                 .Include(x => x.User)
                 .Include(x => x.ProductImages)
+                .Include(x => x.ProductCategories)
                 .Where(x => x.User.UserName == username)
                 .ToListAsync();
 

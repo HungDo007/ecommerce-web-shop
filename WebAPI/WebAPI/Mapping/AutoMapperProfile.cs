@@ -24,8 +24,9 @@ namespace WebAPI.Mapping
 
             CreateMap<Product, ProductVm>()
                 .ForMember(x => x.Seller, opt => opt.MapFrom(s => s.User.UserName))
+                .ForMember(x => x.Category, opt => opt.MapFrom(s => s.ProductCategories[0].CategoryId))
                 .ForMember(x => x.Poster, opt => opt.MapFrom(s => s.ProductImages.Where(ss => ss.IsPoster == true).FirstOrDefault()))
-                .ForMember(x => x.Images, opt => opt.MapFrom(s => s.ProductImages));
+                .ForMember(x => x.Images, opt => opt.MapFrom(s => s.ProductImages.Where(ss => ss.IsPoster == false)));
 
             CreateMap<ProductDetail, ProductDetailVm>();
 

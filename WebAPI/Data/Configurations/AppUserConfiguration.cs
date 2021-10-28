@@ -11,6 +11,7 @@ namespace Data.Configurations
             builder.ToTable("AppUsers");
             builder.Property(x => x.IsSale).HasDefaultValue(false);
             builder.Property(x => x.Status).HasDefaultValue(true);
+            builder.Property(x => x.Avatar).HasDefaultValue("/Avatar/default.png");
         }
     }
 }
