@@ -1,17 +1,40 @@
+import {
+  FormControl,
+  FormHelperText,
+  MenuItem,
+  Select,
+  TextField,
+} from "@material-ui/core";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import "./basic-info.styles.scss";
 
 const defaultImg = "/img/default-img.png";
 
-const BasicInformation = ({ productInfo, setBasicInformation }) => {
+const BasicInformation = ({
+  productInfo,
+  setBasicInformation,
+  errors,
+  onChange,
+}) => {
+  // if (productInfo.name && productInfo.description && productInfo.poster) {
+  //   productInfo.poster = process.env.REACT_APP_IMAGE_URL + productInfo.poster;
+  //   productInfo.images = [process.env.REACT_APP_IMAGE_URL + productInfo.images];
+  //   const length = productInfo.images.length;
+  //   if (length < 4) {
+  //     for (let index = 0; index < 4 - length; index++) {
+  //       productInfo.images.push(defaultImg);
+  //     }
+  //   }
+  // }
+
   const {
     directoryId,
     name,
     description,
-    thumbnailUrl,
+    poster,
     thumbnailFile,
-    listImageUrls,
+    images,
     listImageFiles,
   } = productInfo;
 
@@ -20,7 +43,8 @@ const BasicInformation = ({ productInfo, setBasicInformation }) => {
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    setBasicInformation({ ...productInfo, [name]: value });
+    // setBasicInformation({ ...productInfo, [name]: value });
+    onChange(name, value);
   };
 
   const handleThumbnail = (event) => {
@@ -31,7 +55,7 @@ const BasicInformation = ({ productInfo, setBasicInformation }) => {
         setBasicInformation({
           ...productInfo,
           thumbnailFile: imageFile,
-          thumbnailUrl: x.target.result,
+          poster: x.target.result,
         });
       };
       reader.readAsDataURL(imageFile);
@@ -39,7 +63,7 @@ const BasicInformation = ({ productInfo, setBasicInformation }) => {
       setBasicInformation({
         ...productInfo,
         thumbnailFile: null,
-        thumbnailUrl: defaultImg,
+        poster: defaultImg,
       });
     }
   };
@@ -49,94 +73,117 @@ const BasicInformation = ({ productInfo, setBasicInformation }) => {
       let imageFile = selectorFiles[0];
       const reader = new FileReader();
       reader.onload = (x) => {
-        listImageUrls[position] = x.target.result;
+        images[position] = x.target.result;
         listImageFiles[position] = imageFile;
         setBasicInformation({
           ...productInfo,
           listImageFiles,
-          listImageUrls,
+          images,
         });
       };
       reader.readAsDataURL(imageFile);
     } else {
-      listImageUrls[position] = defaultImg;
+      images[position] = defaultImg;
       listImageFiles[position] = null;
       setBasicInformation({
         ...productInfo,
         listImageFiles,
-        listImageUrls,
+        images,
       });
     }
   };
-
   return (
     <div>
       <h3 className="store-product-title">Basic Information</h3>
       <div className="store-product-basic-info">
         <div className="store-product-group">
           <span className="store-product-info">Directory</span>
-          <select
-            className="store-product-input"
-            name="directoryId"
-            onChange={handleInputChange}
-            value={directoryId}
-          >
-            {initialDirectories.map((item) => (
-              <option key={item.id} value={item.id}>
-                {item.name}
-              </option>
-            ))}
-          </select>
+          <div className="store-product-input">
+            <FormControl
+              fullWidth
+              variant="outlined"
+              {...(errors.directoryId && {
+                error: true,
+              })}
+            >
+              <Select
+                name="directoryId"
+                value={directoryId}
+                onChange={handleInputChange}
+              >
+                {initialDirectories.map((item) => (
+                  <MenuItem key={item.id} value={item.id}>
+                    {item.name}
+                  </MenuItem>
+                ))}
+              </Select>
+              {errors.directoryId && (
+                <FormHelperText>{errors.directoryId}</FormHelperText>
+              )}
+            </FormControl>
+          </div>
         </div>
         <div className="store-product-group">
           <span className="store-product-info">Name</span>
-          <input
-            className="store-product-input"
-            type="text"
-            name="name"
-            required
-            value={name}
-            onChange={handleInputChange}
-          />
+          <div className="store-product-input">
+            <TextField
+              fullWidth
+              name="name"
+              type="text"
+              variant="outlined"
+              value={name}
+              onChange={handleInputChange}
+              {...(errors.name && {
+                error: true,
+                helperText: errors.name,
+              })}
+            />
+          </div>
         </div>
         <div className="store-product-group">
           <span className="store-product-info">Description</span>
-          <textarea
-            className="store-product-textarea "
-            name="description"
-            type="text"
-            rows="8"
-            required
-            value={description}
-            onChange={handleInputChange}
-          />
+          <div className="store-product-input">
+            <TextField
+              fullWidth
+              multiline
+              name="description"
+              type="text"
+              maxRows={8}
+              minRows={8}
+              variant="outlined"
+              value={description}
+              onChange={handleInputChange}
+              {...(errors.description && {
+                error: true,
+                helperText: errors.description,
+              })}
+            />
+          </div>
         </div>
         <div className="store-product-group">
           <span className="store-product-info">Thumbnail</span>
           <label className="store-product-thumbnail" onChange={handleThumbnail}>
             <input hidden type="file" accept="image/*" />
-            <div
+            <img
               className="background-thumbnail"
-              style={{
-                backgroundImage: `url(${thumbnailUrl})`,
-              }}
-            ></div>
+              src={poster ? poster : defaultImg}
+              alt="store"
+            />
           </label>
         </div>
         <div className="store-product-group">
           <span className="store-product-info">Images</span>
-          {listImageUrls.map((item, index) => (
+          {images.map((item, index) => (
             <label
               key={index}
               onChange={(e) => handleImages(e.target.files, index)}
             >
               <input hidden type="file" accept="image/*" />
-              <div
+              <img
                 className="background-image"
-                style={{
-                  backgroundImage: `url(${item})`,
-                }}
-              ></div>
+                src={item ? item : defaultImg}
+                alt="store"
+              />
             </label>
           ))}
         </div>

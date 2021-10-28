@@ -1,45 +1,55 @@
 import { useEffect, useState } from "react";
+import NumberFormat from "react-number-format";
 
-import CustomButton from "../../../../../components/custom-button/custom-button.component";
+import { Button, TextField, InputAdornment } from "@material-ui/core";
 
 import * as MdIcon from "react-icons/md";
 
 import storeApi from "../../../../../api/store-api";
 
-const SaleInformation = ({ productInfo, setBasicInformation }) => {
+const SaleInformation = ({
+  productInfo,
+  setBasicInformation,
+  errors,
+  onChange,
+  actualComponents,
+  setActualComponents,
+}) => {
   const { directoryId, productDetail } = productInfo;
 
-  const [actualComponents, setActualComponents] = useState([]);
   const [componentList, setComponentList] = useState([]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    const list = [...productDetail];
-    list[0][name] = value;
-    setBasicInformation({ ...productInfo, productDetail: list });
+    // const list = [...productDetail];
+    // list[0][name] = value;
+    // setBasicInformation({ ...productInfo, productDetail: list });
+    //console.log(name, value);
+    onChange(name, value, 0);
   };
 
   // handle input change
   const handleInputChange = (e, index) => {
     const { name, value } = e.target;
-    const list = [...productDetail];
+    // const list = [...productDetail];
 
-    if (name !== "price" && name !== "stock") {
-      list[index].componentDetails = actualComponents.map((item) => ({
-        compId: item.id,
-        value:
-          item.name === name
-            ? value
-            : list[index].componentDetails.length > 0
-            ? list[index].componentDetails.find((i) => i.compId === item.id)
-                .value
-            : "",
-      }));
-    } else {
-      list[index][name] = value;
-    }
+    // if (name !== "price" && name !== "stock") {
+    //   list[index].componentDetails = actualComponents.map((item) => ({
+    //     compId: item.id,
+    //     value:
+    //       item.name === name
+    //         ? value
+    //         : list[index].componentDetails.length > 0
+    //         ? list[index].componentDetails.find((i) => i.compId === item.id)
+    //             .value
+    //         : "",
+    //   }));
+    // } else {
+    //   list[index][name] = value;
+    // }
 
-    setBasicInformation({ ...productInfo, productDetail: list });
+    // setBasicInformation({ ...productInfo, productDetail: list });
+    onChange(name, value, index);
   };
 
   // handle click event of the Add button
@@ -115,6 +125,8 @@ const SaleInformation = ({ productInfo, setBasicInformation }) => {
 
     if (directoryId != 0) {
       fetchComponentsOfDirectory(directoryId);
+    } else {
+      setComponentList([]);
     }
   }, [directoryId]);
 
@@ -126,47 +138,70 @@ const SaleInformation = ({ productInfo, setBasicInformation }) => {
           <div>
             <div className="store-product-group">
               <span className="store-product-info">Price</span>
-              <input
-                className="store-product-input"
-                type="number"
-                name="price"
-                onChange={handleChange}
-              />
+              <div className="store-product-input">
+                <TextField
+                  fullWidth
+                  name="price"
+                  type="number"
+                  variant="outlined"
+                  onChange={handleChange}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">$</InputAdornment>
+                    ),
+                  }}
+                  {...(errors.price && {
+                    error: true,
+                    helperText: errors.price,
+                  })}
+                />
+              </div>
             </div>
             <div className="store-product-group">
               <span className="store-product-info">Stock</span>
-              <input
-                className="store-product-input"
-                type="number"
-                name="stock"
-                onChange={handleChange}
-              />
+              <div className="store-product-input">
+                <TextField
+                  fullWidth
+                  name="stock"
+                  type="number"
+                  variant="outlined"
+                  onChange={handleChange}
+                  {...(errors.stock && {
+                    error: true,
+                    helperText: errors.stock,
+                  })}
+                />
+              </div>
             </div>
           </div>
         ) : null}
         <div className="store-product-group">
           <span className="store-product-info">Component group</span>
-          <div className="store-product-input">
+          <div className="store-product-component">
             <div className="store-product-component-header">
               {componentList.map((item, index) => (
-                <CustomButton
+                <Button
+                  className="store-product-button"
+                  variant="contained"
                   key={item.id}
                   type="button"
                   onClick={() => handleAddClick(index)}
                 >
                   Add {item.name}
-                </CustomButton>
+                </Button>
               ))}
             </div>
             <div className="store-product-component-header">
               {actualComponents.map((item) => (
-                <CustomButton
+                <Button
+                  className="store-product-button"
+                  variant="contained"
                   key={item.id}
                   type="button"
                   onClick={() => handleRemoveCompo(item)}
                 >
                   Remove {item.name}
-                </CustomButton>
+                </Button>
               ))}
             </div>
           </div>
@@ -174,7 +209,7 @@ const SaleInformation = ({ productInfo, setBasicInformation }) => {
         {actualComponents.length === 0 ? null : (
           <div className="store-product-group">
             <span className="store-product-info">List component</span>
-            <div className="store-product-input">
+            <div className="store-product-component">
               <div className="store-product-component-header">
                 {actualComponents.map((item) => (
                   <div className="store-product-title-component" key={item.id}>
@@ -188,26 +223,51 @@ const SaleInformation = ({ productInfo, setBasicInformation }) => {
               {productDetail.map((x, i) => (
                 <div key={i} className="store-product-component-header">
                   {actualComponents.map((item) => (
-                    <input
-                      className="store-product-input-component"
-                      key={item.id}
-                      name={item.name}
-                      value={x.name}
-                      onChange={(e) => handleInputChange(e, i)}
-                    />
+                    <div className="store-product-input-component">
+                      <TextField
+                        variant="outlined"
+                        key={item.id}
+                        name={item.name}
+                        value={x.name}
+                        onChange={(e) => handleInputChange(e, i)}
+                        {...(errors.component && {
+                          error: true,
+                          helperText: errors.component,
+                        })}
+                      />
+                    </div>
                   ))}
-                  <input
-                    className="store-product-input-component"
-                    name="price"
-                    value={x.price}
-                    onChange={(e) => handleInputChange(e, i)}
-                  />
-                  <input
-                    className="store-product-input-component"
-                    name="stock"
-                    value={x.stock}
-                    onChange={(e) => handleInputChange(e, i)}
-                  />
+                  <div className="store-product-input-component">
+                    <TextField
+                      variant="outlined"
+                      name="price"
+                      type="number"
+                      value={x.price}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">$</InputAdornment>
+                        ),
+                      }}
+                      onChange={(e) => handleInputChange(e, i)}
+                      {...(errors.price && {
+                        error: true,
+                        helperText: errors.price,
+                      })}
+                    />
+                  </div>
+                  <div className="store-product-input-component">
+                    <TextField
+                      variant="outlined"
+                      name="stock"
+                      type="number"
+                      value={x.stock}
+                      onChange={(e) => handleInputChange(e, i)}
+                      {...(errors.stock && {
+                        error: true,
+                        helperText: errors.stock,
+                      })}
+                    />
+                  </div>
                   <div className="store-product-component-remove">
                     {productDetail.length !== 0 && (
                       <MdIcon.MdDelete onClick={() => handleRemoveClick(i)} />

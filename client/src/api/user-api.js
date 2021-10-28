@@ -17,7 +17,17 @@ const userApi = {
   },
 
   editProfile: (data) => {
-    const url = "​/Users​/update";
+    const url = "/Users/update";
+    return axiosClient.post(url, data);
+  },
+
+  sendCode: (data) => {
+    const url = "Users/sendCode";
+    return axiosClient.post(url, data);
+  },
+
+  verifyEmail: (data) => {
+    const url = "/Users/verifyEmail";
     return axiosClient.post(url, data);
   },
 };

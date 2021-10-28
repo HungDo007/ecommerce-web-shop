@@ -15,6 +15,16 @@ const storeApi = {
     const url = `/Stores/${id}/addDetail`;
     return axiosClient.post(url, data);
   },
+
+  getProfile: (username) => {
+    const url = `/Stores/storeInfo/${username}`;
+    return axiosClient.get(url);
+  },
+
+  editProfile: (data) => {
+    const url = "/Stores/storeInfo";
+    return axiosClient.post(url, data);
+  },
 };
 
 export default storeApi;

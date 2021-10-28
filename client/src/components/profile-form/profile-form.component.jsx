@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSelector } from "react-redux";
 
 import DateFnsUtils from "@date-io/date-fns";
 import { Button, TextField } from "@material-ui/core";
@@ -7,31 +8,19 @@ import {
   MuiPickersUtilsProvider,
 } from "@material-ui/pickers";
 
-import "./profile-form.styles.scss";
-import { useEffect } from "react";
 import userApi from "../../api/user-api";
-import { useSelector } from "react-redux";
+
+import "./profile-form.styles.scss";
 
 const defaultImg = "/img/default-img.png";
 
-const ProfileForm = () => {
-  const initialValues = {
-    avatarSrc: defaultImg,
-    avatarFile: null,
-    firstName: "",
-    lastName: "",
-    dob: new Date(2000, 1, 1),
-    email: "",
-    phoneNumber: "",
-    address: "",
-  };
-  const [values, setValues] = useState(initialValues);
+const ProfileForm = ({ values, setValues }) => {
   const [errors, setErrors] = useState({});
 
   const currentUser = useSelector((state) => state.user.currentUser);
 
   const {
-    avatarSrc,
+    avatar,
     avatarFile,
     firstName,
     lastName,
@@ -84,7 +73,7 @@ const ProfileForm = () => {
         setValues({
           ...values,
           avatarFile: imageFile,
-          avatarSrc: x.target.result,
+          avatar: x.target.result,
         });
       };
       reader.readAsDataURL(imageFile);
@@ -92,7 +81,7 @@ const ProfileForm = () => {
       setValues({
         ...values,
         avatarFile: null,
-        avatarSrc: defaultImg,
+        avatar: defaultImg,
       });
     }
   };
@@ -101,41 +90,28 @@ const ProfileForm = () => {
     event.preventDefault();
 
     if (validate()) {
-      // const formData = new FormData();
-      // formData.append("username", currentUser.unique_name);
-      // formData.append("firstName", firstName);
-      // formData.append("lastName", lastName);
-      // formData.append("dob", dob);
-      // formData.append("phoneNumber", phoneNumber);
-      // formData.append("address", address);
-      // formData.append("email", email);
-      // formData.append("avatar", avatarFile);
+      const formData = new FormData();
+      formData.append("username", currentUser.unique_name);
+      formData.append("firstName", firstName);
+      formData.append("lastName", lastName);
+      formData.append("dob", dob);
+      formData.append("phoneNumber", phoneNumber);
+      formData.append("address", address);
+      formData.append("email", email);
+      formData.append("avatar", avatarFile);
 
-      // const editUserProfile = async () => {
-      //   try {
-      //     const response = await userApi.editProfile(formData);
-      //     console.log(response);
-      //   } catch (error) {
-      //     console.log("Failed to edit profile: ", error);
-      //   }
-      // };
-      alert("submit");
+      const editUserProfile = async () => {
+        try {
+          const response = await userApi.editProfile(formData);
+          console.log(response);
+        } catch (error) {
+          console.log("Failed to edit profile: ", error);
+        }
+      };
+
+      editUserProfile();
     }
   };
-
-  useEffect(() => {
-    const getUserProfile = async () => {
-      try {
-        const response = await userApi.getProfile(currentUser.unique_name);
-        console.log(response);
-        setValues(response);
-      } catch (error) {
-        console.log("Failed to get user profile: ", error);
-      }
-    };
-
-    getUserProfile();
-  }, []);
 
   console.log("profile form has re rendered");
 
@@ -147,7 +123,7 @@ const ProfileForm = () => {
           <div>
             <img
               className="profile-user-avatar-image"
-              src={avatarSrc}
+              src={avatar ? avatar : defaultImg}
               alt="store"
             />
           </div>
@@ -262,7 +238,7 @@ const ProfileForm = () => {
             <TextField
               fullWidth
               multiline
-              rows={4}
+              minRows={4}
               name="address"
               value={address}
               variant="outlined"

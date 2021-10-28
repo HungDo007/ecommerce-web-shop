@@ -34,7 +34,7 @@ const ManageAccountPage = () => {
 
   return (
     <div className="manage-account-block">
-      <div className="manege-account-header">
+      <div className="manage-account-header">
         <div>
           <Tabs value={value} onChange={handleChange}>
             <Tab label="All Admins" />

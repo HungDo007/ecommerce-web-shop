@@ -12,7 +12,11 @@ const StorePage = ({ match }) => {
           path={`${match.path}/manageProduct`}
           component={StoreManagesProduct}
         />
-        <Route path={`${match.path}/product`} component={StoreProduct} />
+        <Route exact path={`${match.path}/product`} component={StoreProduct} />
+        {/* <Route
+          path={`${match.path}/product/:productId`}
+          component={StoreProduct}
+        /> */}
       </Switch>
     </div>
   );
