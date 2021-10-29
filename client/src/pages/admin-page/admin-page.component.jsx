@@ -6,8 +6,6 @@ import ManageDirectoryPage from "./manage-directory-page/manage-directory-page.c
 import ManageProductPage from "./manage-product-page/manage-product-page.component";
 import Profile from "../../components/profile/profile.component";
 
-import "./admin-page.styles.scss";
-
 const AdminPage = ({ match }) => {
   return (
     <div>

@@ -1,31 +1,37 @@
 import { useEffect, useState } from "react";
 
+import { Button, Checkbox, FormControlLabel } from "@material-ui/core";
+
 import { toggleModal } from "../../../../redux/modal/modal.actions";
 
-import Checkbox from "../../../checkbox-item/checkbox-item.component";
-import CustomButton from "../../../custom-button/custom-button.component";
+//import Checkbox from "../../../checkbox-item/checkbox-item.component";
 
 import adminApi from "../../../../api/admin-api";
 
 import "./add-component-to-directory.styles.scss";
+import CustomButton from "../../../custom-button/custom-button.component";
 
-const AddComponentToDirectory = ({ item, dispatch }) => {
-  const [checkedState, setCheckedState] = useState([]);
-
-  const [componentList, setComponentList] = useState([]);
+const AddComponentToDirectory = ({ directoryId, dispatch }) => {
+  const [compoOfDirect, setCompoOfDirect] = useState([]);
   useEffect(() => {
-    const fetchComponentList = async () => {
+    const fetchComponentOfDirectory = async () => {
       try {
-        const response = await adminApi.getAllComponent();
-        setComponentList(response);
-        setCheckedState(new Array(response.length).fill(false));
+        const response = await adminApi.getComponentOfDirectory(directoryId);
+        setCompoOfDirect(response);
       } catch (error) {
-        console.log("Failed to fetch component list: ", error);
+        console.log("Failed to fetch component of directory: ", error);
       }
     };
 
-    fetchComponentList();
+    fetchComponentOfDirectory();
   }, []);
+
+  useEffect(() => {
+    const ls = compoOfDirect
+      .filter((item) => item.isExists === true)
+      .map((item) => item.id);
+    setListCompoId(ls);
+  }, [compoOfDirect]);
 
   const [listCompoId, setListCompoId] = useState([]);
 
@@ -33,9 +39,11 @@ const AddComponentToDirectory = ({ item, dispatch }) => {
     event.preventDefault();
 
     const data = {
-      catId: item.direcId,
+      catId: directoryId,
       comps: listCompoId,
     };
+
+    console.log(data);
 
     const addComponentToDirectory = async () => {
       try {
@@ -51,40 +59,51 @@ const AddComponentToDirectory = ({ item, dispatch }) => {
   };
 
   const handleOnChange = (position) => {
-    const updatedCheckedState = checkedState.map((item, index) =>
-      index === position ? !item : item
-    );
+    const newCompoOfDirect = [...compoOfDirect];
 
-    setCheckedState(updatedCheckedState);
-
-    const listCheckedCompo = updatedCheckedState.reduce(
-      (emptyArray, currentState, index) => {
-        if (currentState === true) {
-          emptyArray.push(componentList[index]);
-        }
-        return emptyArray;
-      },
-      []
-    );
-
-    const listCompoId = listCheckedCompo.map((item) => item.id);
-    setListCompoId(listCompoId);
+    newCompoOfDirect[position] = {
+      ...newCompoOfDirect[position],
+      isExists: !newCompoOfDirect[position].isExists,
+    };
+    setCompoOfDirect(newCompoOfDirect);
   };
 
   console.log("add-component-to-directory has re rendered");
   return (
     <form onSubmit={handleSubmit}>
-      <h3 className="add-component-to-directory-title">Add Component</h3>
       <div className="add-component-to-directory-container">
-        {componentList.map((item, index) => (
-          <Checkbox
-            item={item}
-            onChange={() => handleOnChange(index)}
-            checked={checkedState[index] || false}
+        {compoOfDirect.map((item, index) => (
+          <FormControlLabel
+            key={item.id}
+            value="end"
+            control={
+              <Checkbox
+                color="primary"
+                size="medium"
+                onChange={() => handleOnChange(index)}
+                checked={item.isExists}
+              />
+            }
+            label={item.name}
+            labelPlacement="end"
           />
         ))}
       </div>
-      <CustomButton>Submit</CustomButton>
+      <div className="add-component-to-directory-button">
+        <Button
+          type="submit"
+          variant="contained"
+          style={{
+            borderRadius: 24,
+            backgroundColor: "rgb(45 42 212)",
+            padding: "10px 26px",
+            fontSize: "14px",
+            color: "white",
+          }}
+        >
+          Submit
+        </Button>
+      </div>
     </form>
   );
 };

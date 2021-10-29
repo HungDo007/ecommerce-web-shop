@@ -48,6 +48,11 @@ const adminApi = {
     return axiosClient.post(url, data);
   },
 
+  getComponentOfDirectory: (id) => {
+    const url = `/Admins/category/comp/${id}`;
+    return axiosClient.get(url);
+  },
+
   //manage component
   getAllComponent: () => {
     const url = "/Admins/component";

@@ -1,0 +1,16 @@
+.store-product-main-title {
+  padding: 20px;
+}
+
+.store-product-button {
+  display: flex;
+  justify-content: center;
+  padding: 1rem;
+  .store-product-button-submit {
+    border-radius: 24px;
+    background-color: blue;
+    padding: 10px 26px;
+    font-size: 14px;
+    color: white;
+  }
+}

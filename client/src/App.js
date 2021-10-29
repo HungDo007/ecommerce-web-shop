@@ -13,6 +13,8 @@ import StorePage from "./pages/store-page/store-page.component";
 
 import Footer from "./components/footer/footer.component";
 import Sidebar from "./components/sidebar/sidebar.component";
+import UserPage from "./pages/user-page/user-page.component";
+// import Test from "./pages/sign-in-and-sign-up/test-sign";
 
 const App = ({ currentUser }) => {
   //currentUser ? console.log("có user") : console.log("user is null");
@@ -31,6 +33,7 @@ const App = ({ currentUser }) => {
         <Route path="/directory" component={DirectoryPage} />
         <Route path="/product" component={ProductPage} />
         <Route path="/store" component={StorePage} />
+        <Route path="/user" component={UserPage} />
         <Route
           exact
           path="/signin"

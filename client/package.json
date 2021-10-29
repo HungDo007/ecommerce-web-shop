@@ -3,11 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@material-ui/core": "^4.12.3",
+    "@material-ui/icons": "^4.11.2",
+    "@material-ui/pickers": "^3.3.10",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
     "axios": "^0.21.3",
     "jwt-decode": "^3.1.2",
+    "material-table": "^1.69.3",
     "node-sass": "^6.0.1",
     "query-string": "^7.0.1",
     "react": "^17.0.2",
@@ -15,6 +19,7 @@
     "react-data-table-component-extensions": "^1.5.2",
     "react-dom": "^17.0.2",
     "react-icons": "^4.2.0",
+    "react-number-format": "^4.7.3",
     "react-redux": "^7.2.5",
     "react-router-dom": "^5.2.1",
     "react-scripts": "4.0.3",
@@ -22,7 +27,6 @@
     "redux-logger": "^3.0.6",
     "redux-persist": "^6.0.0",
     "styled-components": "^5.3.1",
-    "swiper": "^6.8.4",
     "web-vitals": "^1.0.1"
   },
   "scripts": {

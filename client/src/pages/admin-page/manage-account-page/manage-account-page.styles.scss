@@ -1,16 +1,10 @@
-.main {
-  margin: 0 5rem;
+.manage-account-block {
+  margin: 2rem 5rem;
+  font-size: 20px;
 
-  .account-page-buttons {
+  .manage-account-header {
     display: flex;
     justify-content: space-between;
-
-    .account-page-navigate {
-      display: flex;
-
-      button {
-        margin-right: 10px;
-      }
-    }
+    margin-bottom: 15px;
   }
 }

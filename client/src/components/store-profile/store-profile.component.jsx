@@ -1,28 +1,62 @@
-import { useState } from "react";
+import { Button, TextField } from "@material-ui/core";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import CustomButton from "../../components/custom-button/custom-button.component";
+import storeApi from "../../api/store-api";
 import "./store-profile.styles.scss";
 const defaultImg = "/img/default-img.png";
 
 const StoreProfile = ({ match }) => {
   const storeInfo = {
-    name: "hungdo",
-    phoneNumber: "01234567",
-    address: "tp HCM",
+    nameStore: "",
+    phoneNumber: "",
+    address: "",
     description: "",
-    imageSrc: defaultImg,
+    avatar: defaultImg,
     imageFile: null,
   };
 
   const [values, setValues] = useState(storeInfo);
+  const [errors, setErrors] = useState({});
 
-  const { name, phoneNumber, address, description, imageSrc, imageFile } =
+  const currentUser = useSelector((state) => state.user.currentUser);
+
+  const { nameStore, phoneNumber, address, description, avatar, imageFile } =
     values;
+
+  const validate = (fieldValues = values) => {
+    let temp = { ...errors };
+    if ("nameStore" in fieldValues)
+      temp.nameStore = fieldValues.nameStore ? "" : "This field is required";
+    if ("phoneNumber" in fieldValues) {
+      temp.phoneNumber =
+        fieldValues.phoneNumber.length > 9 ? "" : "Minimum 10 numbers required";
+      if (fieldValues.phoneNumber)
+        temp.phoneNumber =
+          /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im.test(
+            fieldValues.phoneNumber
+          )
+            ? ""
+            : "Phone Number is not valid.";
+    }
+
+    if ("address" in fieldValues)
+      temp.address = fieldValues.address ? "" : "This field is required";
+    if ("description" in fieldValues)
+      temp.description = fieldValues.description
+        ? ""
+        : "This field is required";
+
+    setErrors({ ...temp });
+
+    if (fieldValues == values) return Object.values(temp).every((x) => x == "");
+  };
 
   const handleChange = (event) => {
     const { name, value } = event.target;
 
     setValues({ ...values, [name]: value });
+    validate({ [name]: value });
   };
 
   const handleReview = (event) => {
@@ -33,7 +67,7 @@ const StoreProfile = ({ match }) => {
         setValues({
           ...values,
           imageFile,
-          imageSrc: x.target.result,
+          avatar: x.target.result,
         });
       };
       reader.readAsDataURL(imageFile);
@@ -41,24 +75,69 @@ const StoreProfile = ({ match }) => {
       setValues({
         ...values,
         imageFile: null,
-        imageSrc: defaultImg,
+        avatar: defaultImg,
       });
     }
   };
 
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    if (validate()) {
+      const formData = new FormData();
+      formData.append("username", currentUser.unique_name);
+      formData.append("nameStore", nameStore);
+      formData.append("description", description);
+      formData.append("address", address);
+      formData.append("phoneNumber", phoneNumber);
+      formData.append("avatar", imageFile);
+
+      const editStoreProfile = async () => {
+        try {
+          const response = await storeApi.editProfile(formData);
+          console.log(response);
+        } catch (error) {
+          console.log("Failed to edit profile: ", error);
+        }
+      };
+
+      editStoreProfile();
+    }
+  };
+
+  useEffect(() => {
+    const getStoreProfile = async () => {
+      try {
+        const response = await storeApi.getProfile(currentUser.unique_name);
+        setValues(response);
+      } catch (error) {
+        console.log("Failed to get store profile: ", error);
+      }
+    };
+
+    getStoreProfile();
+  }, []);
+
   return (
-    <div className="store-container">
+    <form onSubmit={handleSubmit} className="store-container">
       <h3 className="store-main-title">Store Profile</h3>
-      <hr />
       <div className="details">
         <div className="store-content-left">
-          <img className="store-image" src={imageSrc} alt="store" />
+          <img
+            className="store-image"
+            src={avatar ? avatar : defaultImg}
+            alt="store"
+          />
           <input
+            id="raised-label-file"
+            hidden
             type="file"
             accept="image/*"
             onChange={handleReview}
-            required
           />
+          <label className="store-image-label" htmlFor="raised-label-file">
+            Choose Image
+          </label>
           <div className="store-links">
             <div className="store-link">
               <Link to={`${match.path}/manageProduct`}>Product</Link>
@@ -73,47 +152,73 @@ const StoreProfile = ({ match }) => {
         </div>
         <div className="store-info">
           <span className="store-title">Store Name</span>
-          <input
-            className="store-input"
+          <TextField
+            fullWidth
+            name="nameStore"
             type="text"
-            name="name"
-            value={name}
+            variant="outlined"
+            value={nameStore}
             onChange={handleChange}
-            required
+            {...(errors.nameStore && {
+              error: true,
+              helperText: errors.nameStore,
+            })}
           />
           <span className="store-title">Phone Number</span>
-          <input
-            className="store-input"
-            type="text"
+          <TextField
+            fullWidth
             name="phoneNumber"
+            type="text"
+            variant="outlined"
             value={phoneNumber}
             onChange={handleChange}
-            required
+            {...(errors.phoneNumber && {
+              error: true,
+              helperText: errors.phoneNumber,
+            })}
           />
           <span className="store-title">Address</span>
-          <input
-            className="store-input"
-            type="text"
+          <TextField
+            fullWidth
             name="address"
+            type="text"
+            variant="outlined"
             value={address}
             onChange={handleChange}
-            required
+            {...(errors.address && {
+              error: true,
+              helperText: errors.address,
+            })}
           />
           <span className="store-title">Description</span>
-          <textarea
-            className="store-textarea"
+          <TextField
+            fullWidth
+            multiline
             name="description"
-            placeholder="Enter description or your store information here"
             type="text"
-            rows="5"
+            maxRows={5}
+            minRows={5}
+            variant="outlined"
+            placeholder="Enter description or your store information here"
             value={description}
-            required
             onChange={handleChange}
+            {...(errors.description && {
+              error: true,
+              helperText: errors.description,
+            })}
           />
         </div>
       </div>
-      <CustomButton>Save</CustomButton>
-    </div>
+      <div className="store-button">
+        <Button
+          type="submit"
+          variant="contained"
+          className="store-button-submit"
+        >
+          Save Change
+        </Button>
+      </div>
+    </form>
   );
 };
 

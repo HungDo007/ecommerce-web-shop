@@ -1,147 +1,90 @@
-import { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useState, useEffect } from "react";
 
-import {
-  toggleModal,
-  toggleNotification,
-} from "../../../redux/modal/modal.actions";
-
-import DataTable from "react-data-table-component";
-import DataTableExtensions from "react-data-table-component-extensions";
-
-import * as FaIcon from "react-icons/fa";
-import * as MdIcon from "react-icons/md";
-
-import AddComponentContainer from "../../../components/component-classify/add-component.container";
-import Backdrop from "../../../components/modal-backdrop/backdrop.component";
-import ConfirmContainer from "../../../components/confirm/confirm.container";
-import CustomButton from "../../../components/custom-button/custom-button.component";
-import Notification from "../../../components/notification/notification.component";
+import MaterialTable from "material-table";
 
 import adminApi from "../../../api/admin-api";
 
 const ManageComponentPage = () => {
-  const name = "name";
-  const update = null;
-  const remove = null;
-
   const [componentList, setComponentList] = useState([]);
-  const [componentItem, setComponentItem] = useState({
-    compoId: 0,
-    compoName: "",
-  });
-
-  const [action, setAction] = useState("add-compo");
-  const dispatch = useDispatch();
-  const modalIsOpen = useSelector((state) => state.modal.isOpen);
-  const showNotification = useSelector(
-    (state) => state.modal.notificationIsOpen
-  );
-  useEffect(() => {
-    const fetchComponentList = async () => {
-      try {
-        const response = await adminApi.getAllComponent();
-        setComponentList(response);
-      } catch (error) {
-        console.log("Failed to fetch component list: ", error);
-      }
-    };
-
-    fetchComponentList();
-  }, [showNotification]);
-
   const columns = [
     {
-      name: "Name",
-      selector: (row) => row[name],
-      sortable: true,
+      title: "Id",
+      field: "id",
+      editable: "never",
     },
     {
-      name: "Edit",
-      sortable: false,
-      selector: (row) => row[update],
-      cell: (d) => [
-        <>
-          <FaIcon.FaEdit
-            key={d.id}
-            onClick={() => handleCompo(d.id, d.name)}
-            style={{ cursor: "pointer" }}
-          />
-        </>,
-      ],
-    },
-    {
-      name: "Remove",
-      sortable: false,
-      selector: (row) => row[remove],
-      cell: (d) => [
-        <>
-          <MdIcon.MdDelete
-            key={d.id}
-            onClick={() => handleRemoveCompo(d.id)}
-            style={{ cursor: "pointer" }}
-          />
-        </>,
-      ],
+      title: "Name",
+      field: "name",
+      validate: (rowData) =>
+        rowData.name === undefined || rowData.name === ""
+          ? "Name is required"
+          : true,
     },
   ];
 
-  const tableData = {
-    columns,
-    data: componentList,
-    export: false,
-    print: false,
+  const fetchComponentList = async () => {
+    try {
+      const response = await adminApi.getAllComponent();
+      setComponentList(response);
+    } catch (error) {
+      console.log("Failed to fetch component list: ", error);
+    }
   };
 
-  const handleRemoveCompo = (id) => {
-    setAction("remove-compo");
-    setComponentItem({ compoId: id });
-    dispatch(toggleModal());
-  };
+  useEffect(() => {
+    fetchComponentList();
+  }, []);
 
-  const handleCompo = (id, name) => {
-    setAction("add-compo");
-    dispatch(toggleModal());
-    setComponentItem({ id, name });
-  };
-
-  const handleSubmitRemove = () => {
-    const removeComponent = async () => {
-      try {
-        const id = componentItem.compoId;
-        const response = await adminApi.removeComponent(id);
-        console.log(response);
-        dispatch(toggleModal());
-        dispatch(toggleNotification());
-      } catch (error) {
-        console.log("Failed to remove component: ", error);
-      }
-    };
-    removeComponent();
-  };
-
-  console.log("manage-component-page has re rendered");
   return (
-    <div className="main">
-      <div className="btn-add-admin">
-        <CustomButton onClick={() => handleCompo()}>
-          Add new component
-        </CustomButton>
-      </div>
-      <DataTableExtensions {...tableData}>
-        <DataTable pagination highlightOnHover />
-      </DataTableExtensions>
-      {modalIsOpen && action === "add-compo" && (
-        <AddComponentContainer item={componentItem} />
-      )}
-      {modalIsOpen && action === "remove-compo" && (
-        <ConfirmContainer
-          title="Are you sure to remove this component?"
-          onSubmit={handleSubmitRemove}
-        />
-      )}
-      {modalIsOpen && <Backdrop />}
-      {showNotification && <Notification message="Successful" />}
+    <div className="manage-account-block">
+      <MaterialTable
+        options={{ actionsColumnIndex: -1, addRowPosition: "first" }}
+        title="Components"
+        columns={columns}
+        data={componentList}
+        editable={{
+          onRowAdd: (newData) =>
+            new Promise((resolve, reject) => {
+              const payload = {
+                name: newData.name,
+              };
+              adminApi
+                .addComponent(payload)
+                .then((response) => {
+                  fetchComponentList();
+                  resolve(response);
+                })
+                .catch((error) => console.log(error.response));
+            }),
+          onRowUpdate: (newData) =>
+            new Promise((resolve) => {
+              adminApi
+                .editComponent({
+                  id: newData.id,
+                  name: newData.name,
+                })
+                .then((response) => {
+                  fetchComponentList();
+                  resolve(response);
+                })
+                .catch((error) => console.log(error.response));
+
+              resolve();
+            }),
+          onRowDelete: (oldData) =>
+            new Promise((resolve, reject) => {
+              adminApi
+                .removeComponent(oldData.id)
+                .then((response) => {
+                  fetchComponentList();
+                  resolve(response);
+                })
+                .catch((error) => console.log(error.response));
+
+              resolve();
+            }),
+        }}
+      />
     </div>
   );
 };

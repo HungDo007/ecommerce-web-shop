@@ -1,7 +1,7 @@
 import { Route, Switch } from "react-router-dom";
 import StoreProfile from "../../components/store-profile/store-profile.component";
 import StoreManagesProduct from "./store-manage-product/store-manage-product.component";
-import StoreProduct from "./store-manage-product/store-product.component";
+import StoreProduct from "./store-manage-product/store-product/store-product.component";
 
 const StorePage = ({ match }) => {
   return (
@@ -12,7 +12,11 @@ const StorePage = ({ match }) => {
           path={`${match.path}/manageProduct`}
           component={StoreManagesProduct}
         />
-        <Route path={`${match.path}/product`} component={StoreProduct} />
+        <Route exact path={`${match.path}/product`} component={StoreProduct} />
+        {/* <Route
+          path={`${match.path}/product/:productId`}
+          component={StoreProduct}
+        /> */}
       </Switch>
     </div>
   );
