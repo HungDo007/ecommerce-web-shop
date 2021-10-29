@@ -2,7 +2,7 @@
 {
     public class ComponentDetailVm
     {
-        public int Id { get; set; }
+        public int CompId { get; set; }
         //public string Type { get; set; }
         public string Value { set; get; }
     }

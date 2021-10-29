@@ -226,10 +226,10 @@ namespace Application.System
 
             var user = await _userManager.FindByNameAsync(request.UserName);
             if (user != null)
-                errorList.Add("Username đã được sử dụng");
+                errorList.Add("Username already used");
 
             if (await _userManager.FindByEmailAsync(request.Email) != null)
-                errorList.Add("Email đã được sử dụng");
+                errorList.Add("Email already used");
 
 
             user = _mapper.Map<AppUser>(request);

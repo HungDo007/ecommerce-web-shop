@@ -31,7 +31,7 @@ namespace WebAPI.Mapping
             CreateMap<ProductDetail, ProductDetailVm>();
 
             CreateMap<ComponentDetail, ComponentDetailVm>()
-                .ForMember(x => x.Id, opt => opt.MapFrom(s => s.ComponentId));
+                .ForMember(x => x.CompId, opt => opt.MapFrom(s => s.ComponentId));
             //.ForMember(x => x.Type, opt => opt.MapFrom(s => s.Component.Name));
 
             CreateMap<ComponentRequest, Component>();
