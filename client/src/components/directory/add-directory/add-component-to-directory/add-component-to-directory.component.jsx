@@ -4,12 +4,9 @@ import { Button, Checkbox, FormControlLabel } from "@material-ui/core";
 
 import { toggleModal } from "../../../../redux/modal/modal.actions";
 
-//import Checkbox from "../../../checkbox-item/checkbox-item.component";
-
 import adminApi from "../../../../api/admin-api";
 
 import "./add-component-to-directory.styles.scss";
-import CustomButton from "../../../custom-button/custom-button.component";
 
 const AddComponentToDirectory = ({ directoryId, dispatch }) => {
   const [compoOfDirect, setCompoOfDirect] = useState([]);

@@ -7,9 +7,14 @@ const adminApi = {
     return axiosClient.get(url);
   },
 
-  getAllUser: () => {
-    const url = "/Admins/user/allUser";
-    return axiosClient.get(url);
+  // getAllUser: () => {
+  //   const url = "/Admins/user/allUser";
+  //   return axiosClient.get(url);
+  // },
+
+  getUserPaging: (params) => {
+    const url = "/Admins/user/paging";
+    return axiosClient.get(url, { params });
   },
 
   getAllLockedUser: () => {

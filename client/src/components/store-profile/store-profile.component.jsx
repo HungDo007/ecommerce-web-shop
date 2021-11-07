@@ -14,6 +14,8 @@ const StoreProfile = ({ match }) => {
     description: "",
     avatar: defaultImg,
     imageFile: null,
+    rate: undefined,
+    totalProduct: 0,
   };
 
   const [values, setValues] = useState(storeInfo);
@@ -109,7 +111,16 @@ const StoreProfile = ({ match }) => {
     const getStoreProfile = async () => {
       try {
         const response = await storeApi.getProfile(currentUser.unique_name);
-        setValues(response);
+        console.log(response);
+        setValues({
+          address: response.address,
+          avatar: process.env.REACT_APP_IMAGE_URL + response.avatar,
+          description: response.description,
+          nameStore: response.nameStore,
+          phoneNumber: response.phoneNumber,
+          rate: response.rate,
+          totalProduct: response.totalProduct,
+        });
       } catch (error) {
         console.log("Failed to get store profile: ", error);
       }

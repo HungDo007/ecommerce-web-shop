@@ -17,19 +17,19 @@ const BasicInformation = ({
   errors,
   onChange,
 }) => {
-  // if (productInfo.name && productInfo.description && productInfo.poster) {
-  //   productInfo.poster = process.env.REACT_APP_IMAGE_URL + productInfo.poster;
-  //   productInfo.images = [process.env.REACT_APP_IMAGE_URL + productInfo.images];
-  //   const length = productInfo.images.length;
-  //   if (length < 4) {
-  //     for (let index = 0; index < 4 - length; index++) {
-  //       productInfo.images.push(defaultImg);
-  //     }
-  //   }
-  // }
+  if (productInfo.id) {
+    //productInfo.poster = process.env.REACT_APP_IMAGE_URL + productInfo.poster;
+    //productInfo.images = [process.env.REACT_APP_IMAGE_URL + productInfo.images];
+    const length = productInfo.images.length;
+    if (length < 4) {
+      for (let index = 0; index < 4 - length; index++) {
+        productInfo.images.push(defaultImg);
+      }
+    }
+  }
 
   const {
-    directoryId,
+    category,
     name,
     description,
     poster,
@@ -92,6 +92,7 @@ const BasicInformation = ({
       });
     }
   };
+
   return (
     <div>
       <h3 className="store-product-title">Basic Information</h3>
@@ -102,13 +103,13 @@ const BasicInformation = ({
             <FormControl
               fullWidth
               variant="outlined"
-              {...(errors.directoryId && {
+              {...(errors.category && {
                 error: true,
               })}
             >
               <Select
-                name="directoryId"
-                value={directoryId}
+                name="category"
+                value={category}
                 onChange={handleInputChange}
               >
                 {initialDirectories.map((item) => (
@@ -117,8 +118,8 @@ const BasicInformation = ({
                   </MenuItem>
                 ))}
               </Select>
-              {errors.directoryId && (
-                <FormHelperText>{errors.directoryId}</FormHelperText>
+              {errors.category && (
+                <FormHelperText>{errors.category}</FormHelperText>
               )}
             </FormControl>
           </div>

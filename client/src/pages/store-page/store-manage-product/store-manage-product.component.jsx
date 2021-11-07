@@ -39,11 +39,11 @@ const StoreManagesProduct = ({ history }) => {
 
   const handleEditProduct = (event, rowData) => {
     // history.push(`product/${rowData.id}`);
-    // history.push({
-    //   pathname: "product",
-    //   state: rowData.id,
-    // });
-    console.log(rowData);
+    history.push({
+      pathname: "product",
+      state: rowData.id,
+    });
+    //console.log(rowData);
   };
 
   useEffect(() => {

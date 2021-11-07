@@ -44,24 +44,40 @@ const UserTable = ({ actionLockUser, setUsername }) => {
     dispatch(toggleModal());
   };
 
-  useEffect(() => {
-    const fetchUserList = async () => {
-      try {
-        const response = await adminApi.getAllUser();
-        setUserList(response);
-      } catch (error) {
-        console.log("Failed to fetch user list: ", error);
-      }
-    };
-    fetchUserList();
-  }, []);
+  // useEffect(() => {
+  //   const fetchUserList = async () => {
+  //     try {
+  //       const response = await adminApi.getAllUser();
+  //       setUserList(response);
+  //     } catch (error) {
+  //       console.log("Failed to fetch user list: ", error);
+  //     }
+  //   };
+  //   fetchUserList();
+  // }, []);
 
   return (
     <div>
       <MaterialTable
         options={{ actionsColumnIndex: -1 }}
         title="User Accounts"
-        data={userList}
+        data={(query) =>
+          new Promise((resolve, reject) => {
+            console.log(query);
+            const params = {
+              pageIndex: query.page + 1,
+              pageSize: query.pageSize,
+              keyword: query.search,
+            };
+            adminApi.getUserPaging(params).then((response) => {
+              resolve({
+                data: response.items,
+                page: query.page,
+                totalCount: response.totalRecords,
+              });
+            });
+          })
+        }
         columns={columns}
         actions={[
           {

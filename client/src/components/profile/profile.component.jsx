@@ -15,6 +15,8 @@ const defaultImg = "/img/default-img.png";
 
 const Profile = () => {
   const initialValues = {
+    id: 0,
+    emailConfirmed: false,
     avatar: defaultImg,
     avatarFile: null,
     firstName: "",
@@ -38,7 +40,20 @@ const Profile = () => {
     const getUserProfile = async () => {
       try {
         const response = await userApi.getProfile(currentUser.unique_name);
-        setValues(response);
+        console.log(response);
+        setValues({
+          id: response.id,
+          avatar: response.avatar
+            ? process.env.REACT_APP_IMAGE_URL + response.avatar
+            : null,
+          firstName: response.firstName,
+          lastName: response.lastName,
+          dob: response.dob,
+          email: response.email,
+          phoneNumber: response.phoneNumber,
+          address: response.address,
+          emailConfirmed: response.emailConfirmed,
+        });
       } catch (error) {
         console.log("Failed to get user profile: ", error);
       }

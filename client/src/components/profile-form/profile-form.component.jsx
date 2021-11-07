@@ -8,6 +8,8 @@ import {
   MuiPickersUtilsProvider,
 } from "@material-ui/pickers";
 
+import Notification from "../notification/notification.component";
+
 import userApi from "../../api/user-api";
 
 import "./profile-form.styles.scss";
@@ -16,6 +18,11 @@ const defaultImg = "/img/default-img.png";
 
 const ProfileForm = ({ values, setValues }) => {
   const [errors, setErrors] = useState({});
+  const [notify, setNotify] = useState({
+    isOpen: false,
+    message: "",
+    type: "",
+  });
 
   const currentUser = useSelector((state) => state.user.currentUser);
 
@@ -104,8 +111,23 @@ const ProfileForm = ({ values, setValues }) => {
         try {
           const response = await userApi.editProfile(formData);
           console.log(response);
+          setNotify({
+            isOpen: true,
+            message: "Edit profile successfully!",
+            type: "success",
+          });
         } catch (error) {
-          console.log("Failed to edit profile: ", error);
+          setNotify({
+            isOpen: true,
+            message: "Edit profile fail!",
+            type: "error",
+          });
+          // let reason = "";
+          // error.response ? error.response : error
+          console.log(
+            "Failed to edit profile: ",
+            error.response ? error.response : error
+          );
         }
       };
 
@@ -260,6 +282,7 @@ const ProfileForm = ({ values, setValues }) => {
           </Button>
         </div>
       </div>
+      <Notification notify={notify} setNotify={setNotify} />
     </form>
   );
 };
