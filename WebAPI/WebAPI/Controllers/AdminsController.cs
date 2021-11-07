@@ -32,26 +32,26 @@ namespace WebAPI.Controllers
 
         //--------------------------------------------------------------------------------------
         #region User
-        [HttpGet("user/allAdmin")]
-        public async Task<IActionResult> GetAllAdmin()
+        [HttpGet("user/adminPaging")]
+        public async Task<IActionResult> GetAllAdmin([FromQuery] UserPagingRequest request)
         {
-            List<UserResponse> res = await _userService.GetAllAdmin();
+            PagedResult<UserResponse> res = await _userService.GetAdminPaging(request);
             return Ok(res);
         }
 
 
-        [HttpGet("user/allUser")]
-        public async Task<IActionResult> GetAllUser()
+        [HttpGet("user/userPaging")]
+        public async Task<IActionResult> GetAllUser([FromQuery] UserPagingRequest request)
         {
-            List<UserResponse> res = await _userService.GetAllUser();
+            PagedResult<UserResponse> res = await _userService.GetUserPaging(request);
             return Ok(res);
         }
 
 
-        [HttpGet("user/allUserLocked")]
-        public async Task<IActionResult> GetAllUserLocked()
+        [HttpGet("user/userLockedPaging")]
+        public async Task<IActionResult> GetAllUserLocked([FromQuery] UserPagingRequest request)
         {
-            List<UserResponse> res = await _userService.GetAllUserLocked();
+            PagedResult<UserResponse> res = await _userService.GetUserLockedPaging(request);
             return Ok(res);
         }
 
@@ -78,12 +78,15 @@ namespace WebAPI.Controllers
             return BadRequest();
         }
 
-        [HttpGet("user/paging")]
-        public async Task<IActionResult> GetUserPaging([FromQuery] UserPagingRequest request)
+        [HttpPost("user/unlockAccount")]
+        public async Task<IActionResult> UnLockAccount([FromBody] UnlockAccountRequest request)
         {
-            PagedResult<UserResponse> result = await _userService.GetUserPaging(request);
-            return Ok(result);
+            var res = await _userService.UnlockAccount(request);
+            if (res)
+                return Ok();
+            return BadRequest();
         }
+
         #endregion
 
 

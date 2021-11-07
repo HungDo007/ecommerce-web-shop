@@ -60,21 +60,15 @@ namespace Application.System
         /// Return all user in role Admin.
         /// </summary>
         /// <returns></returns>
-        Task<List<UserResponse>> GetAllAdmin();
+        Task<PagedResult<UserResponse>> GetAdminPaging(UserPagingRequest request);
 
-
-        /// <summary>
-        /// Return all user in role User.
-        /// </summary>
-        /// <returns></returns>
-        Task<List<UserResponse>> GetAllUser();
 
 
         /// <summary>
         /// Return all user in role User is locked.
         /// </summary>
         /// <returns></returns>
-        Task<List<UserResponse>> GetAllUserLocked();
+        Task<PagedResult<UserResponse>> GetUserLockedPaging(UserPagingRequest request);
 
 
 
@@ -97,6 +91,7 @@ namespace Application.System
 
         Task<bool> LockAccount(LockAccountRequest request);
 
+        Task<bool> UnlockAccount(UnlockAccountRequest request);
 
         Task<StoreVm> StoreInfo(string username);
 
