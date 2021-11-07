@@ -134,28 +134,68 @@ namespace Application.System
             return false;
         }
 
-        public async Task<List<UserResponse>> GetAllAdmin()
-        {
-            var data = await _userManager.GetUsersInRoleAsync(SystemConstants.RoleAdmin);
 
-            return _mapper.Map<List<UserResponse>>(data);
+        public async Task<PagedResult<UserResponse>> GetAdminPaging(UserPagingRequest request)
+        {
+            var query = await _userManager.GetUsersInRoleAsync(SystemConstants.RoleAdmin);
+
+            //Filter
+            if (!string.IsNullOrEmpty(request.Keyword))
+            {
+                query = query.Where(x => x.UserName.Contains(request.Keyword)).ToList();
+            }
+
+            //Paging
+            int totalRow = query.Count();
+            var data = query.Where(x => x.Status == true)
+                .Skip((request.PageIndex - 1) * request.PageSize)
+                .Take(request.PageSize)
+                .ToList();
+
+
+            List<UserResponse> responses = _mapper.Map<List<UserResponse>>(data);
+
+            //Select and projection
+            var pagedResult = new PagedResult<UserResponse>()
+            {
+                TotalRecords = totalRow,
+                PageIndex = request.PageIndex,
+                PageSize = request.PageSize,
+                Items = responses
+            };
+            return pagedResult;
         }
 
-        public async Task<List<UserResponse>> GetAllUser()
+
+        public async Task<PagedResult<UserResponse>> GetUserLockedPaging(UserPagingRequest request)
         {
-            var data = await _userManager.GetUsersInRoleAsync(SystemConstants.RoleUser);
+            var query = await _userManager.GetUsersInRoleAsync(SystemConstants.RoleUser);
 
-            data = data.Where(x => x.Status == true).ToList();
-            return _mapper.Map<List<UserResponse>>(data);
-        }
+            //Filter
+            if (!string.IsNullOrEmpty(request.Keyword))
+            {
+                query = query.Where(x => x.UserName.Contains(request.Keyword)).ToList();
+            }
+
+            //Paging
+            int totalRow = query.Count();
+            var data = query.Where(x => x.Status == false)
+                .Skip((request.PageIndex - 1) * request.PageSize)
+                .Take(request.PageSize)
+                .ToList();
 
 
-        public async Task<List<UserResponse>> GetAllUserLocked()
-        {
-            var data = await _userManager.GetUsersInRoleAsync(SystemConstants.RoleUser);
+            List<UserResponse> responses = _mapper.Map<List<UserResponse>>(data);
 
-            data = data.Where(x => x.Status == false).ToList();
-            return _mapper.Map<List<UserResponse>>(data);
+            //Select and projection
+            var pagedResult = new PagedResult<UserResponse>()
+            {
+                TotalRecords = totalRow,
+                PageIndex = request.PageIndex,
+                PageSize = request.PageSize,
+                Items = responses
+            };
+            return pagedResult;
         }
 
         public async Task<UserResponse> GetByName(string username)
@@ -171,19 +211,21 @@ namespace Application.System
 
         public async Task<PagedResult<UserResponse>> GetUserPaging(UserPagingRequest request)
         {
-            var query = _userManager.Users;
+            var query = await _userManager.GetUsersInRoleAsync(SystemConstants.RoleUser);
 
             //Filter
             if (!string.IsNullOrEmpty(request.Keyword))
             {
-                query = query.Where(x => x.UserName.Contains(request.Keyword));
+                query = query.Where(x => x.UserName.Contains(request.Keyword)).ToList();
             }
 
             //Paging
-            int totalRow = await query.CountAsync();
-            var data = await query.Skip((request.PageIndex - 1) * request.PageSize)
+            int totalRow = query.Count();
+            var data = query.Where(x => x.Status == true)
+                .Skip((request.PageIndex - 1) * request.PageSize)
                 .Take(request.PageSize)
-                .ToListAsync();
+                .ToList();
+
 
             List<UserResponse> responses = _mapper.Map<List<UserResponse>>(data);
 
@@ -210,7 +252,30 @@ namespace Application.System
             SendMailRequest mailRequest = new SendMailRequest();
             mailRequest.Subject = SystemConstants.LockAccount;
             mailRequest.ToEmail = user.Email;
-            mailRequest.Body = $"Tài khoản của bạn đã bị khóa vì: {request.Reason}\n Vui lòng liên hệ quản trị viên để làm việc và lấy lại tài khoản";
+            mailRequest.Body = $"Tài khoản của bạn đã bị khóa vì: {request.Reason} <br/> Vui lòng liên hệ quản trị viên để làm việc và lấy lại tài khoản!!!";
+
+            await _mailService.SendMail(mailRequest);
+
+            var result = await _userManager.UpdateAsync(user);
+            if (result.Succeeded)
+                return true;
+            return false;
+        }
+
+
+        public async Task<bool> UnlockAccount(UnlockAccountRequest request)
+        {
+            var user = await _userManager.FindByNameAsync(request.Username);
+
+            if (user == null)
+                return false;
+
+            user.Status = true;
+
+            SendMailRequest mailRequest = new SendMailRequest();
+            mailRequest.Subject = SystemConstants.UnlockAccount;
+            mailRequest.ToEmail = user.Email;
+            mailRequest.Body = $"Tài khoản của bạn đã được mở khóa trở lại.";
 
             await _mailService.SendMail(mailRequest);
 
@@ -226,10 +291,10 @@ namespace Application.System
 
             var user = await _userManager.FindByNameAsync(request.UserName);
             if (user != null)
-                errorList.Add("Username đã được sử dụng");
+                errorList.Add("Username already used");
 
             if (await _userManager.FindByEmailAsync(request.Email) != null)
-                errorList.Add("Email đã được sử dụng");
+                errorList.Add("Email already used");
 
 
             user = _mapper.Map<AppUser>(request);

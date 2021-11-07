@@ -3,6 +3,7 @@ using Application.ViewModels.Catalog;
 using AutoMapper;
 using Data.EF;
 using Data.Entities;
+using Data.Enum;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -135,10 +136,11 @@ namespace Application.Catalog
         public async Task<List<ProductVm>> GetAll()
         {
             var data = await _context.Products
-                .Where(x => x.Status == true)
+                .Where(x => x.Status == ProductStatus.Active)
                 .Include(x => x.User)
                 .Include(x => x.ProductImages)
                 .Include(x => x.ProductCategories)
+                .Include(x => x.ProductDetails)
                 .ToListAsync();
 
             return _mapper.Map<List<ProductVm>>(data);
@@ -148,10 +150,11 @@ namespace Application.Catalog
         public async Task<ProductVm> GetProductDetail(int id)
         {
             var product = await _context.Products
-                .Where(x => x.Status == true && x.Id == id)
+                .Where(x => x.Status == ProductStatus.Active && x.Id == id)
                 .Include(x => x.User)
                 .Include(x => x.ProductImages)
                 .Include(x => x.ProductCategories)
+                .Include(x => x.ProductDetails)
                 .FirstOrDefaultAsync();
 
             if (product == null)
@@ -269,10 +272,11 @@ namespace Application.Catalog
         public async Task<List<ProductVm>> GetOfUser(string username)
         {
             var data = await _context.Products
-                .Where(x => x.Status == true)
+                .Where(x => x.Status == ProductStatus.Active)
                 .Include(x => x.User)
                 .Include(x => x.ProductImages)
                 .Include(x => x.ProductCategories)
+                .Include(x => x.ProductDetails)
                 .Where(x => x.User.UserName == username)
                 .ToListAsync();
 

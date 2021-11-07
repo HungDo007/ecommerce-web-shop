@@ -12,6 +12,7 @@ namespace Application.ViewModels.Catalog
         public int Category { get; set; }
         public int ViewCount { get; set; }
         public float Rate { get; set; }
+        public decimal Price { get; set; }
         public DateTime DateCreated { set; get; }
         public string Poster { get; set; }
         public List<string> Images { get; set; } = new List<string>();

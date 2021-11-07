@@ -8,9 +8,9 @@ namespace Data.Configurations
     {
         public void Configure(EntityTypeBuilder<OrderDetail> builder)
         {
-            builder.HasKey(x => new { x.OrderId, x.ProductId });
+            builder.HasKey(x => new { x.OrderId, x.ProductDetailId });
             builder.HasOne(x => x.Order).WithMany(x => x.OrderDetails).HasForeignKey(x => x.OrderId);
-            builder.HasOne(x => x.Product).WithMany(x => x.OrderDetails).HasForeignKey(x => x.ProductId).OnDelete(DeleteBehavior.NoAction);
+            builder.HasOne(x => x.ProductDetail).WithMany(x => x.OrderDetails).HasForeignKey(x => x.ProductDetailId).OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

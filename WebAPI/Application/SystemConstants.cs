@@ -11,6 +11,7 @@
 
         public const string ActiveMail = "Verify Code";
         public const string LockAccount = "Lock Account";
+        public const string UnlockAccount = "Unlock Account";
 
         public const string FolderCategory = "Category";
         public const string FolderProduct = "Product";

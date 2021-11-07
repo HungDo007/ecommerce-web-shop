@@ -2,7 +2,7 @@
 
 namespace Application.ViewModels.System
 {
-    public class UserPagingRequest : PagingRequestBase
+    public class UnlockAccountRequest : LockAccountBase
     {
     }
 }

@@ -1,8 +1,9 @@
-﻿namespace Application.ViewModels.System
+﻿using Application.ViewModels.Common;
+
+namespace Application.ViewModels.System
 {
-    public class LockAccountRequest
+    public class LockAccountRequest : LockAccountBase
     {
-        public string Username { get; set; }
         public string Reason { get; set; }
     }
 }

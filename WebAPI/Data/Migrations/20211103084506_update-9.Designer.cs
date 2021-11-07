@@ -4,14 +4,16 @@ using Data.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Data.Migrations
 {
     [DbContext(typeof(EShopContext))]
-    partial class EShopContextModelSnapshot : ModelSnapshot
+    [Migration("20211103084506_update-9")]
+    partial class update9
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -149,7 +151,7 @@ namespace Data.Migrations
                             Id = new Guid("f82493f3-ab61-477b-8bb8-daebc61cf148"),
                             AccessFailedCount = 0,
                             Address = "TPHCM",
-                            ConcurrencyStamp = "2f6cc832-4edf-4003-884b-20f0634739a7",
+                            ConcurrencyStamp = "d6759216-896d-4820-87c3-106230a3f071",
                             Dob = new DateTime(2020, 1, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "webshop@gmail.com",
                             EmailConfirmed = true,
@@ -159,7 +161,7 @@ namespace Data.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "webshop@gmail.com",
                             NormalizedUserName = "admin",
-                            PasswordHash = "AQAAAAEAACcQAAAAEGGz0AdqSEgb9iL6KzixuAZO97duOVwUlJLDwvkXben2PL0Ue+qPsIyXbdVsK0F6eg==",
+                            PasswordHash = "AQAAAAEAACcQAAAAECwB6QfPl14TCiAdx9+B2cV1vwnzG3981lD1AOGrqaGl6+Q1N04tMpr+q6zPubc3mA==",
                             PhoneNumber = "1234567",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
@@ -334,7 +336,7 @@ namespace Data.Migrations
                     b.Property<DateTime>("DateCreated")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2021, 11, 5, 15, 33, 53, 60, DateTimeKind.Local).AddTicks(1463));
+                        .HasDefaultValue(new DateTime(2021, 11, 3, 15, 45, 5, 303, DateTimeKind.Local).AddTicks(728));
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -347,10 +349,10 @@ namespace Data.Migrations
                         .HasColumnType("real")
                         .HasDefaultValue(0f);
 
-                    b.Property<int>("Status")
+                    b.Property<bool>("Status")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -655,7 +657,7 @@ namespace Data.Migrations
                         new
                         {
                             Id = new Guid("ae7f2c5c-8241-4e88-9e2e-4e9342f98a51"),
-                            ConcurrencyStamp = "a0130b57-52cd-4f44-890d-7911547feb18",
+                            ConcurrencyStamp = "d8a184fe-6e0b-4004-b129-c567df513ed9",
                             Name = "Admin",
                             NormalizedName = "admin",
                             Description = "Administrator"
@@ -663,7 +665,7 @@ namespace Data.Migrations
                         new
                         {
                             Id = new Guid("8daf1440-3444-416d-807c-edbe207f8fba"),
-                            ConcurrencyStamp = "022a8f36-36c9-4f9b-961f-33516fa5c2ed",
+                            ConcurrencyStamp = "d10bba39-37fa-4ca6-ae3f-b1e2c1dc673f",
                             Name = "User",
                             NormalizedName = "user",
                             Description = "Website Users"
