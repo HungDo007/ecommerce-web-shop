@@ -4,6 +4,7 @@
     {
         Active,
         Hided,
-        Deleted
+        Deleted,
+        AdminDeleted
     }
 }

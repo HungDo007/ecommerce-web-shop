@@ -25,6 +25,13 @@ namespace WebAPI.Controllers
             _userService = userService;
         }
 
+        [HttpGet("productHideOfUser/{username}")]
+        public async Task<IActionResult> GetAll(string username, [FromQuery] ProductPagingRequest request)
+        {
+            return Ok(await _productService.GetHideOfUser(username, request));
+        }
+
+
         [HttpPost]
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> Add([FromForm] ProductRequest request)
@@ -80,6 +87,31 @@ namespace WebAPI.Controllers
         public async Task<IActionResult> UpdateStoreInfo([FromForm] StoreRequest request)
         {
             if (await _userService.UpdateStoreInfo(request))
+                return Ok();
+            return BadRequest();
+        }
+
+
+        [HttpPost("hideProduct")]
+        public async Task<IActionResult> HideProduct([FromBody] int proId)
+        {
+            if (await _productService.HideProduct(proId))
+                return Ok();
+            return BadRequest();
+        }
+
+        [HttpPost("unhideProduct")]
+        public async Task<IActionResult> UnHideProduct([FromBody] int proId)
+        {
+            if (await _productService.UnHideProduct(proId))
+                return Ok();
+            return BadRequest();
+        }
+
+        [HttpDelete("{proId}")]
+        public async Task<IActionResult> DeleteProduct(int proId)
+        {
+            if (await _productService.DeleteProduct(proId))
                 return Ok();
             return BadRequest();
         }
