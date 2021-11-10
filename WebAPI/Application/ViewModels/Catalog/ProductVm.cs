@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Data.Enum;
+using System;
 using System.Collections.Generic;
 
 namespace Application.ViewModels.Catalog
@@ -12,6 +13,7 @@ namespace Application.ViewModels.Catalog
         public int Category { get; set; }
         public int ViewCount { get; set; }
         public float Rate { get; set; }
+        public ProductStatus Status { get; set; }
         public decimal Price { get; set; }
         public DateTime DateCreated { set; get; }
         public string Poster { get; set; }

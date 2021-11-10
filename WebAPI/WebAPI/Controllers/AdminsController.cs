@@ -19,14 +19,17 @@ namespace WebAPI.Controllers
         private readonly IUserService _userService;
         private readonly ICategoryService _categoryService;
         private readonly IComponentService _componentService;
+        private readonly IProductService _productService;
 
         public AdminsController(IUserService userService,
             ICategoryService categoryService,
-            IComponentService componentService)
+            IComponentService componentService,
+            IProductService productService)
         {
             _userService = userService;
             _categoryService = categoryService;
             _componentService = componentService;
+            _productService = productService;
         }
 
 
@@ -172,6 +175,42 @@ namespace WebAPI.Controllers
         public async Task<IActionResult> DeleteComp(int id)
         {
             if (await _componentService.Delete(id))
+                return Ok();
+            return BadRequest();
+        }
+        #endregion
+
+
+
+        //--------------------------------------------------------------------------------------
+        #region Product
+        [HttpGet("product/productAll")]
+        public async Task<IActionResult> GetProductAll([FromQuery] ProductPagingRequest request)
+        {
+            return Ok(await _productService.GetAdminAll(request));
+        }
+
+
+        [HttpGet("product/productLocked")]
+        public async Task<IActionResult> GetProductLocked([FromQuery] ProductPagingRequest request)
+        {
+            return Ok(await _productService.GetLocked(request));
+        }
+
+
+        [HttpPost("product/lockProduct")]
+        public async Task<IActionResult> LockAccount([FromBody] LockProductRequest request)
+        {
+            if (await _userService.AdminDeleteProduct(request.ProId, request.Reason))
+                return Ok();
+            return BadRequest();
+        }
+
+
+        [HttpPost("product/unlockProduct")]
+        public async Task<IActionResult> UnLockAccount([FromBody] int ProId)
+        {
+            if (await _userService.AdminUnDeleteProduct(ProId))
                 return Ok();
             return BadRequest();
         }

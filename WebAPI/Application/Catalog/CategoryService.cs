@@ -26,35 +26,45 @@ namespace Application.Catalog
 
         public async Task<bool> AddCat(CategoryRequest request)
         {
-            var check = await _context.Categories.AnyAsync(x => x.Name == request.Name);
-            if (check)
-                return false;
-
+            var cat = await _context.Categories.Where(x => x.Name == request.Name).FirstOrDefaultAsync();
             Category category = _mapper.Map<Category>(request);
 
-            if (request.Parent.Count != 0)
+            if (cat != null)
             {
-                foreach (var item in request.Parent)
+                if (cat.Status == true)
+                    return false;
+                else
                 {
-                    if (item != null)
+                    cat.Status = true;
+                }
+            }
+            else
+            {
+                if (request.Parent.Count != 0)
+                {
+                    foreach (var item in request.Parent)
                     {
-                        var parent = await _context.Categories.FindAsync(int.Parse(item));
-                        category.CatParent.Add(parent);
+                        if (item != null)
+                        {
+                            var parent = await _context.Categories.FindAsync(int.Parse(item));
+                            category.CatParent.Add(parent);
+                        }
+                    }
+                }
+
+                if (request.Image != null)
+                {
+                    try
+                    {
+                        category.Image = await _storageService.SaveFile(SystemConstants.FolderCategory, request.Image);
+                    }
+                    catch
+                    {
+                        category.Image = null;
                     }
                 }
             }
 
-            if (request.Image != null)
-            {
-                try
-                {
-                    category.Image = await _storageService.SaveFile(SystemConstants.FolderCategory, request.Image);
-                }
-                catch
-                {
-                    category.Image = null;
-                }
-            }
 
             try
             {

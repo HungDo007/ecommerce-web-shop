@@ -1,8 +1,7 @@
-﻿using Application.ViewModels.Common;
-
-namespace Application.ViewModels.System
+﻿namespace Application.ViewModels.System
 {
-    public class UnlockAccountRequest : LockAccountBase
+    public class UnlockAccountRequest
     {
+        public string Username { get; set; }
     }
 }

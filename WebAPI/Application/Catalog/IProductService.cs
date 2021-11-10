@@ -1,4 +1,5 @@
 ﻿using Application.ViewModels.Catalog;
+using Application.ViewModels.Common;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -10,8 +11,9 @@ namespace Application.Catalog
         /// Get all product.
         /// </summary>
         /// <returns></returns>
-        Task<List<ProductVm>> GetAll();
+        Task<PagedResult<ProductVm>> GetAll(ProductPagingRequest request);
 
+        Task<PagedResult<ProductVm>> GetAdminAll(ProductPagingRequest request);
 
         /// <summary>
         /// Get product detail with specified id.
@@ -20,7 +22,11 @@ namespace Application.Catalog
         /// <returns></returns>
         Task<ProductVm> GetProductDetail(int id);
 
-        Task<List<ProductVm>> GetOfUser(string username);
+        Task<PagedResult<ProductVm>> GetOfUser(string username, ProductPagingRequest request);
+
+        Task<PagedResult<ProductVm>> GetHideOfUser(string username, ProductPagingRequest request);
+
+        Task<PagedResult<ProductVm>> GetLocked(ProductPagingRequest request);
 
         Task AddViewCount(int proId);
 
@@ -31,5 +37,9 @@ namespace Application.Catalog
         Task<bool> Update(ProductRequest request);
 
         Task<bool> UpdateProDetail(List<ProductDetailRequest> detailVms);
+
+        Task<bool> HideProduct(int proId);
+        Task<bool> DeleteProduct(int proId);
+        Task<bool> UnHideProduct(int proId);
     }
 }

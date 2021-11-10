@@ -96,5 +96,8 @@ namespace Application.System
         Task<StoreVm> StoreInfo(string username);
 
         Task<bool> UpdateStoreInfo(StoreRequest request);
+
+        Task<bool> AdminDeleteProduct(int proId, string reason);
+        Task<bool> AdminUnDeleteProduct(int proId);
     }
 }

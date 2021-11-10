@@ -4,6 +4,7 @@ using Application.ViewModels.System;
 using AutoMapper;
 using Data.EF;
 using Data.Entities;
+using Data.Enum;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -171,6 +172,7 @@ namespace Application.System
         {
             var query = await _userManager.GetUsersInRoleAsync(SystemConstants.RoleUser);
 
+            query = query.Where(x => x.Status == false).ToList();
             //Filter
             if (!string.IsNullOrEmpty(request.Keyword))
             {
@@ -179,8 +181,7 @@ namespace Application.System
 
             //Paging
             int totalRow = query.Count();
-            var data = query.Where(x => x.Status == false)
-                .Skip((request.PageIndex - 1) * request.PageSize)
+            var data = query.Skip((request.PageIndex - 1) * request.PageSize)
                 .Take(request.PageSize)
                 .ToList();
 
@@ -213,6 +214,7 @@ namespace Application.System
         {
             var query = await _userManager.GetUsersInRoleAsync(SystemConstants.RoleUser);
 
+            query = query.Where(x => x.Status == true).ToList();
             //Filter
             if (!string.IsNullOrEmpty(request.Keyword))
             {
@@ -221,8 +223,7 @@ namespace Application.System
 
             //Paging
             int totalRow = query.Count();
-            var data = query.Where(x => x.Status == true)
-                .Skip((request.PageIndex - 1) * request.PageSize)
+            var data = query.Skip((request.PageIndex - 1) * request.PageSize)
                 .Take(request.PageSize)
                 .ToList();
 
@@ -409,6 +410,56 @@ namespace Application.System
         {
             Random rd = new Random();
             return rd.Next(100000, 999999).ToString();
+        }
+
+        public async Task<bool> AdminDeleteProduct(int proId, string reason)
+        {
+            var product = await _context.Products
+                .Where(x => x.Id == proId)
+                .Include(x => x.User)
+                .FirstOrDefaultAsync();
+
+            if (product == null)
+                return false;
+
+            product.Status = ProductStatus.AdminDeleted;
+
+            SendMailRequest mailRequest = new SendMailRequest();
+            mailRequest.Subject = SystemConstants.LockProduct;
+            mailRequest.ToEmail = product.User.Email;
+            mailRequest.Body = $"Sản phẩm của bạn đã bị khóa vì: {reason} <br/> Vui lòng liên hệ quản trị viên để làm việc và mở khóa tài khoản!!!";
+
+            await _mailService.SendMail(mailRequest);
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> AdminUnDeleteProduct(int proId)
+        {
+            var product = await _context.Products.FindAsync(proId);
+
+            if (product == null)
+                return false;
+
+            product.Status = ProductStatus.Active;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Application.Catalog;
+using Application.ViewModels.Catalog;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -18,9 +19,9 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("product")]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] ProductPagingRequest request)
         {
-            return Ok(await _productService.GetAll());
+            return Ok(await _productService.GetAll(request));
         }
 
 
@@ -45,9 +46,9 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("allProductOfUser/{username}")]
-        public async Task<IActionResult> ProductOfUser(string username)
+        public async Task<IActionResult> ProductOfUser(string username, [FromQuery] ProductPagingRequest request)
         {
-            return Ok(await _productService.GetOfUser(username));
+            return Ok(await _productService.GetOfUser(username, request));
         }
     }
 }

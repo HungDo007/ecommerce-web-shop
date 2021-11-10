@@ -1,5 +1,6 @@
 ﻿using Application.Common;
 using Application.ViewModels.Catalog;
+using Application.ViewModels.Common;
 using AutoMapper;
 using Data.EF;
 using Data.Entities;
@@ -50,10 +51,6 @@ namespace Application.Catalog
                 }
             }
 
-            //foreach (var item in request.Details)
-            //{
-            //    pro.ProductDetails.Add(await AddProDetail(pro.Id, item));
-            //}
             if (request.Categories.Count > 0)
             {
                 foreach (var item in request.Categories)
@@ -133,9 +130,9 @@ namespace Application.Catalog
             }
         }
 
-        public async Task<List<ProductVm>> GetAll()
+        public async Task<PagedResult<ProductVm>> GetAll(ProductPagingRequest request)
         {
-            var data = await _context.Products
+            var products = await _context.Products
                 .Where(x => x.Status == ProductStatus.Active)
                 .Include(x => x.User)
                 .Include(x => x.ProductImages)
@@ -143,9 +140,121 @@ namespace Application.Catalog
                 .Include(x => x.ProductDetails)
                 .ToListAsync();
 
-            return _mapper.Map<List<ProductVm>>(data);
+            //Filter
+            if (!string.IsNullOrEmpty(request.Keyword))
+            {
+                products = products.Where(x => x.Name.Contains(request.Keyword)).ToList();
+            }
+
+            if (request.CatId != 0)
+            {
+                products = products.Where(x => x.ProductCategories != null && x.ProductCategories[0].CategoryId == request.CatId).ToList();
+            }
+
+
+            //Paging
+            int totalRow = products.Count();
+            products = products.Skip((request.PageIndex - 1) * request.PageSize)
+                .Take(request.PageSize)
+                .ToList();
+
+
+            var responses = _mapper.Map<List<ProductVm>>(products);
+
+            //Select and projection
+            var pagedResult = new PagedResult<ProductVm>()
+            {
+                TotalRecords = totalRow,
+                PageIndex = request.PageIndex,
+                PageSize = request.PageSize,
+                Items = responses
+            };
+            return pagedResult;
         }
 
+        public async Task<PagedResult<ProductVm>> GetLocked(ProductPagingRequest request)
+        {
+            var products = await _context.Products
+                .Where(x => x.Status == ProductStatus.AdminDeleted)
+                .Include(x => x.User)
+                .Include(x => x.ProductImages)
+                .Include(x => x.ProductCategories)
+                .Include(x => x.ProductDetails)
+                .ToListAsync();
+
+            //Filter
+            if (!string.IsNullOrEmpty(request.Keyword))
+            {
+                products = products.Where(x => x.Name.Contains(request.Keyword)).ToList();
+            }
+
+            if (request.CatId != 0)
+            {
+                products = products.Where(x => x.ProductCategories != null && x.ProductCategories[0].CategoryId == request.CatId).ToList();
+            }
+
+
+            //Paging
+            int totalRow = products.Count();
+            products = products.Skip((request.PageIndex - 1) * request.PageSize)
+                .Take(request.PageSize)
+                .ToList();
+
+
+            var responses = _mapper.Map<List<ProductVm>>(products);
+
+            //Select and projection
+            var pagedResult = new PagedResult<ProductVm>()
+            {
+                TotalRecords = totalRow,
+                PageIndex = request.PageIndex,
+                PageSize = request.PageSize,
+                Items = responses
+            };
+            return pagedResult;
+        }
+
+        public async Task<PagedResult<ProductVm>> GetAdminAll(ProductPagingRequest request)
+        {
+            var products = await _context.Products
+                .Where(x => x.Status == ProductStatus.Active || x.Status == ProductStatus.Hided)
+                .Include(x => x.User)
+                .Include(x => x.ProductImages)
+                .Include(x => x.ProductCategories)
+                .Include(x => x.ProductDetails)
+                .ToListAsync();
+
+            //Filter
+            if (!string.IsNullOrEmpty(request.Keyword))
+            {
+                products = products.Where(x => x.Name.Contains(request.Keyword)).ToList();
+            }
+
+            if (request.CatId != 0)
+            {
+                products = products.Where(x => x.ProductCategories != null && x.ProductCategories[0].CategoryId == request.CatId).ToList();
+            }
+
+
+            //Paging
+            int totalRow = products.Count();
+            products = products.Skip((request.PageIndex - 1) * request.PageSize)
+                .Take(request.PageSize)
+                .ToList();
+
+
+            var responses = _mapper.Map<List<ProductVm>>(products);
+
+            //Select and projection
+            var pagedResult = new PagedResult<ProductVm>()
+            {
+                TotalRecords = totalRow,
+                PageIndex = request.PageIndex,
+                PageSize = request.PageSize,
+                Items = responses
+            };
+            return pagedResult;
+        }
 
         public async Task<ProductVm> GetProductDetail(int id)
         {
@@ -167,18 +276,6 @@ namespace Application.Catalog
                 .Include(c => c.ComponentDetails)
                 .ToListAsync();
             List<ProductDetailVm> productDetailVms = _mapper.Map<List<ProductDetailVm>>(details);
-
-            //for (int i = 0; i < details.Count; i++)
-            //{                
-            //    var c = await _context.ComponentDetails
-            //        .Include(x => x.ProductDetails)
-            //        .Include(x => x.Component)
-            //        .Where(x => x.ProductDetails.Contains(details[i]))
-            //        .ToListAsync();
-            //    List<ComponentVm> componentDetalVms = _mapper.Map<List<ComponentVm>>(c);
-            //    productDetailVms[i].ComponentDetails = componentDetalVms;
-            //}
-
 
             response.ProductDetails = productDetailVms;
             return response;
@@ -269,9 +366,9 @@ namespace Application.Catalog
 
         }
 
-        public async Task<List<ProductVm>> GetOfUser(string username)
+        public async Task<PagedResult<ProductVm>> GetOfUser(string username, ProductPagingRequest request)
         {
-            var data = await _context.Products
+            var products = await _context.Products
                 .Where(x => x.Status == ProductStatus.Active)
                 .Include(x => x.User)
                 .Include(x => x.ProductImages)
@@ -280,7 +377,133 @@ namespace Application.Catalog
                 .Where(x => x.User.UserName == username)
                 .ToListAsync();
 
-            return _mapper.Map<List<ProductVm>>(data);
+            //Filter
+            if (!string.IsNullOrEmpty(request.Keyword))
+            {
+                products = products.Where(x => x.Name.Contains(request.Keyword)).ToList();
+            }
+
+            if (request.CatId != 0)
+            {
+                products = products.Where(x => x.ProductCategories != null && x.ProductCategories[0].CategoryId == request.CatId).ToList();
+            }
+
+
+            //Paging
+            int totalRow = products.Count();
+            products = products.Skip((request.PageIndex - 1) * request.PageSize)
+                .Take(request.PageSize)
+                .ToList();
+
+
+            var responses = _mapper.Map<List<ProductVm>>(products);
+
+            //Select and projection
+            var pagedResult = new PagedResult<ProductVm>()
+            {
+                TotalRecords = totalRow,
+                PageIndex = request.PageIndex,
+                PageSize = request.PageSize,
+                Items = responses
+            };
+            return pagedResult;
+        }
+
+        public async Task<PagedResult<ProductVm>> GetHideOfUser(string username, ProductPagingRequest request)
+        {
+            var products = await _context.Products
+                .Where(x => x.Status == ProductStatus.Hided)
+                .Include(x => x.User)
+                .Include(x => x.ProductImages)
+                .Include(x => x.ProductCategories)
+                .Include(x => x.ProductDetails)
+                .Where(x => x.User.UserName == username)
+                .ToListAsync();
+
+            //Filter
+            if (!string.IsNullOrEmpty(request.Keyword))
+            {
+                products = products.Where(x => x.Name.Contains(request.Keyword)).ToList();
+            }
+
+            if (request.CatId != 0)
+            {
+                products = products.Where(x => x.ProductCategories != null && x.ProductCategories[0].CategoryId == request.CatId).ToList();
+            }
+
+
+            //Paging
+            int totalRow = products.Count();
+            products = products.Skip((request.PageIndex - 1) * request.PageSize)
+                .Take(request.PageSize)
+                .ToList();
+
+
+            var responses = _mapper.Map<List<ProductVm>>(products);
+
+            //Select and projection
+            var pagedResult = new PagedResult<ProductVm>()
+            {
+                TotalRecords = totalRow,
+                PageIndex = request.PageIndex,
+                PageSize = request.PageSize,
+                Items = responses
+            };
+            return pagedResult;
+        }
+
+        public async Task<bool> HideProduct(int proId)
+        {
+            var product = await _context.Products.FindAsync(proId);
+            if (product == null)
+                return false;
+
+            product.Status = ProductStatus.Hided;
+            try
+            {
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> UnHideProduct(int proId)
+        {
+            var product = await _context.Products.FindAsync(proId);
+            if (product == null)
+                return false;
+
+            product.Status = ProductStatus.Active;
+            try
+            {
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> DeleteProduct(int proId)
+        {
+            var product = await _context.Products.FindAsync(proId);
+            if (product == null)
+                return false;
+
+            product.Status = ProductStatus.Deleted;
+            try
+            {
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }
