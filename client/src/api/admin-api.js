@@ -2,24 +2,19 @@ import axiosClient from "./axios-client";
 
 const adminApi = {
   //manage account
-  getAllAdmin: () => {
-    const url = "/Admins/user/allAdmin";
-    return axiosClient.get(url);
-  },
-
-  // getAllUser: () => {
-  //   const url = "/Admins/user/allUser";
-  //   return axiosClient.get(url);
-  // },
-
-  getUserPaging: (params) => {
-    const url = "/Admins/user/paging";
+  getAdminPaging: (params) => {
+    const url = "/Admins/user/adminPaging";
     return axiosClient.get(url, { params });
   },
 
-  getAllLockedUser: () => {
-    const url = "/Admins/user/allUserLocked";
-    return axiosClient(url);
+  getUserPaging: (params) => {
+    const url = "/Admins/user/userPaging";
+    return axiosClient.get(url, { params });
+  },
+
+  getLockedUserPaging: (params) => {
+    const url = "/Admins/user/userLockedPaging";
+    return axiosClient(url, { params });
   },
 
   addAmin: (data) => {
@@ -29,6 +24,11 @@ const adminApi = {
 
   lockAccount: (data) => {
     const url = "/Admins/user/lockAccount";
+    return axiosClient.post(url, data);
+  },
+
+  unlockAccount: (data) => {
+    const url = "/Admins/user/unlockAccount";
     return axiosClient.post(url, data);
   },
 

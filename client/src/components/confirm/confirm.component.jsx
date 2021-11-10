@@ -31,7 +31,7 @@ const Confirm = (props) => {
           const response = await adminApi.lockAccount(data);
           console.log(response);
         } catch (error) {
-          console.log("Failed to lock account: ", error);
+          console.log("Failed to lock account: ", error.response);
         }
       };
       lockAccount();

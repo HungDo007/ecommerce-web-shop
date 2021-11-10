@@ -6,6 +6,11 @@ const catalogApi = {
     return axiosClient.get(url);
   },
 
+  getAllProduct: () => {
+    const url = "/Catalogs/product";
+    return axiosClient.get(url);
+  },
+
   getAllProductOfStore: (username) => {
     const url = `/Catalogs/allProductOfUser/${username}`;
     return axiosClient.get(url);

@@ -21,10 +21,11 @@ const Profile = () => {
     avatarFile: null,
     firstName: "",
     lastName: "",
-    dob: new Date(2000, 1, 1),
+    dob: new Date(1995, 11, 17),
     email: "",
     phoneNumber: "",
     address: "",
+    role: "",
   };
   const [values, setValues] = useState(initialValues);
 
@@ -40,7 +41,6 @@ const Profile = () => {
     const getUserProfile = async () => {
       try {
         const response = await userApi.getProfile(currentUser.unique_name);
-        console.log(response);
         setValues({
           id: response.id,
           avatar: response.avatar
@@ -53,6 +53,7 @@ const Profile = () => {
           phoneNumber: response.phoneNumber,
           address: response.address,
           emailConfirmed: response.emailConfirmed,
+          role: response.role,
         });
       } catch (error) {
         console.log("Failed to get user profile: ", error);
@@ -66,8 +67,8 @@ const Profile = () => {
 
   return (
     <div className="profile-block">
-      <div>
-        {values.emailConfirmed ? null : (
+      <div className="profile-task">
+        {values.emailConfirmed || values.role === "Admin" ? null : (
           <div onClick={handleActiveMail}>Active Mail</div>
         )}
       </div>
@@ -79,7 +80,7 @@ const Profile = () => {
         open={modalIsOpen}
         dispatch={dispatch}
       >
-        <ActiveEmailForm currentUser={values} />
+        <ActiveEmailForm />
       </CustomDialog>
     </div>
   );

@@ -67,12 +67,12 @@ const ManageDirectoryPage = () => {
         </div>
       ),
       render: (rowData) =>
-        rowData.image === undefined ? (
+        rowData.image ? (
           <img
             height="100"
             width="150"
-            style={{ objectFit: "cover" }}
-            src={defaultImg}
+            style={{ objectFit: "cover", border: "1px solid" }}
+            src={process.env.REACT_APP_IMAGE_URL + rowData.image}
             aria-hidden
             alt="image of directory"
           />
@@ -80,8 +80,8 @@ const ManageDirectoryPage = () => {
           <img
             height="100"
             width="150"
-            style={{ objectFit: "cover" }}
-            src={process.env.REACT_APP_IMAGE_URL + rowData.image}
+            style={{ objectFit: "cover", border: "1px solid" }}
+            src={defaultImg}
             aria-hidden
             alt="image of directory"
           />

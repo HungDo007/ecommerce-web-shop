@@ -1,13 +1,8 @@
-import { useEffect } from "react";
-import { useState } from "react";
-
 import MaterialTable from "material-table";
 
 import adminApi from "../../../../api/admin-api";
 
 const AdminTable = () => {
-  const [adminList, setAdminList] = useState([]);
-
   const columns = [
     {
       title: "Username",
@@ -34,20 +29,27 @@ const AdminTable = () => {
     },
   ];
 
-  useEffect(() => {
-    const fetchAdminList = async () => {
-      try {
-        const response = await adminApi.getAllAdmin();
-        setAdminList(response);
-      } catch (error) {
-        console.log("Failed to fetch list: ", error);
-      }
-    };
-    fetchAdminList();
-  }, []);
-
   return (
-    <MaterialTable title="Admin Accounts" data={adminList} columns={columns} />
+    <MaterialTable
+      title="Admin Account"
+      data={(query) =>
+        new Promise((resolve, reject) => {
+          const params = {
+            pageIndex: query.page + 1,
+            pageSize: query.pageSize,
+            keyword: query.search,
+          };
+          adminApi.getAdminPaging(params).then((response) => {
+            resolve({
+              data: response.items,
+              page: query.page,
+              totalCount: response.totalRecords,
+            });
+          });
+        })
+      }
+      columns={columns}
+    />
   );
 };
 

@@ -43,33 +43,6 @@ const StoreProduct = (props) => {
     if ("category" in fieldValues)
       temp.category = fieldValues.category != 0 ? "" : "This field is required";
 
-    // if ("price" in fieldValues.productDetails[0])
-    //   temp.price = fieldValues.price ? "" : "This field is required";
-
-    // if ("productDetails" in fieldValues) {
-    //   productDetails.forEach((element) => {
-    //     if ("price" in element) {
-    //       // temp.price = [];
-    //       temp.price =
-    //         element.price > 0 ? "" : "The price must be greater than 0 ";
-    //     }
-    //     if ("stock" in element) {
-    //       // temp.stock = [];
-    //       temp.stock =
-    //         element.stock > 0 ? "" : "The stock must be greater than 0 ";
-    //     }
-    //     if (element.componentDetails.length < actualComponents.length) {
-    //       temp.component = "This field is required";
-    //     } else {
-    //       element.componentDetails.forEach((item) => {
-    //         if ("value" in item) {
-    //           temp.component = item.value ? "" : "This field is required";
-    //         }
-    //       });
-    //     }
-    //   });
-    // }
-
     setErrors({ ...temp });
 
     if (fieldValues === productInfo)
@@ -141,35 +114,60 @@ const StoreProduct = (props) => {
       formData.append("description", productInfo.description);
       formData.append("categories", productInfo.category);
       formData.append("poster", productInfo.thumbnailFile);
+
       if (productInfo.listImageFiles) {
         for (let i = 0; i < productInfo.listImageFiles.length; i++) {
           formData.append("images", productInfo.listImageFiles[i]);
         }
       }
 
-      const addDetail = async (productId) => {
-        try {
-          const response = await storeApi.addDetail(
-            productId,
-            productInfo.productDetails
-          );
-          console.log(response);
-        } catch (error) {
-          console.log("Failed to add detail: ", error.response);
-        }
-      };
+      if (productInfo.id) {
+        const editProduct = async () => {
+          try {
+            formData.append("id", productInfo.id);
+            const response = await storeApi.editProduct(formData);
+            console.log(response);
+          } catch (error) {
+            console.log("Failed to edit product: ", error.response);
+          }
+        };
+        const editDetail = async () => {
+          try {
+            const response = await storeApi.editDetail(productDetails);
+            console.log(response);
+          } catch (error) {
+            console.log("Failed to edit detail: ", error.response);
+          }
+        };
+        editProduct();
+        editDetail();
+        props.history.push("/store/manageProduct");
+      } else {
+        const addDetail = async (productId) => {
+          try {
+            const response = await storeApi.addDetail(
+              productId,
+              productDetails
+            );
+            console.log(response);
+          } catch (error) {
+            console.log("Failed to add detail: ", error.response);
+          }
+        };
 
-      const addProduct = async () => {
-        try {
-          const productId = await storeApi.addProduct(formData);
-          // setProductId(response);
-          addDetail(productId);
-        } catch (error) {
-          console.log("Failed to add product: ", error);
-        }
-      };
-      //addProduct();
-      alert("submit");
+        const addProduct = async () => {
+          try {
+            const productId = await storeApi.addProduct(formData);
+            // setProductId(response);
+            addDetail(productId);
+          } catch (error) {
+            console.log("Failed to add product: ", error);
+          }
+        };
+        addProduct();
+        props.history.push("/store/manageProduct");
+      }
+      //alert("submit");
       console.log(productInfo);
     } else {
       console.log("not validate");
@@ -205,9 +203,11 @@ const StoreProduct = (props) => {
     }
   }, []);
 
+  console.log(productInfo);
+
   return (
     <form onSubmit={handleSubmit} className="app">
-      <h2 className="store-product-main-title"> Add product </h2>
+      <h2 className="store-product-main-title"> Manage product </h2>
       <hr />
       <BasicInformation
         errors={errors}

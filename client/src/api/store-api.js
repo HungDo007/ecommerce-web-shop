@@ -16,6 +16,16 @@ const storeApi = {
     return axiosClient.post(url, data);
   },
 
+  editProduct: (data) => {
+    const url = "/Stores/updatePro";
+    return axiosClient.post(url, data);
+  },
+
+  editDetail: (data) => {
+    const url = "/Stores/updateDetail";
+    return axiosClient.post(url, data);
+  },
+
   getProfile: (username) => {
     const url = `/Stores/storeInfo/${username}`;
     return axiosClient.get(url);

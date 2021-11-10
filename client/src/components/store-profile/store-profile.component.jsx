@@ -99,7 +99,7 @@ const StoreProfile = ({ match }) => {
           const response = await storeApi.editProfile(formData);
           console.log(response);
         } catch (error) {
-          console.log("Failed to edit profile: ", error);
+          console.log("Failed to edit profile: ", error.response);
         }
       };
 
@@ -111,7 +111,6 @@ const StoreProfile = ({ match }) => {
     const getStoreProfile = async () => {
       try {
         const response = await storeApi.getProfile(currentUser.unique_name);
-        console.log(response);
         setValues({
           address: response.address,
           avatar: process.env.REACT_APP_IMAGE_URL + response.avatar,
@@ -122,7 +121,7 @@ const StoreProfile = ({ match }) => {
           totalProduct: response.totalProduct,
         });
       } catch (error) {
-        console.log("Failed to get store profile: ", error);
+        console.log("Failed to get store profile: ", error.response);
       }
     };
 

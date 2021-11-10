@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 
 import MaterialTable from "material-table";
@@ -9,8 +8,6 @@ import adminApi from "../../../../api/admin-api";
 import { toggleModal } from "../../../../redux/modal/modal.actions";
 
 const UserTable = ({ actionLockUser, setUsername }) => {
-  const [userList, setUserList] = useState([]);
-
   const dispatch = useDispatch();
 
   const columns = [
@@ -44,18 +41,6 @@ const UserTable = ({ actionLockUser, setUsername }) => {
     dispatch(toggleModal());
   };
 
-  // useEffect(() => {
-  //   const fetchUserList = async () => {
-  //     try {
-  //       const response = await adminApi.getAllUser();
-  //       setUserList(response);
-  //     } catch (error) {
-  //       console.log("Failed to fetch user list: ", error);
-  //     }
-  //   };
-  //   fetchUserList();
-  // }, []);
-
   return (
     <div>
       <MaterialTable
@@ -70,6 +55,7 @@ const UserTable = ({ actionLockUser, setUsername }) => {
               keyword: query.search,
             };
             adminApi.getUserPaging(params).then((response) => {
+              console.log(response);
               resolve({
                 data: response.items,
                 page: query.page,

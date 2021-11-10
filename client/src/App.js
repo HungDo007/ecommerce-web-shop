@@ -25,14 +25,17 @@ const App = ({ currentUser }) => {
   //   : console.log("null");
   return (
     <div>
-      <Sidebar currentUser={currentUser} />
+      <Sidebar />
       <Switch>
         <Route exact path="/" component={HomePage} />
         <Route path="/admin" component={AdminPage} />
         <Route path="/cart" component={CartPage} />
         <Route path="/directory" component={DirectoryPage} />
         <Route path="/product" component={ProductPage} />
-        <Route path="/store" component={StorePage} />
+        <Route
+          path="/store"
+          render={(props) => <StorePage {...props} currentUser={currentUser} />}
+        />
         <Route path="/user" component={UserPage} />
         <Route
           exact

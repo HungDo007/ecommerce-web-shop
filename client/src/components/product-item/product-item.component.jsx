@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import "./product-item.styles.scss";
 
 const ProductItem = ({ item }) => {
-  const { id, name, price, imageUrl } = item;
+  const { id, name, price, poster } = item;
   //const [clicked, setClicked] = useState(false)
 
   return (
@@ -10,11 +10,13 @@ const ProductItem = ({ item }) => {
       <div className="product-item">
         <div
           className="image"
-          style={{ backgroundImage: `url(${imageUrl})` }}
+          style={{
+            backgroundImage: `url(${process.env.REACT_APP_IMAGE_URL + poster})`,
+          }}
         />
         <div className="product-footer">
           <span className="name">{name}</span>
-          <span className="price">{price}</span>
+          <span className="price">{`$${price}`}</span>
         </div>
       </div>
     </Link>

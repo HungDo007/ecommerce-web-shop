@@ -1,5 +1,9 @@
+import { useEffect, useState } from "react";
+
 import MaterialTable from "material-table";
-import { useState } from "react";
+
+import catalogApi from "../../../api/catalog-api";
+
 const defaultImg = "/img/default-img.png";
 
 const ManageProductPage = () => {
@@ -41,8 +45,25 @@ const ManageProductPage = () => {
     {
       title: "Date Created",
       field: "dateCreated",
+      type: "date",
+      dateSetting: {
+        format: "dd/MM/yyyy",
+      },
     },
   ];
+
+  useEffect(() => {
+    const getProductList = async () => {
+      try {
+        const response = await catalogApi.getAllProduct();
+        setProductList(response);
+      } catch (error) {
+        console.log("Failed to get products: ", error.response);
+      }
+    };
+    getProductList();
+  }, []);
+
   return (
     <div className="manage-account-block">
       <MaterialTable title="Product" columns={columns} data={productList} />

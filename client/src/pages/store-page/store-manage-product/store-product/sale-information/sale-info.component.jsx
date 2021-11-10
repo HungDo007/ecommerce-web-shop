@@ -125,8 +125,6 @@ const SaleInformation = ({
     }
   }, [category]);
 
-  console.log(errors);
-
   return (
     <div>
       <h3 className="store-product-title">Sales Information</h3>
@@ -284,9 +282,9 @@ const SaleInformation = ({
                   </div>
                 </div>
               ))}
-              <div style={{ marginTop: 20 }}>
+              {/* <div style={{ marginTop: 20 }}>
                 {JSON.stringify(productDetails)}
-              </div>
+              </div> */}
             </div>
           </div>
         )}

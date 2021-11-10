@@ -1,12 +1,16 @@
 import { Button, TextField } from "@material-ui/core";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 import userApi from "../../api/user-api";
 
-const ActiveEmailForm = ({ currentUser }) => {
+const ActiveEmailForm = () => {
   const [state, setState] = useState({
     code: "",
   });
+
   const [errors, setErrors] = useState({});
+
+  const currentUser = useSelector((state) => state.user.currentUser);
 
   const validate = (fieldValues = state) => {
     let temp = { ...errors };
@@ -15,7 +19,9 @@ const ActiveEmailForm = ({ currentUser }) => {
 
     setErrors({ ...temp });
 
-    if (fieldValues == state) return Object.values(temp).every((x) => x == "");
+    if (fieldValues === state) {
+      return Object.values(temp).every((x) => x == "");
+    }
   };
 
   const handleOnChange = (event) => {
@@ -26,7 +32,7 @@ const ActiveEmailForm = ({ currentUser }) => {
   };
 
   const data = {
-    username: currentUser.username,
+    username: currentUser.unique_name,
     email: currentUser.email,
   };
 
@@ -66,8 +72,8 @@ const ActiveEmailForm = ({ currentUser }) => {
   return (
     <div style={{ width: 375, textAlign: "center" }}>
       <div style={{ margin: 15 }}>
-        Check your email after clicking on Send Code button and entering the
-        code here
+        Active email to create store. Check your email after clicking on Send
+        Code button and entering the code here.
       </div>
       <div style={{ margin: 15 }}>
         <Button

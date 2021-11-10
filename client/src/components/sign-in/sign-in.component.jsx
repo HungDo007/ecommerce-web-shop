@@ -103,7 +103,7 @@ const SignIn = ({ setAction }) => {
         } catch (error) {
           console.log("Fail to authenticate: ", error.response);
           if (
-            error.response.data ===
+            error.response?.data ===
             "Tên đăng nhập hoặc mật khẩu không chính xác."
           ) {
             setErrors({

@@ -39,7 +39,7 @@ const ManageComponentPage = () => {
     <div className="manage-account-block">
       <MaterialTable
         options={{ actionsColumnIndex: -1, addRowPosition: "first" }}
-        title="Components"
+        title="Component"
         columns={columns}
         data={componentList}
         editable={{

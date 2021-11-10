@@ -9,35 +9,29 @@ import * as AiIcons from "react-icons/ai";
 
 import CartDropDown from "../cart-dropdown/cart-dropdown.component";
 import CartIcon from "../cart-icon/cart-icon.component";
-import { setCurrentUser } from "../../redux/user/user.actions";
+
 import { DataArr } from "./sidebarData";
 
 import "./sidebar.styles.css";
+import { mergeClasses } from "@material-ui/styles";
+import CustomAppBar from "../custom-appbar/custom-appbar";
 
-const Sidebar = ({ currentUser }) => {
+const Sidebar = () => {
   const [sidebar, setSidebar] = useState(false);
   const showSideBar = () => setSidebar(!sidebar);
 
   const [cartDrop, setCartDrop] = useState(false);
   const showCartDrop = () => setCartDrop(!cartDrop);
 
-  const dispatch = useDispatch();
-
-  const history = useHistory();
-  const handleSignOut = () => {
-    dispatch(setCurrentUser(null));
-    localStorage.removeItem("jwtToken");
-    history.push("/");
-  };
-
   return (
     <>
       <IconContext.Provider value={{ color: "#fff" }}>
         <div>
-          <div className="sidebar">
+          {/* <div className="sidebar">
             <Link to="#" className="menu-bars">
               <FaIcons.FaBars onClick={showSideBar} />
             </Link>
+            <Link to="directory">Directory</Link>
             <div className="options">
               {currentUser ? (
                 <div className="option" onClick={handleSignOut}>
@@ -53,7 +47,8 @@ const Sidebar = ({ currentUser }) => {
               </div>
             </div>
             {cartDrop ? <CartDropDown /> : null}
-          </div>
+          </div> */}
+          <CustomAppBar sidebar={sidebar} setSidebar={setSidebar} />
           <nav className={sidebar ? "nav-menu active" : "nav-menu"}>
             <ul className="nav-menu-items" onClick={showSideBar}>
               <li className="navbar-toggle">

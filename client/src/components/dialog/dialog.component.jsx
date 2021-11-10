@@ -9,7 +9,6 @@ import {
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 
-import { useDispatch } from "react-redux";
 import { toggleModal } from "../../redux/modal/modal.actions";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
