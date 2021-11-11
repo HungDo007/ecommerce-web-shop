@@ -13,7 +13,7 @@ namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(Roles = SystemConstants.RoleAdmin)]
+    [Authorize(Roles = SystemConstants.RoleAdmin)]
     public class AdminsController : ControllerBase
     {
         private readonly IUserService _userService;
