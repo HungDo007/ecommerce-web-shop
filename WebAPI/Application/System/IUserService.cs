@@ -12,7 +12,7 @@ namespace Application.System
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        Task<string> Authenticate(LoginRequest request);
+        Task<LoginResponse> Authenticate(LoginRequest request);
 
 
         /// <summary>

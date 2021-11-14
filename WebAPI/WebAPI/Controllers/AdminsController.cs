@@ -148,9 +148,8 @@ namespace WebAPI.Controllers
         [HttpPost("component/add")]
         public async Task<IActionResult> AddComponent(ComponentRequest request)
         {
-            int res = await _componentService.Add(request);
-            if (res != 0)
-                return Ok(res);
+            if (await _componentService.Add(request))
+                return Ok(1);
             return BadRequest("Component is exists.");
         }
 

@@ -38,8 +38,8 @@ namespace Application.Catalog
 
         Task<bool> UpdateProDetail(List<ProductDetailRequest> detailVms);
 
-        Task<bool> HideProduct(int proId);
-        Task<bool> DeleteProduct(int proId);
-        Task<bool> UnHideProduct(int proId);
+        Task<bool> HideProduct(string username, int proId);
+        Task<bool> DeleteProduct(string username, int proId);
+        Task<bool> UnHideProduct(string username, int proId);
     }
 }

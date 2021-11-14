@@ -28,6 +28,7 @@ namespace Application.System
         private readonly IMailService _mailService;
         private readonly EShopContext _context;
         private readonly IStorageService _storageService;
+        //static PagingService _pagingService;
 
         public UserService(UserManager<AppUser> userManager,
             SignInManager<AppUser> signInManager,
@@ -76,8 +77,9 @@ namespace Application.System
             await _context.SaveChangesAsync();
         }
 
-        public async Task<string> Authenticate(LoginRequest request)
+        public async Task<LoginResponse> Authenticate(LoginRequest request)
         {
+            LoginResponse response = new LoginResponse();
             var user = await _userManager.FindByNameAsync(request.Username);
             if (user == null)
             {
@@ -85,11 +87,26 @@ namespace Application.System
             }
 
             if (user == null || user.Status == false)
-                return null;
+            {
+                response.Status = false;
+                response.Response = "Incorrect Username.";
+                return response;
+            }
+
+            if (user.Status == false)
+            {
+                response.Status = false;
+                response.Response = "Account is locked.";
+                return response;
+            }
 
             var result = await _signInManager.PasswordSignInAsync(user, request.Password, request.Remember, true);
             if (!result.Succeeded)
-                return null;
+            {
+                response.Status = false;
+                response.Response = "Incorrect Password.";
+                return response;
+            }
 
 
             //get Claim
@@ -119,7 +136,9 @@ namespace Application.System
             var tokenHandler = new JwtSecurityTokenHandler();
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
-            return tokenHandler.WriteToken(token);
+            response.Status = true;
+            response.Response = tokenHandler.WriteToken(token);
+            return response;
         }
 
         public async Task<bool> ChangeEmail(string username, string email)
@@ -147,23 +166,10 @@ namespace Application.System
             }
 
             //Paging
-            int totalRow = query.Count();
-            var data = query.Where(x => x.Status == true)
-                .Skip((request.PageIndex - 1) * request.PageSize)
-                .Take(request.PageSize)
-                .ToList();
+            List<UserResponse> data = _mapper.Map<List<UserResponse>>(query);
 
+            var pagedResult = PagingService.Paging<UserResponse>(data, request.PageIndex, request.PageSize);
 
-            List<UserResponse> responses = _mapper.Map<List<UserResponse>>(data);
-
-            //Select and projection
-            var pagedResult = new PagedResult<UserResponse>()
-            {
-                TotalRecords = totalRow,
-                PageIndex = request.PageIndex,
-                PageSize = request.PageSize,
-                Items = responses
-            };
             return pagedResult;
         }
 
@@ -180,22 +186,10 @@ namespace Application.System
             }
 
             //Paging
-            int totalRow = query.Count();
-            var data = query.Skip((request.PageIndex - 1) * request.PageSize)
-                .Take(request.PageSize)
-                .ToList();
+            List<UserResponse> data = _mapper.Map<List<UserResponse>>(query);
 
+            var pagedResult = PagingService.Paging<UserResponse>(data, request.PageIndex, request.PageSize);
 
-            List<UserResponse> responses = _mapper.Map<List<UserResponse>>(data);
-
-            //Select and projection
-            var pagedResult = new PagedResult<UserResponse>()
-            {
-                TotalRecords = totalRow,
-                PageIndex = request.PageIndex,
-                PageSize = request.PageSize,
-                Items = responses
-            };
             return pagedResult;
         }
 
@@ -222,22 +216,10 @@ namespace Application.System
             }
 
             //Paging
-            int totalRow = query.Count();
-            var data = query.Skip((request.PageIndex - 1) * request.PageSize)
-                .Take(request.PageSize)
-                .ToList();
+            List<UserResponse> data = _mapper.Map<List<UserResponse>>(query);
 
+            var pagedResult = PagingService.Paging<UserResponse>(data, request.PageIndex, request.PageSize);
 
-            List<UserResponse> responses = _mapper.Map<List<UserResponse>>(data);
-
-            //Select and projection
-            var pagedResult = new PagedResult<UserResponse>()
-            {
-                TotalRecords = totalRow,
-                PageIndex = request.PageIndex,
-                PageSize = request.PageSize,
-                Items = responses
-            };
             return pagedResult;
         }
 

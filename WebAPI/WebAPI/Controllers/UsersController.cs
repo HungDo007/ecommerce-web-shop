@@ -24,10 +24,10 @@ namespace WebAPI.Controllers
         {
             var result = await _userService.Authenticate(request);
 
-            if (string.IsNullOrEmpty(result))
-                return BadRequest("Tên đăng nhập hoặc mật khẩu không chính xác.");
+            if (result.Status == false)
+                return BadRequest(result.Response);
 
-            return Ok(result);
+            return Ok(result.Response);
         }
 
         [HttpPost("register")]
@@ -52,7 +52,7 @@ namespace WebAPI.Controllers
             {
                 if (!await _userService.ChangeEmail(request.Username, request.Email))
                 {
-                    return BadRequest("Email đã được sử dụng.");
+                    return BadRequest("Email already in user.");
                 }
 
                 if (await _userService.Update(request.Username, request))
@@ -61,7 +61,7 @@ namespace WebAPI.Controllers
                 }
                 return BadRequest();
             }
-            return BadRequest("Bạn không có quyền chỉnh sửa thông tin cho tài khoản người khác.");
+            return BadRequest("You are not allowed to edit other people's infomation.");
         }
 
         [HttpGet("{username}")]
@@ -84,9 +84,9 @@ namespace WebAPI.Controllers
                 {
                     return Ok();
                 }
-                return BadRequest("Mã nhập không đúng");
+                return BadRequest("Incorrect code");
             }
-            return BadRequest("Bạn không có quyền chỉnh sửa thông tin cho tài khoản người khác.");
+            return BadRequest("You are not allowed to edit other people's infomation.");
         }
 
         [HttpPost("sendCode")]
@@ -98,7 +98,7 @@ namespace WebAPI.Controllers
                 await _userService.ActiveMail(request.Email);
                 return Ok();
             }
-            return BadRequest("Bạn không có quyền chỉnh sửa thông tin cho tài khoản người khác.");
+            return BadRequest("You are not allowed to edit other people's infomation.");
         }
     }
 }
