@@ -11,7 +11,7 @@ namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class StoresController : ControllerBase
     {
         private readonly IProductService _productService;
@@ -95,25 +95,28 @@ namespace WebAPI.Controllers
         [HttpPost("hideProduct")]
         public async Task<IActionResult> HideProduct([FromBody] int proId)
         {
-            if (await _productService.HideProduct(proId))
+            string username = User.Identity.Name;
+            if (await _productService.HideProduct(username, proId))
                 return Ok();
-            return BadRequest();
+            return BadRequest("You may not change other people's product infomation.");
         }
 
         [HttpPost("unhideProduct")]
         public async Task<IActionResult> UnHideProduct([FromBody] int proId)
         {
-            if (await _productService.UnHideProduct(proId))
+            string username = User.Identity.Name;
+            if (await _productService.UnHideProduct(username, proId))
                 return Ok();
-            return BadRequest();
+            return BadRequest("You may not change other people's product infomation.");
         }
 
         [HttpDelete("{proId}")]
         public async Task<IActionResult> DeleteProduct(int proId)
         {
-            if (await _productService.DeleteProduct(proId))
+            string username = User.Identity.Name;
+            if (await _productService.DeleteProduct(username, proId))
                 return Ok();
-            return BadRequest();
+            return BadRequest("You may not change other people's product infomation.");
         }
     }
 }

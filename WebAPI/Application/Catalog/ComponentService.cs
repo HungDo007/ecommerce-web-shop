@@ -20,21 +20,34 @@ namespace Application.Catalog
             _mapper = mapper;
         }
 
-        public async Task<int> Add(ComponentRequest request)
+        public async Task<bool> Add(ComponentRequest request)
         {
-            if (await _context.Components.AnyAsync(x => x.Name == request.Name))
-                return 0;
-            Component component = _mapper.Map<Component>(request);
+            var comp = await _context.Components.Where(x => x.Name == request.Name).FirstOrDefaultAsync();
 
+            if (comp != null)
+            {
+                if (comp.Status == true)
+                {
+                    return false;
+                }
+                else
+                {
+                    comp.Status = true;
+                }
+            }
+            else
+            {
+                Component component = _mapper.Map<Component>(request);
+                _context.Components.Add(component);
+            }
             try
             {
-                _context.Components.Add(component);
                 await _context.SaveChangesAsync();
-                return component.ID;
+                return true;
             }
             catch
             {
-                return 0;
+                return false;
             }
         }
 

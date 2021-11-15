@@ -151,25 +151,30 @@ namespace Application.Catalog
                 products = products.Where(x => x.ProductCategories != null && x.ProductCategories[0].CategoryId == request.CatId).ToList();
             }
 
+            List<ProductVm> data = _mapper.Map<List<ProductVm>>(products);
 
-            //Paging
-            int totalRow = products.Count();
-            products = products.Skip((request.PageIndex - 1) * request.PageSize)
-                .Take(request.PageSize)
-                .ToList();
+            var pagedResult = PagingService.Paging<ProductVm>(data, request.PageIndex, request.PageSize);
 
-
-            var responses = _mapper.Map<List<ProductVm>>(products);
-
-            //Select and projection
-            var pagedResult = new PagedResult<ProductVm>()
-            {
-                TotalRecords = totalRow,
-                PageIndex = request.PageIndex,
-                PageSize = request.PageSize,
-                Items = responses
-            };
             return pagedResult;
+
+            ////Paging
+            //int totalRow = products.Count();
+            //products = products.Skip((request.PageIndex - 1) * request.PageSize)
+            //    .Take(request.PageSize)
+            //    .ToList();
+
+
+            //var responses = _mapper.Map<List<ProductVm>>(products);
+
+            ////Select and projection
+            //var pagedResult = new PagedResult<ProductVm>()
+            //{
+            //    TotalRecords = totalRow,
+            //    PageIndex = request.PageIndex,
+            //    PageSize = request.PageSize,
+            //    Items = responses
+            //};
+            //return pagedResult;
         }
 
         public async Task<PagedResult<ProductVm>> GetLocked(ProductPagingRequest request)
@@ -236,24 +241,30 @@ namespace Application.Catalog
             }
 
 
-            //Paging
-            int totalRow = products.Count();
-            products = products.Skip((request.PageIndex - 1) * request.PageSize)
-                .Take(request.PageSize)
-                .ToList();
+            List<ProductVm> data = _mapper.Map<List<ProductVm>>(products);
 
+            var pagedResult = PagingService.Paging<ProductVm>(data, request.PageIndex, request.PageSize);
 
-            var responses = _mapper.Map<List<ProductVm>>(products);
-
-            //Select and projection
-            var pagedResult = new PagedResult<ProductVm>()
-            {
-                TotalRecords = totalRow,
-                PageIndex = request.PageIndex,
-                PageSize = request.PageSize,
-                Items = responses
-            };
             return pagedResult;
+
+            ////Paging
+            //int totalRow = products.Count();
+            //products = products.Skip((request.PageIndex - 1) * request.PageSize)
+            //    .Take(request.PageSize)
+            //    .ToList();
+
+
+            //var responses = _mapper.Map<List<ProductVm>>(products);
+
+            ////Select and projection
+            //var pagedResult = new PagedResult<ProductVm>()
+            //{
+            //    TotalRecords = totalRow,
+            //    PageIndex = request.PageIndex,
+            //    PageSize = request.PageSize,
+            //    Items = responses
+            //};
+            //return pagedResult;
         }
 
         public async Task<ProductVm> GetProductDetail(int id)
@@ -388,25 +399,30 @@ namespace Application.Catalog
                 products = products.Where(x => x.ProductCategories != null && x.ProductCategories[0].CategoryId == request.CatId).ToList();
             }
 
+            List<ProductVm> data = _mapper.Map<List<ProductVm>>(products);
 
-            //Paging
-            int totalRow = products.Count();
-            products = products.Skip((request.PageIndex - 1) * request.PageSize)
-                .Take(request.PageSize)
-                .ToList();
+            var pagedResult = PagingService.Paging<ProductVm>(data, request.PageIndex, request.PageSize);
 
-
-            var responses = _mapper.Map<List<ProductVm>>(products);
-
-            //Select and projection
-            var pagedResult = new PagedResult<ProductVm>()
-            {
-                TotalRecords = totalRow,
-                PageIndex = request.PageIndex,
-                PageSize = request.PageSize,
-                Items = responses
-            };
             return pagedResult;
+
+            ////Paging
+            //int totalRow = products.Count();
+            //products = products.Skip((request.PageIndex - 1) * request.PageSize)
+            //    .Take(request.PageSize)
+            //    .ToList();
+
+
+            //var responses = _mapper.Map<List<ProductVm>>(products);
+
+            ////Select and projection
+            //var pagedResult = new PagedResult<ProductVm>()
+            //{
+            //    TotalRecords = totalRow,
+            //    PageIndex = request.PageIndex,
+            //    PageSize = request.PageSize,
+            //    Items = responses
+            //};
+            //return pagedResult;
         }
 
         public async Task<PagedResult<ProductVm>> GetHideOfUser(string username, ProductPagingRequest request)
@@ -430,32 +446,39 @@ namespace Application.Catalog
             {
                 products = products.Where(x => x.ProductCategories != null && x.ProductCategories[0].CategoryId == request.CatId).ToList();
             }
+            List<ProductVm> data = _mapper.Map<List<ProductVm>>(products);
 
+            var pagedResult = PagingService.Paging<ProductVm>(data, request.PageIndex, request.PageSize);
 
-            //Paging
-            int totalRow = products.Count();
-            products = products.Skip((request.PageIndex - 1) * request.PageSize)
-                .Take(request.PageSize)
-                .ToList();
-
-
-            var responses = _mapper.Map<List<ProductVm>>(products);
-
-            //Select and projection
-            var pagedResult = new PagedResult<ProductVm>()
-            {
-                TotalRecords = totalRow,
-                PageIndex = request.PageIndex,
-                PageSize = request.PageSize,
-                Items = responses
-            };
             return pagedResult;
+
+            ////Paging
+            //int totalRow = products.Count();
+            //products = products.Skip((request.PageIndex - 1) * request.PageSize)
+            //    .Take(request.PageSize)
+            //    .ToList();
+
+
+            //var responses = _mapper.Map<List<ProductVm>>(products);
+
+            ////Select and projection
+            //var pagedResult = new PagedResult<ProductVm>()
+            //{
+            //    TotalRecords = totalRow,
+            //    PageIndex = request.PageIndex,
+            //    PageSize = request.PageSize,
+            //    Items = responses
+            //};
+            //return pagedResult;
         }
 
-        public async Task<bool> HideProduct(int proId)
+        public async Task<bool> HideProduct(string username, int proId)
         {
-            var product = await _context.Products.FindAsync(proId);
-            if (product == null)
+            var product = await _context.Products
+                .Where(x => x.Id == proId)
+                .Include(x => x.User)
+                .FirstOrDefaultAsync();
+            if (product == null || product.User.UserName != username)
                 return false;
 
             product.Status = ProductStatus.Hided;
@@ -470,10 +493,13 @@ namespace Application.Catalog
             }
         }
 
-        public async Task<bool> UnHideProduct(int proId)
+        public async Task<bool> UnHideProduct(string username, int proId)
         {
-            var product = await _context.Products.FindAsync(proId);
-            if (product == null)
+            var product = await _context.Products
+                .Where(x => x.Id == proId)
+                .Include(x => x.User)
+                .FirstOrDefaultAsync();
+            if (product == null || product.User.UserName != username)
                 return false;
 
             product.Status = ProductStatus.Active;
@@ -488,10 +514,13 @@ namespace Application.Catalog
             }
         }
 
-        public async Task<bool> DeleteProduct(int proId)
+        public async Task<bool> DeleteProduct(string username, int proId)
         {
-            var product = await _context.Products.FindAsync(proId);
-            if (product == null)
+            var product = await _context.Products
+                .Where(x => x.Id == proId)
+                .Include(x => x.User)
+                .FirstOrDefaultAsync();
+            if (product == null || product.User.UserName != username)
                 return false;
 
             product.Status = ProductStatus.Deleted;
