@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 
+import { Pagination } from "@material-ui/lab";
+
 import CustomButton from "../custom-button/custom-button.component";
 import ProductItem from "../product-item/product-item.component";
 
@@ -14,41 +16,48 @@ const Product = () => {
   // const productArr = collection.map((i) => i.items);
   // const product = [].concat.apply([], productArr);
 
-  const [productList, setProductList] = useState([]);
-
-  const numberOfItems = 4;
-  const [items, setItems] = useState(numberOfItems);
-
-  const handleMore = () => {
-    setItems(items + numberOfItems);
-  };
+  const [productPaging, setProductPaging] = useState({
+    items: [],
+    pageCount: 0,
+  });
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
-    const getProductList = async () => {
+    const getProductPaging = async () => {
       try {
-        const response = await catalogApi.getAllProduct();
-        setProductList(response);
+        const params = {
+          pageIndex: page,
+          pageSize: 4,
+        };
+        const response = await catalogApi.getAllProduct(params);
+        setProductPaging(response);
       } catch (error) {
         console.log("Failed to get products: ", error.response);
       }
     };
-    getProductList();
-  }, []);
+    getProductPaging();
+  }, [page]);
 
   return (
     <>
       <div className="product-title">Product</div>
       <div className="product">
         <div className="items">
-          {productList
-            .filter((item, index) => index < items)
+          {productPaging?.items
+            .filter((item, index) => index < 4)
             .map((item) => (
               <ProductItem key={item.id} item={item} />
             ))}
         </div>
       </div>
       <div className="more-button">
-        <CustomButton onClick={handleMore}>See more...</CustomButton>
+        <Pagination
+          count={productPaging?.pageCount}
+          defaultPage={1}
+          onChange={(event, page) => setPage(page)}
+          shape="rounded"
+          color="primary"
+        />
       </div>
     </>
   );

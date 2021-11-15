@@ -22,6 +22,7 @@ const ManageAccountPage = () => {
 
   const modalIsOpen = useSelector((state) => state.modal.isOpen);
   const currentUser = useSelector((state) => state.user.currentUser);
+
   const dispatch = useDispatch();
 
   const handleChange = (event, value) => {
@@ -76,7 +77,11 @@ const ManageAccountPage = () => {
         <AdminTable />
       </TabPanel>
       <TabPanel value={value} index={1}>
-        <UserTable actionLockUser={setAction} setUsername={setUsername} />
+        <UserTable
+          actionLockUser={setAction}
+          setUsername={setUsername}
+          dispatch={dispatch}
+        />
       </TabPanel>
       <TabPanel value={value} index={2}>
         <LockedUserTable actionLockUser={setAction} setUsername={setUsername} />

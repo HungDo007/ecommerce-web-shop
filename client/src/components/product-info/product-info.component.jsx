@@ -57,6 +57,8 @@ const ProductInfo = ({ productId }) => {
     ],
   };
 
+  const [productInfo, setProductInfo] = useState({});
+
   const [index, setIndex] = useState(0);
 
   const imgRef = useRef(null);
@@ -74,6 +76,8 @@ const ProductInfo = ({ productId }) => {
   useEffect(() => {
     imgRef.current.children[index].className = "active";
   }, []);
+
+  console.log(productId);
 
   return (
     <div className="app">
@@ -96,7 +100,7 @@ const ProductInfo = ({ productId }) => {
         <div className="box">
           <div className="row">
             <h2>{product.title}</h2>
-            <span>${product.price}</span>
+            <div className="product-price">${product.price}</div>
           </div>
           <div className="colors">
             <div className="color-title">Color</div>
@@ -114,11 +118,14 @@ const ProductInfo = ({ productId }) => {
               ))}
             </div>
           </div>
-          <p>{product.description}</p>
-          <p>{product.content}</p>
-
+          {/* <p>{product.description}</p>
+          <p>{product.content}</p> */}
           <button className="cart">Add to cart</button>
         </div>
+      </div>
+      <div className="product-description">
+        <div className="product-title">PRODUCT DESCRIPTION</div>
+        <div className="product-content">{product.description}</div>
       </div>
     </div>
   );

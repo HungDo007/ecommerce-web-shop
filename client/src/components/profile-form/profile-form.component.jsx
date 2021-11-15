@@ -132,7 +132,6 @@ const ProfileForm = ({ values, setValues }) => {
       const editUserProfile = async () => {
         try {
           const response = await userApi.editProfile(formData);
-          console.log(response);
           setNotify({
             isOpen: true,
             message: "Edit profile successfully! Please sign in again",
@@ -164,9 +163,6 @@ const ProfileForm = ({ values, setValues }) => {
       editUserProfile();
     }
   };
-
-  console.log("profile form has re rendered");
-  console.log(values);
 
   return (
     <form className="profile-block" onSubmit={handleSubmit}>

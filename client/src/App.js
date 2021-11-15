@@ -27,7 +27,17 @@ const App = ({ currentUser }) => {
     <div>
       <Sidebar />
       <Switch>
-        <Route exact path="/" component={HomePage} />
+        <Route
+          exact
+          path="/"
+          render={() =>
+            currentUser?.role === "Admin" ? (
+              <Redirect to="/Admin" />
+            ) : (
+              <HomePage />
+            )
+          }
+        />
         <Route path="/admin" component={AdminPage} />
         <Route path="/cart" component={CartPage} />
         <Route path="/directory" component={DirectoryPage} />

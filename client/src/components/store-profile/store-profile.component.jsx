@@ -131,7 +131,7 @@ const StoreProfile = ({ match }) => {
   return (
     <form onSubmit={handleSubmit} className="store-container">
       <h3 className="store-main-title">Store Profile</h3>
-      <div className="details">
+      <div className="store-box">
         <div className="store-content-left">
           <img
             className="store-image"

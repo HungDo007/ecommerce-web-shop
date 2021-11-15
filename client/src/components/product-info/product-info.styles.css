@@ -1,14 +1,35 @@
 .app {
   max-width: 1200px;
   width: 100%;
-  margin: 100px auto;
-  box-shadow: 0 0 5px #ccc;
+  margin: 80px auto;
 }
+
+.product-description {
+  box-shadow: 0 0 5px #ccc;
+  margin-top: 20px;
+  padding: 1rem;
+}
+
+.product-description .product-title {
+  background: rgba(0, 0, 0, 0.02);
+  color: rgba(0, 0, 0, 0.87);
+  font-size: 1.125rem;
+  padding: 1rem;
+  text-transform: capitalize;
+}
+
+.product-description .product-content {
+  margin: 1rem;
+  white-space: pre-wrap;
+  line-height: 1.8rem;
+}
+
 .details {
   display: flex;
   justify-content: space-around;
   flex-wrap: wrap;
   padding: 30px 0;
+  box-shadow: 0 0 5px #ccc;
 }
 .details .big-img {
   width: 500px;
@@ -36,8 +57,11 @@
   letter-spacing: 1px;
   margin-bottom: 10px;
 }
-.box .row span {
+.box .row .product-price {
   color: crimson;
+  padding: 15px 20px;
+  background: #fafafa;
+  font-size: 1.8rem;
 }
 
 .box .colors {

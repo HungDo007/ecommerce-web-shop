@@ -54,7 +54,7 @@ const ManageComponentPage = () => {
                   fetchComponentList();
                   resolve(response);
                 })
-                .catch((error) => console.log(error.response));
+                .catch((error) => reject(console.log(error.response)));
             }),
           onRowUpdate: (newData) =>
             new Promise((resolve) => {

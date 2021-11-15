@@ -63,8 +63,6 @@ const Profile = () => {
     getUserProfile();
   }, []);
 
-  console.log("profile has re rendered");
-
   return (
     <div className="profile-block">
       <div className="profile-task">

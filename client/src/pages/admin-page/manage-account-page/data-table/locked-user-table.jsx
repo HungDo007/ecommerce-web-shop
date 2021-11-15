@@ -35,7 +35,7 @@ const LockedUserTable = ({ actionLockUser, setUsername }) => {
     },
   ];
 
-  const handleLockAccount = (event, rowData) => {
+  const handleUnlockAccount = (event, rowData) => {
     actionLockUser("unlock-user");
     setUsername(rowData.username);
     dispatch(toggleModal());
@@ -69,7 +69,7 @@ const LockedUserTable = ({ actionLockUser, setUsername }) => {
             icon: LockOpenIcon,
             tooltip: "Unlock user account",
             onClick: (event, rowData) => {
-              handleLockAccount(event, rowData);
+              handleUnlockAccount(event, rowData);
             },
           },
         ]}

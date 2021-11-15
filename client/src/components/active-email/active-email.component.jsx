@@ -20,7 +20,7 @@ const ActiveEmailForm = () => {
     setErrors({ ...temp });
 
     if (fieldValues === state) {
-      return Object.values(temp).every((x) => x == "");
+      return Object.values(temp).every((x) => x === "");
     }
   };
 

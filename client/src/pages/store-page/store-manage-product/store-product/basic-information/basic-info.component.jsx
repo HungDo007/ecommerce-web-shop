@@ -18,8 +18,6 @@ const BasicInformation = ({
   onChange,
 }) => {
   if (productInfo.id) {
-    //productInfo.poster = process.env.REACT_APP_IMAGE_URL + productInfo.poster;
-    //productInfo.images = [process.env.REACT_APP_IMAGE_URL + productInfo.images];
     const length = productInfo.images.length;
     if (length < 4) {
       for (let index = 0; index < 4 - length; index++) {
@@ -69,7 +67,7 @@ const BasicInformation = ({
   };
 
   const handleImages = (selectorFiles, position) => {
-    if (selectorFiles) {
+    if (selectorFiles && selectorFiles[0]) {
       let imageFile = selectorFiles[0];
       const reader = new FileReader();
       reader.onload = (x) => {

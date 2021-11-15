@@ -78,6 +78,27 @@ const adminApi = {
     const url = `/Admins/component/${id}`;
     return axiosClient.delete(url);
   },
+
+  //manage product
+  getProductPaging: (params) => {
+    const url = "/Admins/product/productAll";
+    return axiosClient.get(url, { params });
+  },
+
+  getLockedProductPaging: (params) => {
+    const url = "/Admins/product/productLocked";
+    return axiosClient.get(url, { params });
+  },
+
+  lockProduct: (data) => {
+    const url = "/Admins/product/lockProduct";
+    return axiosClient.post(url, data);
+  },
+
+  unlockProduct: (data) => {
+    const url = "/Admins/product/unlockProduct";
+    return axiosClient.post(url, data);
+  },
 };
 
 export default adminApi;

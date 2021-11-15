@@ -12,11 +12,10 @@ const StorePage = ({ match, currentUser, history }) => {
     const getUserProfile = async () => {
       try {
         const response = await userApi.getProfile(currentUser.unique_name);
-        console.log(response);
         if (response.emailConfirmed) {
-          history.push("/store");
+          history.replace("/store");
         } else {
-          history.push("/user");
+          history.replace("/user");
         }
       } catch (error) {
         console.log("Failed to get user profile: ", error.response);

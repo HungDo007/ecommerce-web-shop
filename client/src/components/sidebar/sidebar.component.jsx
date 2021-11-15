@@ -1,20 +1,14 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { useHistory } from "react-router";
 
 import { IconContext } from "react-icons";
-import * as FaIcons from "react-icons/fa";
 import * as AiIcons from "react-icons/ai";
 
-import CartDropDown from "../cart-dropdown/cart-dropdown.component";
-import CartIcon from "../cart-icon/cart-icon.component";
+import CustomAppBar from "../custom-appbar/custom-appbar";
 
 import { DataArr } from "./sidebarData";
 
 import "./sidebar.styles.css";
-import { mergeClasses } from "@material-ui/styles";
-import CustomAppBar from "../custom-appbar/custom-appbar";
 
 const Sidebar = () => {
   const [sidebar, setSidebar] = useState(false);

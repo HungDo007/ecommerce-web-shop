@@ -1,5 +1,3 @@
-import { useDispatch } from "react-redux";
-
 import MaterialTable from "material-table";
 
 import LockIcon from "@material-ui/icons/Lock";
@@ -7,9 +5,7 @@ import LockIcon from "@material-ui/icons/Lock";
 import adminApi from "../../../../api/admin-api";
 import { toggleModal } from "../../../../redux/modal/modal.actions";
 
-const UserTable = ({ actionLockUser, setUsername }) => {
-  const dispatch = useDispatch();
-
+const UserTable = ({ actionLockUser, setUsername, dispatch }) => {
   const columns = [
     {
       title: "Username",

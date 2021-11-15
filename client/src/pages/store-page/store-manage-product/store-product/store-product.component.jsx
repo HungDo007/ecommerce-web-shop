@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { Button } from "@material-ui/core";
 
 import BasicInformation from "./basic-information/basic-info.component";
+import Notification from "../../../../components/notification/notification.component";
 import SaleInformation from "./sale-information/sale-info.component";
 
 import catalogApi from "../../../../api/catalog-api";
@@ -26,6 +27,11 @@ const StoreProduct = (props) => {
   });
   const [errors, setErrors] = useState({});
   const [actualComponents, setActualComponents] = useState([]);
+  const [notify, setNotify] = useState({
+    isOpen: false,
+    message: "",
+    type: "",
+  });
 
   const { thumbnailFile, productDetails } = productInfo;
 
@@ -106,69 +112,84 @@ const StoreProduct = (props) => {
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    if (validateBasicInfo() && validate() && thumbnailFile !== null) {
-      const formData = new FormData();
+    //validate form
+    if (validateBasicInfo() && validate()) {
+      //check thumbnail
+      if (thumbnailFile === null) {
+        setNotify({
+          isOpen: true,
+          message: "Please choose thumbnail!",
+          type: "error",
+        });
+      } else {
+        const formData = new FormData();
 
-      formData.append("seller", currentUser.unique_name);
-      formData.append("name", productInfo.name);
-      formData.append("description", productInfo.description);
-      formData.append("categories", productInfo.category);
-      formData.append("poster", productInfo.thumbnailFile);
+        formData.append("seller", currentUser.unique_name);
+        formData.append("name", productInfo.name);
+        formData.append("description", productInfo.description);
+        formData.append("categories", productInfo.category);
+        formData.append("poster", productInfo.thumbnailFile);
 
-      if (productInfo.listImageFiles) {
-        for (let i = 0; i < productInfo.listImageFiles.length; i++) {
-          formData.append("images", productInfo.listImageFiles[i]);
+        if (productInfo.listImageFiles.length !== 0) {
+          for (let i = 0; i < productInfo.listImageFiles.length; i++) {
+            formData.append("images", productInfo.listImageFiles[i]);
+          }
+        } else {
+          formData.append("images", undefined);
+        }
+
+        //edit product
+        if (productInfo.id) {
+          const editProduct = async () => {
+            try {
+              formData.append("id", productInfo.id);
+              const response = await storeApi.editProduct(formData);
+              console.log(response);
+            } catch (error) {
+              console.log("Failed to edit product: ", error.response);
+            }
+          };
+          const editDetail = async () => {
+            try {
+              const response = await storeApi.editDetail(productDetails);
+              console.log(response);
+            } catch (error) {
+              console.log("Failed to edit detail: ", error.response);
+            }
+          };
+          // console.log(productInfo);
+          // for (let value of formData.entries()) {
+          //   console.log(value[0] + ", " + value[1]);
+          // }
+          editProduct();
+          editDetail();
+          props.history.push("/store/manageProduct");
+        } else {
+          //add product
+          const addDetail = async (productId) => {
+            try {
+              const response = await storeApi.addDetail(
+                productId,
+                productDetails
+              );
+              console.log(response);
+            } catch (error) {
+              console.log("Failed to add detail: ", error.response);
+            }
+          };
+
+          const addProduct = async () => {
+            try {
+              const productId = await storeApi.addProduct(formData);
+              addDetail(productId);
+            } catch (error) {
+              console.log("Failed to add product: ", error);
+            }
+          };
+          addProduct();
+          props.history.push("/store/manageProduct");
         }
       }
-
-      if (productInfo.id) {
-        const editProduct = async () => {
-          try {
-            formData.append("id", productInfo.id);
-            const response = await storeApi.editProduct(formData);
-            console.log(response);
-          } catch (error) {
-            console.log("Failed to edit product: ", error.response);
-          }
-        };
-        const editDetail = async () => {
-          try {
-            const response = await storeApi.editDetail(productDetails);
-            console.log(response);
-          } catch (error) {
-            console.log("Failed to edit detail: ", error.response);
-          }
-        };
-        editProduct();
-        editDetail();
-        props.history.push("/store/manageProduct");
-      } else {
-        const addDetail = async (productId) => {
-          try {
-            const response = await storeApi.addDetail(
-              productId,
-              productDetails
-            );
-            console.log(response);
-          } catch (error) {
-            console.log("Failed to add detail: ", error.response);
-          }
-        };
-
-        const addProduct = async () => {
-          try {
-            const productId = await storeApi.addProduct(formData);
-            // setProductId(response);
-            addDetail(productId);
-          } catch (error) {
-            console.log("Failed to add product: ", error);
-          }
-        };
-        addProduct();
-        props.history.push("/store/manageProduct");
-      }
-      //alert("submit");
-      console.log(productInfo);
     } else {
       console.log("not validate");
     }
@@ -203,10 +224,8 @@ const StoreProduct = (props) => {
     }
   }, []);
 
-  console.log(productInfo);
-
   return (
-    <form onSubmit={handleSubmit} className="app">
+    <form onSubmit={handleSubmit} className="store-product-container">
       <h2 className="store-product-main-title"> Manage product </h2>
       <hr />
       <BasicInformation
@@ -232,6 +251,7 @@ const StoreProduct = (props) => {
           Submit
         </Button>
       </div>
+      <Notification notify={notify} setNotify={setNotify} />
     </form>
   );
 };

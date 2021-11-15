@@ -6,14 +6,14 @@ const catalogApi = {
     return axiosClient.get(url);
   },
 
-  getAllProduct: () => {
+  getAllProduct: (params) => {
     const url = "/Catalogs/product";
-    return axiosClient.get(url);
+    return axiosClient.get(url, { params });
   },
 
-  getAllProductOfStore: (username) => {
+  getAllProductOfStore: (username, params) => {
     const url = `/Catalogs/allProductOfUser/${username}`;
-    return axiosClient.get(url);
+    return axiosClient.get(url, { params });
   },
 
   getProductById: (id) => {

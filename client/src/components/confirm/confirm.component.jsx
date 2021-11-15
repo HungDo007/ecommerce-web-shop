@@ -36,6 +36,22 @@ const Confirm = (props) => {
       };
       lockAccount();
       dispatch(toggleModal());
+    } else if (props.title === "Are you sure to lock this product?") {
+      const data = {
+        proId: props.data,
+        reason: reason,
+      };
+      const lockProduct = async () => {
+        try {
+          const response = await adminApi.lockProduct(data);
+          console.log(response);
+        } catch (error) {
+          console.log("Failed to lock account: ", error.response);
+        }
+      };
+      lockProduct();
+      //console.log(data);
+      dispatch(toggleModal());
     } else {
       props.onSubmit();
     }
@@ -44,7 +60,8 @@ const Confirm = (props) => {
   return (
     <form style={{ width: 410 }} onSubmit={handleSubmit}>
       <div style={{ margin: "20px 0" }}>{props.title}</div>
-      {props.title === "Are you sure to lock this account?" ? (
+      {props.title === "Are you sure to lock this account?" ||
+      props.title === "Are you sure to lock this product?" ? (
         <FormInput
           name="reason"
           handleChange={handleChange}

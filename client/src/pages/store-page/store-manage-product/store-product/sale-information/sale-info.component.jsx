@@ -86,12 +86,13 @@ const SaleInformation = ({
         productDetails[0].componentDetails.length > 0
       ) {
         const array = productDetails[0].componentDetails.map((item) => {
-          const compo = componentList.find((i) => i.id === item.id);
+          const compo = componentList.find((i) => i.compId === item.id);
           return {
             id: compo ? compo.id : "",
             name: compo ? compo.name : "",
           };
         });
+
         setActualComponents(array);
       }
     }
