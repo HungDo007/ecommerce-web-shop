@@ -96,7 +96,7 @@ namespace Application.Catalog
                         .FirstOrDefaultAsync();
 
                     if (comp == null)
-                        comp = new ComponentDetail() { ComponentId = item.CompId, Value = item.Value };
+                        comp = new ComponentDetail() { ComponentId = item.CompId, Name = item.Name, Value = item.Value };
 
                     details.Add(comp);
                 }
@@ -286,6 +286,8 @@ namespace Application.Catalog
                 .Where(x => x.ProductId == id)
                 .Include(c => c.ComponentDetails)
                 .ToListAsync();
+
+
             List<ProductDetailVm> productDetailVms = _mapper.Map<List<ProductDetailVm>>(details);
 
             response.ProductDetails = productDetailVms;
@@ -303,14 +305,15 @@ namespace Application.Catalog
             pro.Name = request.Name;
             pro.Description = request.Description;
 
-            var img = pro.ProductImages.Where(x => x.IsPoster == true).FirstOrDefault();
+            var poster = pro.ProductImages.Where(x => x.IsPoster == true).FirstOrDefault();
+            var imgs = pro.ProductImages.Where(x => x.IsPoster == false).ToList();
 
             pro.ProductImages.Clear();
             if (request.Poster != null)
             {
                 try
                 {
-                    await _storageService.DeleteFileAsync(img.Path);
+                    await _storageService.DeleteFileAsync(poster.Path);
                 }
                 catch { }
 
@@ -318,7 +321,7 @@ namespace Application.Catalog
             }
             else
             {
-                pro.ProductImages.Add(img);
+                pro.ProductImages.Add(poster);
             }
 
             if (request.Images.Count > 0)
@@ -326,6 +329,13 @@ namespace Application.Catalog
                 foreach (var item in request.Images)
                 {
                     pro.ProductImages.Add(await AddImage(pro.Id, false, item));
+                }
+            }
+            else
+            {
+                foreach (var item in imgs)
+                {
+                    pro.ProductImages.Add(item);
                 }
             }
 
@@ -360,7 +370,7 @@ namespace Application.Catalog
                         .FirstOrDefaultAsync();
 
                     if (comp == null)
-                        comp = new ComponentDetail() { ComponentId = cmp.CompId, Value = cmp.Value };
+                        comp = new ComponentDetail() { ComponentId = cmp.CompId, Name = cmp.Name, Value = cmp.Value };
 
                     pro.ComponentDetails.Add(comp);
                 }
@@ -404,25 +414,6 @@ namespace Application.Catalog
             var pagedResult = PagingService.Paging<ProductVm>(data, request.PageIndex, request.PageSize);
 
             return pagedResult;
-
-            ////Paging
-            //int totalRow = products.Count();
-            //products = products.Skip((request.PageIndex - 1) * request.PageSize)
-            //    .Take(request.PageSize)
-            //    .ToList();
-
-
-            //var responses = _mapper.Map<List<ProductVm>>(products);
-
-            ////Select and projection
-            //var pagedResult = new PagedResult<ProductVm>()
-            //{
-            //    TotalRecords = totalRow,
-            //    PageIndex = request.PageIndex,
-            //    PageSize = request.PageSize,
-            //    Items = responses
-            //};
-            //return pagedResult;
         }
 
         public async Task<PagedResult<ProductVm>> GetHideOfUser(string username, ProductPagingRequest request)
@@ -451,25 +442,6 @@ namespace Application.Catalog
             var pagedResult = PagingService.Paging<ProductVm>(data, request.PageIndex, request.PageSize);
 
             return pagedResult;
-
-            ////Paging
-            //int totalRow = products.Count();
-            //products = products.Skip((request.PageIndex - 1) * request.PageSize)
-            //    .Take(request.PageSize)
-            //    .ToList();
-
-
-            //var responses = _mapper.Map<List<ProductVm>>(products);
-
-            ////Select and projection
-            //var pagedResult = new PagedResult<ProductVm>()
-            //{
-            //    TotalRecords = totalRow,
-            //    PageIndex = request.PageIndex,
-            //    PageSize = request.PageSize,
-            //    Items = responses
-            //};
-            //return pagedResult;
         }
 
         public async Task<bool> HideProduct(string username, int proId)
