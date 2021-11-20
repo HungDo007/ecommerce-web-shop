@@ -131,8 +131,8 @@ const ProductInfo = ({ productId }) => {
           </div>
           <div className="component-container">
             <div className="component-title">
-              {listCompoName.map((name) => (
-                <div>{name}</div>
+              {listCompoName.map((name, index) => (
+                <div key={index}>{name}</div>
               ))}
             </div>
             <div>
@@ -140,8 +140,8 @@ const ProductInfo = ({ productId }) => {
                 <div key={index} className="component-block">
                   {value.map((i, idx) => (
                     <button
-                      onClick={() => setIsActive(idx)}
                       key={idx}
+                      onClick={() => setIsActive(idx)}
                       className={
                         isActive === idx
                           ? "component-value active"

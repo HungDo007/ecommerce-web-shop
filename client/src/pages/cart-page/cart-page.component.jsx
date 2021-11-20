@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Cart from "../../components/cart/cart.component";
 
-import { Checkbox, IconButton, Tooltip } from "@material-ui/core";
+import { Button, Checkbox, IconButton, Tooltip } from "@material-ui/core";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
 import ClearIcon from "@material-ui/icons/Clear";
@@ -72,15 +72,17 @@ const CartPage = () => {
   const [cartItems, setCartItems] = useState(itemsDb);
   const [items, setItems] = useState([]);
 
-  const handleChange = (event, position, id) => {
+  const handleChange = (event, position) => {
+    const id = Number(event.target.value);
+
     if (position === -1) {
-      // setChecked(event.target.checked);
-      // if (event.target.checked === true) {
-      //   setItems(cartItems);
-      // } else {
-      //   setItems([]);
-      //   setCartItems(itemsDb);
-      // }
+      setChecked(event.target.checked);
+      if (event.target.checked === true) {
+        setItems(cartItems);
+      } else {
+        setItems([]);
+        setCartItems(cartItems);
+      }
     } else {
       const newCartItem = [...cartItems];
 
@@ -91,7 +93,7 @@ const CartPage = () => {
 
       setCartItems(newCartItem);
 
-      if (event.target.checked === true) {
+      if (event.target.checked) {
         if (!items.some((item) => item.id === id)) {
           setItems([...items, cartItems[position]]);
         }
@@ -99,6 +101,10 @@ const CartPage = () => {
         setItems(items.filter((item) => item.id !== id));
       }
     }
+  };
+
+  const handleCheckout = () => {
+    console.log(cartItems);
   };
 
   console.log(items);
@@ -133,8 +139,9 @@ const CartPage = () => {
         <div key={cartItem.id} className="c-item">
           <div>
             <Checkbox
+              value={cartItem.id}
               checked={cartItem.isChecked}
-              onChange={(event) => handleChange(event, index, cartItem.id)}
+              onChange={(event) => handleChange(event, index)}
             />
           </div>
           <div className="image-container">
@@ -163,6 +170,9 @@ const CartPage = () => {
         </div>
       ))}
       <div className="total">TOTAL:</div>
+      <div>
+        <Button onClick={handleCheckout}>Checkout</Button>
+      </div>
     </div>
   );
 };
