@@ -92,7 +92,7 @@ const BasicInformation = ({
   };
 
   return (
-    <div>
+    <div className="basic-info-container">
       <h3 className="store-product-title">Basic Information</h3>
       <div className="store-product-basic-info">
         <div className="store-product-group">

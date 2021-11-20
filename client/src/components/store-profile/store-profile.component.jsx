@@ -1,8 +1,13 @@
-import { Button, TextField } from "@material-ui/core";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+
+import { Button, TextField } from "@material-ui/core";
+
+import Notification from "../notification/notification.component";
+
 import storeApi from "../../api/store-api";
+
 import "./store-profile.styles.scss";
 const defaultImg = "/img/default-img.png";
 
@@ -20,6 +25,11 @@ const StoreProfile = ({ match }) => {
 
   const [values, setValues] = useState(storeInfo);
   const [errors, setErrors] = useState({});
+  const [notify, setNotify] = useState({
+    isOpen: false,
+    message: "",
+    type: "",
+  });
 
   const currentUser = useSelector((state) => state.user.currentUser);
 
@@ -98,8 +108,20 @@ const StoreProfile = ({ match }) => {
         try {
           const response = await storeApi.editProfile(formData);
           console.log(response);
+          if (response.status === 200 && response.statusText === "OK") {
+            setNotify({
+              isOpen: true,
+              message: "Edit store profile successfully!",
+              type: "success",
+            });
+          }
         } catch (error) {
           console.log("Failed to edit profile: ", error.response);
+          setNotify({
+            isOpen: true,
+            message: "Failed to edit profile!",
+            type: "error",
+          });
         }
       };
 
@@ -113,7 +135,9 @@ const StoreProfile = ({ match }) => {
         const response = await storeApi.getProfile(currentUser.unique_name);
         setValues({
           address: response.address,
-          avatar: process.env.REACT_APP_IMAGE_URL + response.avatar,
+          avatar: response.avatar
+            ? process.env.REACT_APP_IMAGE_URL + response.avatar
+            : avatar,
           description: response.description,
           nameStore: response.nameStore,
           phoneNumber: response.phoneNumber,
@@ -228,6 +252,7 @@ const StoreProfile = ({ match }) => {
           Save Change
         </Button>
       </div>
+      <Notification notify={notify} setNotify={setNotify} />
     </form>
   );
 };

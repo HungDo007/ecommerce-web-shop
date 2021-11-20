@@ -44,20 +44,24 @@ const UserTable = ({ actionLockUser, setUsername, dispatch }) => {
         title="User Accounts"
         data={(query) =>
           new Promise((resolve, reject) => {
-            console.log(query);
             const params = {
               pageIndex: query.page + 1,
               pageSize: query.pageSize,
               keyword: query.search,
             };
-            adminApi.getUserPaging(params).then((response) => {
-              console.log(response);
-              resolve({
-                data: response.items,
-                page: query.page,
-                totalCount: response.totalRecords,
+            adminApi
+              .getUserPaging(params)
+              .then((response) => {
+                resolve({
+                  data: response.items,
+                  page: query.page,
+                  totalCount: response.totalRecords,
+                });
+              })
+              .catch((error) => {
+                console.log(error);
+                reject();
               });
-            });
           })
         }
         columns={columns}

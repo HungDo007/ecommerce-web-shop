@@ -1,13 +1,9 @@
 import Product from "../product/product.component";
 
-import SHOP_DATA from "../product/data";
-
-const DirectoryItems = ({ match }) => {
-  const directory = SHOP_DATA[match.params.directoryId];
-  const { items } = directory;
+const DirectoryItems = () => {
   return (
     <div className="homepage">
-      <Product products={items} />
+      <Product />
     </div>
   );
 };

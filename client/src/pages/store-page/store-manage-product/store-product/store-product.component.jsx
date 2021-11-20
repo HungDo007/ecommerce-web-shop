@@ -23,7 +23,7 @@ const StoreProduct = (props) => {
     thumbnailFile: null,
     images: new Array(4).fill(defaultImg),
     listImageFiles: [],
-    productDetails: [{ price: 0, stock: 0, componentDetails: [] }],
+    productDetails: [{ price: "", stock: "", componentDetails: [] }],
   });
   const [errors, setErrors] = useState({});
   const [actualComponents, setActualComponents] = useState([]);
@@ -47,7 +47,8 @@ const StoreProduct = (props) => {
         ? ""
         : "This field is required";
     if ("category" in fieldValues)
-      temp.category = fieldValues.category != 0 ? "" : "This field is required";
+      temp.category =
+        fieldValues.category !== 0 ? "" : "This field is required";
 
     setErrors({ ...temp });
 
@@ -134,8 +135,6 @@ const StoreProduct = (props) => {
           for (let i = 0; i < productInfo.listImageFiles.length; i++) {
             formData.append("images", productInfo.listImageFiles[i]);
           }
-        } else {
-          formData.append("images", undefined);
         }
 
         //edit product
@@ -153,6 +152,9 @@ const StoreProduct = (props) => {
             try {
               const response = await storeApi.editDetail(productDetails);
               console.log(response);
+              if (response.status === 200 && response.statusText === "OK") {
+                props.history.push("/store/manageProduct");
+              }
             } catch (error) {
               console.log("Failed to edit detail: ", error.response);
             }
@@ -163,7 +165,6 @@ const StoreProduct = (props) => {
           // }
           editProduct();
           editDetail();
-          props.history.push("/store/manageProduct");
         } else {
           //add product
           const addDetail = async (productId) => {
@@ -172,7 +173,9 @@ const StoreProduct = (props) => {
                 productId,
                 productDetails
               );
-              console.log(response);
+              if (response.status === 200 && response.statusText === "OK") {
+                props.history.push("/store/manageProduct");
+              }
             } catch (error) {
               console.log("Failed to add detail: ", error.response);
             }
@@ -187,11 +190,14 @@ const StoreProduct = (props) => {
             }
           };
           addProduct();
-          props.history.push("/store/manageProduct");
         }
       }
     } else {
-      console.log("not validate");
+      setNotify({
+        isOpen: true,
+        message: "Please complete the form!",
+        type: "error",
+      });
     }
   };
 
@@ -199,7 +205,6 @@ const StoreProduct = (props) => {
     const getProduct = async (id) => {
       try {
         const response = await catalogApi.getProductById(id);
-        console.log(response);
         let array = response.images;
         array.forEach((element, index, newArr) => {
           newArr[index] = process.env.REACT_APP_IMAGE_URL + element;
@@ -222,12 +227,11 @@ const StoreProduct = (props) => {
     if (props.location.state) {
       getProduct(props.location.state);
     }
-  }, []);
+  }, [props.location.state]);
 
   return (
     <form onSubmit={handleSubmit} className="store-product-container">
       <h2 className="store-product-main-title"> Manage product </h2>
-      <hr />
       <BasicInformation
         errors={errors}
         onChange={handleInputChange}

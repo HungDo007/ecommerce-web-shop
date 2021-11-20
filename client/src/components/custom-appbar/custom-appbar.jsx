@@ -79,6 +79,9 @@ const CustomAppBar = ({ sidebar, setSidebar }) => {
       flexGrow: 1,
     },
     search: {
+      height: "42px",
+      display: "flex",
+      alignItems: "center",
       position: "relative",
       borderRadius: theme.shape.borderRadius,
       backgroundColor: alpha(theme.palette.common.white, 0.15),
@@ -89,18 +92,8 @@ const CustomAppBar = ({ sidebar, setSidebar }) => {
       marginLeft: 0,
       width: "100%",
       [theme.breakpoints.up("sm")]: {
-        marginLeft: theme.spacing(3),
         width: "auto",
       },
-    },
-    searchIcon: {
-      padding: theme.spacing(0, 2),
-      height: "100%",
-      position: "absolute",
-      pointerEvents: "none",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
     },
     inputRoot: {
       color: "inherit",
@@ -108,7 +101,6 @@ const CustomAppBar = ({ sidebar, setSidebar }) => {
     inputInput: {
       padding: theme.spacing(1, 1, 1, 0),
       // vertical padding + font size from searchIcon
-      paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
       transition: theme.transitions.create("width"),
       width: "100%",
       [theme.breakpoints.up("md")]: {
@@ -118,6 +110,9 @@ const CustomAppBar = ({ sidebar, setSidebar }) => {
     link: {
       color: "white",
       paddingLeft: "5px",
+      "&:hover": {
+        color: "#b6acac",
+      },
     },
   }));
 
@@ -136,13 +131,10 @@ const CustomAppBar = ({ sidebar, setSidebar }) => {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap>
-            Directory
-          </Typography>
           <div className={classes.search}>
-            <div className={classes.searchIcon}>
+            <IconButton color="inherit" aria-label="search">
               <SearchIcon />
-            </div>
+            </IconButton>
             <InputBase
               placeholder="Search…"
               classes={{

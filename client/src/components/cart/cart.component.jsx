@@ -1,19 +1,60 @@
-import "./cart.styles.scss";
+import { useState } from "react";
 
-const Cart = () => {
+import { Checkbox, IconButton, Tooltip } from "@material-ui/core";
+import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
+import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
+import ClearIcon from "@material-ui/icons/Clear";
+
+import "./cart.styles.scss";
+import { useEffect } from "react";
+
+const Cart = ({
+  index,
+  checked,
+  cartItem: { name, quantity, price, imageUrl, isChecked },
+}) => {
+  if (checked) {
+    isChecked = true;
+  }
+
+  // useEffect(() => {
+  //   if (checked) {
+  //     console.log("a");
+  //   }
+  // }, [checked]);
+
+  const handleChange = (position) => {
+    console.log(position);
+  };
+
   return (
     <div className="c-item">
-      <div className="image-container">
-        <img src="" alt="item" />
+      <div>
+        <Checkbox checked={isChecked} onChange={() => handleChange(index)} />
       </div>
-      <span className="name">Name</span>
+      <div className="image-container">
+        <img src={imageUrl} alt="item" />
+      </div>
+      <span className="name">{name}</span>
       <span className="quantity">
-        <div className="arrow">&#10094;</div>
-        <span className="value">Quantity</span>
-        <div className="arrow">&#10095;</div>
+        <Tooltip title="Decrease item by 1">
+          <IconButton aria-label="decrease item">
+            <ArrowBackIosIcon />
+          </IconButton>
+        </Tooltip>
+        <span className="value">{quantity}</span>
+        <Tooltip title="Increase item by 1">
+          <IconButton aria-label="increase item">
+            <ArrowForwardIosIcon />
+          </IconButton>
+        </Tooltip>
       </span>
-      <span className="price">Price</span>
-      <div className="remove-button">&#10005;</div>
+      <span className="price">{price}</span>
+      <Tooltip title="Remove item">
+        <IconButton aria-label="remove item">
+          <ClearIcon />
+        </IconButton>
+      </Tooltip>
     </div>
   );
 };

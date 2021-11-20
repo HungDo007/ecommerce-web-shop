@@ -102,13 +102,13 @@ const SignIn = ({ setAction }) => {
           dispatch(setCurrentUser(user));
         } catch (error) {
           console.log("Fail to authenticate: ", error.response);
-          if (
-            error.response?.data ===
-            "Tên đăng nhập hoặc mật khẩu không chính xác."
-          ) {
+          if (error.response?.data === "Incorrect Username.") {
             setErrors({
-              email: "Your username or password is incorrect",
-              password: "Your username or password is incorrect",
+              email: "Your username is incorrect",
+            });
+          } else if (error.response?.data === "Incorrect Password.") {
+            setErrors({
+              password: "Your password is incorrect",
             });
           }
         }

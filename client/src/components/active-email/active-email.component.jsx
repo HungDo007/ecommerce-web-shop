@@ -1,6 +1,10 @@
-import { Button, TextField } from "@material-ui/core";
 import { useState } from "react";
 import { useSelector } from "react-redux";
+
+import { Button, TextField } from "@material-ui/core";
+
+import Notification from "../notification/notification.component";
+
 import userApi from "../../api/user-api";
 
 const ActiveEmailForm = () => {
@@ -9,6 +13,12 @@ const ActiveEmailForm = () => {
   });
 
   const [errors, setErrors] = useState({});
+
+  const [notify, setNotify] = useState({
+    isOpen: false,
+    message: "",
+    type: "",
+  });
 
   const currentUser = useSelector((state) => state.user.currentUser);
 
@@ -41,6 +51,13 @@ const ActiveEmailForm = () => {
       try {
         const response = await userApi.sendCode(data);
         console.log(response);
+        if (response.status === 200 && response.statusText === "OK") {
+          setNotify({
+            isOpen: true,
+            message: "Send code successfully. Check your email!",
+            type: "success",
+          });
+        }
       } catch (error) {
         console.log("Failed to send code: ", error.response);
       }
@@ -58,9 +75,16 @@ const ActiveEmailForm = () => {
           const payload = { ...data, code: state.code };
           const response = await userApi.verifyEmail(payload);
           console.log(response);
+          if (response.status === 200 && response.statusText === "OK") {
+            setNotify({
+              isOpen: true,
+              message: "Active email successfully!",
+              type: "success",
+            });
+          }
         } catch (error) {
           console.log("Failed to verify email: ", error.response);
-          if (error.response.data === "Mã nhập không đúng")
+          if (error.response?.data === "Incorrect code")
             setErrors({ code: "Code is incorrect" });
         }
       };
@@ -119,6 +143,7 @@ const ActiveEmailForm = () => {
           </Button>
         </div>
       </form>
+      <Notification notify={notify} setNotify={setNotify} />
     </div>
   );
 };

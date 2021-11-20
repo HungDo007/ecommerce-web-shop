@@ -1,65 +1,35 @@
+import { Button } from "@material-ui/core";
 import { useEffect, useRef, useState } from "react";
+import catalogApi from "../../api/catalog-api";
 
-import "./product-info.styles.css";
+import CheckIcon from "@material-ui/icons/Check";
+import RemoveIcon from "@material-ui/icons/Remove";
+import AddIcon from "@material-ui/icons/Add";
+
+import "./product-info.styles.scss";
 
 const ProductInfo = ({ productId }) => {
-  //console.log(productId);
-  const product = {
-    _id: "1",
-    title:
-      "Giày 𝐍𝐈𝐊𝐄 Thể Thao Nam Nữ Đẹp Màu Trắng Giày Sneaker Trắng HotTrends_SN001",
-    src: [
-      "https://shopgiayreplica.com/wp-content/uploads/2019/11/nike-air-force-1-shadow-replica.jpg",
-      "https://rubystore.com.vn/wp-content/uploads/2020/07/giay-nike-air-jordan-1-high-x-dior-sieu-cap.jpg",
-      "https://hanghieuvip.net/wp-content/uploads/2021/03/Nike-Air-Force-1-Shadow-Aura-Green-88.jpg",
-      "https://lakbay.vn/cdn/images/Nike/Nike%20n%E1%BB%AF/giay-nike-air-force-1-high-utility.jpg",
-      "http://hystore.vn/wp-content/uploads/2020/11/xam-1.jpg",
-    ],
-    description: "UI/UX designing, html css tutorials",
-    content:
-      "Welcome to our channel Dev AT. Here you can learn web designing, UI/UX designing, html css tutorials, css animations and css effects, javascript and jquery tutorials and related so on.",
-    price: 2000000003,
-    colors: ["red", "black", "white", "teal"],
-    size: ["36", "37", "38", "39", "40", "41", "42", "43"],
-    count: 1,
+  const [listCompoValue, setListCompoValue] = useState([]);
 
-    productDetails: [
-      {
-        id: 1,
-        stock: 10,
-        price: 100000,
-        componentDetails: [
-          {
-            id: 1,
-            value: "40",
-          },
-          {
-            id: 2,
-            value: "Red",
-          },
-        ],
-      },
-      {
-        id: 2,
-        stock: 15,
-        price: 100000,
-        componentDetails: [
-          {
-            id: 3,
-            value: "41",
-          },
-          {
-            id: 4,
-            value: "White",
-          },
-        ],
-      },
-    ],
-  };
+  const [productInfo, setProductInfo] = useState({
+    name: "",
+    price: "",
+    description: "",
+    poster: "",
+    images: [],
+    productDetails: [],
+  });
 
-  const [productInfo, setProductInfo] = useState({});
+  const { name, price, poster, images, description, productDetails } =
+    productInfo;
 
+  let listCompoName = [["Color"], ["Size"]];
+
+  const [listImage, setListImage] = useState([]);
   const [index, setIndex] = useState(0);
+  const [amount, setAmount] = useState(1);
+  const [isActive, setIsActive] = useState(-1);
+  const incrementValue = Number(amount) || 1;
 
   const imgRef = useRef(null);
 
@@ -70,26 +40,83 @@ const ProductInfo = ({ productId }) => {
       images[i].className = images[i].className.replace("active", "");
     }
     images[index].className = "active";
-    console.log(imgRef.current.children);
   };
 
   useEffect(() => {
-    imgRef.current.children[index].className = "active";
+    const getProduct = async () => {
+      try {
+        const response = await catalogApi.getProductById(productId);
+        console.log(response);
+        setProductInfo(response);
+      } catch (error) {
+        console.log("Failed to get product: ", error.response);
+      }
+    };
+    getProduct();
   }, []);
 
-  console.log(productId);
+  useEffect(() => {
+    setListImage([poster, ...images]);
+
+    let listCompo = [];
+    let num = productDetails[0]?.componentDetails.length;
+    for (let i = 0; i < num; i++) {
+      let a = [];
+      //let arr = [];
+      productDetails.forEach((element) => {
+        if (!a.some((item) => item === element.componentDetails[i]?.value)) {
+          a.push(element.componentDetails[i]?.value);
+        }
+        // arr = a.map((item) => ({
+        //   value: item,
+        //   id: Math.random().toString(36).substr(2, 9),
+        // }));
+        //console.log(arr);
+      });
+      listCompo.push(a);
+    }
+    setListCompoValue(listCompo);
+    //console.log(listCompo);
+  }, [productInfo]);
+
+  useEffect(() => {
+    if (listImage.length !== 0) {
+      imgRef.current.children[index].className = "active";
+    }
+  }, [listImage]);
+
+  const handleChange = (event) => {
+    if (event.target.value > 100) {
+      return;
+    } else {
+      setAmount(event.target.value);
+    }
+  };
+
+  const handleSelected = () => {
+    console.log("clicked");
+    setIsActive();
+  };
+
+  console.log(listCompoValue);
+  //console.log(productInfo);
 
   return (
     <div className="app">
       <div className="details">
-        <div>
+        <div className="product-info-image">
           <div className="big-img">
-            <img src={product.src[index]} alt="" />
+            <img
+              src={process.env.REACT_APP_IMAGE_URL + listImage[index]}
+              alt=""
+              className="image"
+            />
             <div className="thumb" ref={imgRef}>
-              {product.src.map((img, index) => (
+              {listImage.map((img, index) => (
                 <img
+                  className="thumb-image"
                   key={index}
-                  src={img}
+                  src={process.env.REACT_APP_IMAGE_URL + img}
                   alt=""
                   onClick={() => handleTab(index)}
                 />
@@ -99,33 +126,74 @@ const ProductInfo = ({ productId }) => {
         </div>
         <div className="box">
           <div className="row">
-            <h2>{product.title}</h2>
-            <div className="product-price">${product.price}</div>
+            <h2>{name}</h2>
+            <div className="product-price">${price}</div>
           </div>
-          <div className="colors">
-            <div className="color-title">Color</div>
-            <div className="color-items">
-              {product.colors.map((color, index) => (
-                <button key={index}>{color}</button>
+          <div className="component-container">
+            <div className="component-title">
+              {listCompoName.map((name) => (
+                <div>{name}</div>
+              ))}
+            </div>
+            <div>
+              {listCompoValue.map((value, index) => (
+                <div key={index} className="component-block">
+                  {value.map((i, idx) => (
+                    <button
+                      onClick={() => setIsActive(idx)}
+                      key={idx}
+                      className={
+                        isActive === idx
+                          ? "component-value active"
+                          : "component-value"
+                      }
+                    >
+                      {i}
+                      {isActive === idx ? (
+                        <div className="component-value-icon">
+                          <CheckIcon style={{ fontSize: "14px" }} />
+                        </div>
+                      ) : null}
+                    </button>
+                  ))}
+                </div>
               ))}
             </div>
           </div>
-          <div className="colors">
-            <div className="color-title">Size</div>
-            <div className="color-items">
-              {product.size.map((size, index) => (
-                <button key={index}>{size}</button>
-              ))}
+          <div className="item-container">
+            <div className="item-title">Amount</div>
+            <div className="item">
+              <div className="amount-block">
+                <button
+                  className="amount-button"
+                  onClick={() => setAmount(incrementValue - 1)}
+                >
+                  <RemoveIcon />
+                </button>
+                <input
+                  className="amount-button amount-input"
+                  type="text"
+                  value={incrementValue}
+                  onChange={handleChange}
+                  onFocus={(event) => event.target.select()}
+                />
+                <button
+                  className="amount-button"
+                  onClick={() => setAmount(incrementValue + 1)}
+                >
+                  <AddIcon />
+                </button>
+              </div>
             </div>
           </div>
-          {/* <p>{product.description}</p>
-          <p>{product.content}</p> */}
-          <button className="cart">Add to cart</button>
+          <Button variant="contained" color="primary" className="cart">
+            Add to cart
+          </Button>
         </div>
       </div>
       <div className="product-description">
-        <div className="product-title">PRODUCT DESCRIPTION</div>
-        <div className="product-content">{product.description}</div>
+        <div className="product-description-title">PRODUCT DESCRIPTION</div>
+        <div className="product-content">{description}</div>
       </div>
     </div>
   );

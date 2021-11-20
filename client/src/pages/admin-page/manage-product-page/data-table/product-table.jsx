@@ -80,6 +80,7 @@ const ProductTable = ({ actionLockProduct, setProductId, dispatch }) => {
             })
             .catch((error) => {
               console.log(error);
+              reject();
             });
         })
       }

@@ -39,9 +39,9 @@ const SaleInformation = ({
         productDetails: [
           ...productDetails,
           {
-            price: 0,
-            stock: 0,
-            componentDetails: [],
+            price: "",
+            stock: "",
+            componentDetails: [{ compId: 0, value: "" }],
           },
         ],
       });
@@ -86,7 +86,7 @@ const SaleInformation = ({
         productDetails[0].componentDetails.length > 0
       ) {
         const array = productDetails[0].componentDetails.map((item) => {
-          const compo = componentList.find((i) => i.compId === item.id);
+          const compo = componentList.find((i) => i.id === item.compId);
           return {
             id: compo ? compo.id : "",
             name: compo ? compo.name : "",
@@ -103,7 +103,7 @@ const SaleInformation = ({
     if (actualComponents.length === 0) {
       setBasicInformation({
         ...productInfo,
-        productDetails: [{ price: 0, stock: 0, componentDetails: [] }],
+        productDetails: [{ price: "", stock: "", componentDetails: [] }],
       });
     }
   }, [actualComponents]);
@@ -126,8 +126,10 @@ const SaleInformation = ({
     }
   }, [category]);
 
+  console.log(actualComponents);
+
   return (
-    <div>
+    <div className="basic-info-container">
       <h3 className="store-product-title">Sales Information</h3>
       <div className="store-product-basic-info">
         {actualComponents.length === 0 ? (
@@ -140,7 +142,7 @@ const SaleInformation = ({
                   name="price"
                   type="number"
                   value={
-                    productDetails[0]?.price ? productDetails[0].price : "0"
+                    productDetails[0]?.price ? productDetails[0].price : ""
                   }
                   variant="outlined"
                   onChange={handleChange}
@@ -283,9 +285,9 @@ const SaleInformation = ({
                   </div>
                 </div>
               ))}
-              {/* <div style={{ marginTop: 20 }}>
+              <div style={{ marginTop: 20 }}>
                 {JSON.stringify(productDetails)}
-              </div> */}
+              </div>
             </div>
           </div>
         )}

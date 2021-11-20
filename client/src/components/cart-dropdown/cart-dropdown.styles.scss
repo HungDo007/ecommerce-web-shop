@@ -7,20 +7,29 @@
   top: 55px;
   right: 40px;
   z-index: 5;
-
-  .empty-message {
-    font-size: 18px;
-    margin: 50px auto;
-  }
+  justify-content: space-between;
 
   .cart-items {
-    height: 240px;
-    display: flex;
-    flex-direction: column;
+    height: 272px;
     overflow: auto;
+    padding: 6px;
+
+    .cart-empty-block {
+      display: flex;
+      flex-direction: column;
+
+      .cart-empty-img {
+        height: 240px;
+        width: 240px;
+      }
+
+      .empty-message {
+        margin: 0 auto;
+      }
+    }
   }
 
-  button {
-    margin-top: auto;
+  .link-button {
+    margin: 0 auto;
   }
 }

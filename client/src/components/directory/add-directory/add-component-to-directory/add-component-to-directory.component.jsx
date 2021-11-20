@@ -8,8 +8,9 @@ import adminApi from "../../../../api/admin-api";
 
 import "./add-component-to-directory.styles.scss";
 
-const AddComponentToDirectory = ({ directoryId, dispatch }) => {
+const AddComponentToDirectory = ({ directoryId, dispatch, setNotify }) => {
   const [compoOfDirect, setCompoOfDirect] = useState([]);
+
   useEffect(() => {
     const fetchComponentOfDirectory = async () => {
       try {
@@ -46,6 +47,13 @@ const AddComponentToDirectory = ({ directoryId, dispatch }) => {
       try {
         const response = await adminApi.addComponentToDirectory(data);
         console.log(response);
+        if (response.statusText === "OK" && response.status === 200) {
+          setNotify({
+            isOpen: true,
+            message: "Add component successfully!",
+            type: "success",
+          });
+        }
       } catch (error) {
         console.log("Failed to add component to directory: ", error);
       }
@@ -65,7 +73,6 @@ const AddComponentToDirectory = ({ directoryId, dispatch }) => {
     setCompoOfDirect(newCompoOfDirect);
   };
 
-  console.log("add-component-to-directory has re rendered");
   return (
     <form onSubmit={handleSubmit}>
       <div className="add-component-to-directory-container">

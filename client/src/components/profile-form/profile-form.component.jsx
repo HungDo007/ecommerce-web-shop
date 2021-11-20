@@ -141,7 +141,7 @@ const ProfileForm = ({ values, setValues }) => {
             setTimeout(() => signOut(), 3000);
           }
         } catch (error) {
-          if (error?.response.data === "Email đã được sử dụng.") {
+          if (error?.response.data === "Email already in user.") {
             setNotify({
               isOpen: true,
               message: "Email has been used! Try another!",

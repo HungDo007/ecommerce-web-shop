@@ -14,34 +14,10 @@ const Sidebar = () => {
   const [sidebar, setSidebar] = useState(false);
   const showSideBar = () => setSidebar(!sidebar);
 
-  const [cartDrop, setCartDrop] = useState(false);
-  const showCartDrop = () => setCartDrop(!cartDrop);
-
   return (
     <>
       <IconContext.Provider value={{ color: "#fff" }}>
         <div>
-          {/* <div className="sidebar">
-            <Link to="#" className="menu-bars">
-              <FaIcons.FaBars onClick={showSideBar} />
-            </Link>
-            <Link to="directory">Directory</Link>
-            <div className="options">
-              {currentUser ? (
-                <div className="option" onClick={handleSignOut}>
-                  SIGN OUT
-                </div>
-              ) : (
-                <Link className="option" to="/signin">
-                  SIGN IN
-                </Link>
-              )}
-              <div onClick={showCartDrop}>
-                <CartIcon />
-              </div>
-            </div>
-            {cartDrop ? <CartDropDown /> : null}
-          </div> */}
           <CustomAppBar sidebar={sidebar} setSidebar={setSidebar} />
           <nav className={sidebar ? "nav-menu active" : "nav-menu"}>
             <ul className="nav-menu-items" onClick={showSideBar}>

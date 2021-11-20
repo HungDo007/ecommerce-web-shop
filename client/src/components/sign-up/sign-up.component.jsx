@@ -144,13 +144,22 @@ const SignUp = ({ setAction, currentUser }) => {
           try {
             const response = await userApi.signUp(data);
             console.log(response);
-            setNotify({
-              isOpen: true,
-              message: "Sign up successfully!",
-              type: "success",
-            });
+            if (response.statusText === "OK" && response.status === 200) {
+              setNotify({
+                isOpen: true,
+                message: "Sign up successfully!",
+                type: "success",
+              });
+            }
           } catch (error) {
             console.log(error.response);
+            if (error.response?.data == "Username already used") {
+              setNotify({
+                isOpen: true,
+                message: `Fail to sign up. Username already used!`,
+                type: "error",
+              });
+            }
             // setNotify({
             //   isOpen: true,
             //   message: `Fail to sign up: ${error?.response.data}`,

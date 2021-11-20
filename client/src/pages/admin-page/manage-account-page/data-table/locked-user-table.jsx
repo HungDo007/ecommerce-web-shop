@@ -54,13 +54,19 @@ const LockedUserTable = ({ actionLockUser, setUsername }) => {
               pageSize: query.pageSize,
               keyword: query.search,
             };
-            adminApi.getLockedUserPaging(params).then((response) => {
-              resolve({
-                data: response.items,
-                page: query.page,
-                totalCount: response.totalRecords,
+            adminApi
+              .getLockedUserPaging(params)
+              .then((response) => {
+                resolve({
+                  data: response.items,
+                  page: query.page,
+                  totalCount: response.totalRecords,
+                });
+              })
+              .catch((error) => {
+                console.log(error);
+                reject();
               });
-            });
           })
         }
         columns={columns}

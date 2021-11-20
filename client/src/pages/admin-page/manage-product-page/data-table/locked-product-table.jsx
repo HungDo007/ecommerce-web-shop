@@ -69,13 +69,19 @@ const LockedProductTable = ({ actionLockProduct, setProductId, dispatch }) => {
             pageSize: query.pageSize,
             keyword: query.search,
           };
-          adminApi.getLockedProductPaging(params).then((response) => {
-            resolve({
-              data: response.items,
-              page: query.page,
-              totalCount: response.totalRecords,
+          adminApi
+            .getLockedProductPaging(params)
+            .then((response) => {
+              resolve({
+                data: response.items,
+                page: query.page,
+                totalCount: response.totalRecords,
+              });
+            })
+            .catch((error) => {
+              console.log(error);
+              reject();
             });
-          });
         })
       }
       columns={columns}

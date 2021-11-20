@@ -3,6 +3,8 @@ import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 
 import { toggleModal } from "../../redux/modal/modal.actions";
+
+import Notification from "../notification/notification.component";
 import ActiveEmailForm from "../active-email/active-email.component";
 import CustomDialog from "../dialog/dialog.component";
 import ProfileForm from "../profile-form/profile-form.component";

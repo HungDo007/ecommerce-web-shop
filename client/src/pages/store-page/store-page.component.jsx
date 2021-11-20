@@ -22,7 +22,7 @@ const StorePage = ({ match, currentUser, history }) => {
       }
     };
     getUserProfile();
-  }, []);
+  }, [currentUser.unique_name, history]);
 
   return (
     <div>

@@ -10,15 +10,11 @@
 
   .items {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
     grid-gap: 12px;
-
-    & .product-item {
-      margin-bottom: 15px;
-    }
   }
 }
 
 .more-button {
-  margin-bottom: 3rem;
+  margin: 3rem 0;
 }
