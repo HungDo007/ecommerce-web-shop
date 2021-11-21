@@ -8,7 +8,7 @@ const CartDropDown = () => {
   const cartItems = [
     {
       id: 23,
-      name: "Blue Tanktop",
+      name: "Blue Tank Top",
       imageUrl: "https://i.ibb.co/7CQVJNm/blue-tank.png",
       price: 25,
       quantity: 1,

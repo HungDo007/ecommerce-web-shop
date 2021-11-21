@@ -94,6 +94,7 @@ const StoreProduct = (props) => {
       if (name !== "price" && name !== "stock") {
         list[index].componentDetails = actualComponents.map((item) => ({
           compId: item.id,
+          name: item.name,
           value:
             item.name === name
               ? value
@@ -200,6 +201,8 @@ const StoreProduct = (props) => {
       });
     }
   };
+
+  console.log(productInfo);
 
   useEffect(() => {
     const getProduct = async (id) => {

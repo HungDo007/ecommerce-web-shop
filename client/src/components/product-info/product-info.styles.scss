@@ -12,6 +12,7 @@
 
     .product-info-image {
       background: #fafafa;
+      height: 570px;
 
       .big-img {
         width: 500px;
@@ -73,69 +74,103 @@
 
       .component-container {
         width: 500px;
-        margin: 16px auto;
-        display: flex;
+        margin: 30px auto;
 
-        .component-title {
+        .component-item {
           display: flex;
-          width: 100px;
-          justify-content: space-around;
-          flex-direction: column;
-        }
+          align-items: baseline;
+          margin-bottom: 25px;
 
-        .component-block {
-          display: flex;
-          padding: 12px 0;
+          .component-name {
+            width: 110px;
+          }
 
-          .component-value {
-            position: relative;
-            width: 80px;
-            height: 35px;
-            border: 1px solid rgba(0, 0, 0, 0.09);
-            border-radius: 2px;
-            margin: 2px 2px;
-            cursor: pointer;
-            background-color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+          .component-values {
+            flex-wrap: wrap;
+            width: 390px;
 
-            &:hover {
+            .component-value-btn {
+              min-width: 5rem;
+              min-height: 2.125rem;
+              padding: 0 5px;
+              border: 1px solid rgba(0, 0, 0, 0.09);
+              border-radius: 2px;
+              background: #fff;
+              cursor: pointer;
+              margin: 0 8px 8px 0;
+
+              &:hover {
+                color: royalblue;
+                border: 1px solid royalblue;
+              }
+
+              .component-value-icon {
+                position: absolute;
+                right: 0;
+                bottom: 0;
+              }
+            }
+
+            .active {
+              position: relative;
               color: royalblue;
               border: 1px solid royalblue;
             }
-
-            &:active {
-              background-color: rgba(90, 55, 160, 0.2);
-            }
-
-            .component-value-icon {
-              position: absolute;
-              right: 0;
-              bottom: -6px;
-            }
-          }
-
-          .active {
-            color: royalblue;
-            border: 1px solid royalblue;
           }
         }
+
+        // .component-block {
+        //   display: flex;
+        //   padding: 12px 0;
+
+        //   .component-value {
+        //     position: relative;
+        //     width: 80px;
+        //     height: 35px;
+        //     border: 1px solid rgba(0, 0, 0, 0.09);
+        //     border-radius: 2px;
+        //     margin: 2px 2px;
+        //     cursor: pointer;
+        //     background-color: white;
+        //     display: flex;
+        //     align-items: center;
+        //     justify-content: center;
+
+        //     &:hover {
+        //       color: royalblue;
+        //       border: 1px solid royalblue;
+        //     }
+
+        //     &:active {
+        //       background-color: rgba(90, 55, 160, 0.2);
+        //     }
+
+        //     .component-value-icon {
+        //       position: absolute;
+        //       right: 0;
+        //       bottom: -6px;
+        //     }
+        //   }
+
+        //   .active {
+        //     color: royalblue;
+        //     border: 1px solid royalblue;
+        //   }
+        //}
       }
 
       .item-container {
         display: flex;
         align-items: center;
         width: 500px;
-        justify-content: space-between;
         margin: 16px auto;
 
         .item-title {
-          width: 100px;
+          width: 110px;
         }
 
         .item {
-          width: 430px;
+          align-items: center;
 
           .amount-block {
             display: flex;

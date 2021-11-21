@@ -119,14 +119,12 @@ const SaleInformation = ({
       }
     };
 
-    if (category != 0) {
+    if (category !== 0) {
       fetchComponentsOfDirectory(category);
     } else {
       setComponentList([]);
     }
   }, [category]);
-
-  console.log(actualComponents);
 
   return (
     <div className="basic-info-container">
@@ -165,7 +163,7 @@ const SaleInformation = ({
                   fullWidth
                   name="stock"
                   value={
-                    productDetails[0]?.stock ? productDetails[0].stock : "0"
+                    productDetails[0]?.stock ? productDetails[0].stock : ""
                   }
                   type="number"
                   variant="outlined"
@@ -285,9 +283,9 @@ const SaleInformation = ({
                   </div>
                 </div>
               ))}
-              <div style={{ marginTop: 20 }}>
+              {/* <div style={{ marginTop: 20 }}>
                 {JSON.stringify(productDetails)}
-              </div>
+              </div> */}
             </div>
           </div>
         )}

@@ -9,7 +9,7 @@ import AddIcon from "@material-ui/icons/Add";
 import "./product-info.styles.scss";
 
 const ProductInfo = ({ productId }) => {
-  const [listCompoValue, setListCompoValue] = useState([]);
+  const [listComponent, setListComponent] = useState([]);
 
   const [productInfo, setProductInfo] = useState({
     name: "",
@@ -20,16 +20,32 @@ const ProductInfo = ({ productId }) => {
     productDetails: [],
   });
 
+  const variant = [
+    {
+      name: "color",
+      values: [
+        {
+          id: 1,
+          name: "L",
+        },
+      ],
+    },
+  ];
+
   const { name, price, poster, images, description, productDetails } =
     productInfo;
 
-  let listCompoName = [["Color"], ["Size"]];
-
   const [listImage, setListImage] = useState([]);
   const [index, setIndex] = useState(0);
-  const [amount, setAmount] = useState(1);
-  const [isActive, setIsActive] = useState(-1);
-  const incrementValue = Number(amount) || 1;
+
+  const [cartItem, setCartItem] = useState({
+    productDetailId: 0,
+    amount: 1,
+  });
+
+  const [isActive, setIsActive] = useState(false);
+
+  const incrementValue = Number(cartItem.amount) || 1;
 
   const imgRef = useRef(null);
 
@@ -61,22 +77,21 @@ const ProductInfo = ({ productId }) => {
     let listCompo = [];
     let num = productDetails[0]?.componentDetails.length;
     for (let i = 0; i < num; i++) {
-      let a = [];
-      //let arr = [];
+      let a = {
+        name: "",
+        value: [],
+      };
       productDetails.forEach((element) => {
-        if (!a.some((item) => item === element.componentDetails[i]?.value)) {
-          a.push(element.componentDetails[i]?.value);
+        if (
+          !a.value.some((item) => item === element.componentDetails[i]?.value)
+        ) {
+          a.value.push(element.componentDetails[i]?.value);
         }
-        // arr = a.map((item) => ({
-        //   value: item,
-        //   id: Math.random().toString(36).substr(2, 9),
-        // }));
-        //console.log(arr);
+        a.name = element.componentDetails[i]?.name;
       });
       listCompo.push(a);
     }
-    setListCompoValue(listCompo);
-    //console.log(listCompo);
+    setListComponent(listCompo);
   }, [productInfo]);
 
   useEffect(() => {
@@ -89,17 +104,24 @@ const ProductInfo = ({ productId }) => {
     if (event.target.value > 100) {
       return;
     } else {
-      setAmount(event.target.value);
+      //setAmount(event.target.value);
+      setCartItem({ ...cartItem, amount: event.target.value });
     }
   };
 
-  const handleSelected = () => {
-    console.log("clicked");
-    setIsActive();
+  const handleCompo = (event) => {
+    setIsActive(!isActive);
+    console.log(event);
   };
 
-  console.log(listCompoValue);
-  //console.log(productInfo);
+  const handleAddToCart = () => {
+    if (cartItem.productDetailId === 0) {
+      alert("Select component ");
+    }
+    console.log(cartItem);
+  };
+
+  console.log(listComponent);
 
   return (
     <div className="app">
@@ -108,7 +130,7 @@ const ProductInfo = ({ productId }) => {
           <div className="big-img">
             <img
               src={process.env.REACT_APP_IMAGE_URL + listImage[index]}
-              alt=""
+              alt="product"
               className="image"
             />
             <div className="thumb" ref={imgRef}>
@@ -130,7 +152,7 @@ const ProductInfo = ({ productId }) => {
             <div className="product-price">${price}</div>
           </div>
           <div className="component-container">
-            <div className="component-title">
+            {/* <div className="component-title">
               {listCompoName.map((name, index) => (
                 <div key={index}>{name}</div>
               ))}
@@ -140,16 +162,15 @@ const ProductInfo = ({ productId }) => {
                 <div key={index} className="component-block">
                   {value.map((i, idx) => (
                     <button
+                      value={i}
                       key={idx}
-                      onClick={() => setIsActive(idx)}
+                      onClick={handleCompo}
                       className={
-                        isActive === idx
-                          ? "component-value active"
-                          : "component-value"
+                        isActive ? "component-value active" : "component-value"
                       }
                     >
                       {i}
-                      {isActive === idx ? (
+                      {isActive ? (
                         <div className="component-value-icon">
                           <CheckIcon style={{ fontSize: "14px" }} />
                         </div>
@@ -158,7 +179,32 @@ const ProductInfo = ({ productId }) => {
                   ))}
                 </div>
               ))}
-            </div>
+            </div> */}
+            {listComponent.map((item, index) => (
+              <div className="component-item" key={index}>
+                <div className="component-name">{item.name}</div>
+                <div className="component-values">
+                  {item.value.map((value) => (
+                    <Button
+                      value={value}
+                      className={
+                        isActive
+                          ? "component-value-btn active"
+                          : "component-value-btn"
+                      }
+                      onClick={handleCompo}
+                    >
+                      {value}
+                      {isActive ? (
+                        <div className="component-value-icon">
+                          <CheckIcon style={{ fontSize: "14px" }} />
+                        </div>
+                      ) : null}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
           <div className="item-container">
             <div className="item-title">Amount</div>
@@ -166,7 +212,9 @@ const ProductInfo = ({ productId }) => {
               <div className="amount-block">
                 <button
                   className="amount-button"
-                  onClick={() => setAmount(incrementValue - 1)}
+                  onClick={() =>
+                    setCartItem({ ...cartItem, amount: incrementValue - 1 })
+                  }
                 >
                   <RemoveIcon />
                 </button>
@@ -179,14 +227,21 @@ const ProductInfo = ({ productId }) => {
                 />
                 <button
                   className="amount-button"
-                  onClick={() => setAmount(incrementValue + 1)}
+                  onClick={() =>
+                    setCartItem({ ...cartItem, amount: incrementValue + 1 })
+                  }
                 >
                   <AddIcon />
                 </button>
               </div>
             </div>
           </div>
-          <Button variant="contained" color="primary" className="cart">
+          <Button
+            variant="contained"
+            color="primary"
+            className="cart"
+            onClick={handleAddToCart}
+          >
             Add to cart
           </Button>
         </div>
