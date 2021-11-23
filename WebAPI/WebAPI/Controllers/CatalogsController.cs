@@ -21,7 +21,8 @@ namespace WebAPI.Controllers
         [HttpGet("product")]
         public async Task<IActionResult> GetAll([FromQuery] ProductPagingRequest request)
         {
-            return Ok(await _productService.GetAll(request));
+            string username = User.Identity.Name;
+            return Ok(await _productService.GetAll(username, request));
         }
 
 

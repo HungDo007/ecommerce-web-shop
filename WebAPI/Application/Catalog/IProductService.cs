@@ -11,7 +11,7 @@ namespace Application.Catalog
         /// Get all product.
         /// </summary>
         /// <returns></returns>
-        Task<PagedResult<ProductVm>> GetAll(ProductPagingRequest request);
+        Task<PagedResult<ProductVm>> GetAll(string username, ProductPagingRequest request);
 
         Task<PagedResult<ProductVm>> GetAdminAll(ProductPagingRequest request);
 

@@ -86,7 +86,7 @@ namespace Application.System
                 user = await _userManager.FindByEmailAsync(request.Username) != null ? await _userManager.FindByEmailAsync(request.Username) : null;
             }
 
-            if (user == null || user.Status == false)
+            if (user == null)
             {
                 response.Status = false;
                 response.Response = "Incorrect Username.";

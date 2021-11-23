@@ -130,7 +130,7 @@ namespace Application.Catalog
             }
         }
 
-        public async Task<PagedResult<ProductVm>> GetAll(ProductPagingRequest request)
+        public async Task<PagedResult<ProductVm>> GetAll(string username, ProductPagingRequest request)
         {
             var products = await _context.Products
                 .Where(x => x.Status == ProductStatus.Active)
@@ -141,6 +141,10 @@ namespace Application.Catalog
                 .ToListAsync();
 
             //Filter
+            if (!string.IsNullOrEmpty(username))
+            {
+                products = products.Where(x => x.User.UserName != username).ToList();
+            }
             if (!string.IsNullOrEmpty(request.Keyword))
             {
                 products = products.Where(x => x.Name.Contains(request.Keyword)).ToList();

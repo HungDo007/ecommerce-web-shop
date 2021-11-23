@@ -12,6 +12,7 @@ namespace Data.Configurations
             builder.ToTable("Carts");
             builder.HasKey(i => i.Id);
             builder.HasOne(i => i.ProductDetail).WithMany(i => i.Carts).HasForeignKey(i => i.ProductDetailId);
+            builder.Property(i => i.DateCreated).HasDefaultValue(DateTime.Now);
             builder.HasOne(i => i.AppUser).WithMany(i => i.Carts).HasForeignKey(i => i.UserId).OnDelete(DeleteBehavior.NoAction);
         }
     }
