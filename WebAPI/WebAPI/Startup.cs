@@ -67,6 +67,7 @@ namespace WebAPI
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IComponentService, ComponentService>();
+            services.AddScoped<ISaleService, SaleService>();
 
             services.AddControllers();
 
