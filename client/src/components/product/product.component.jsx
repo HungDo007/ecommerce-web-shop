@@ -43,7 +43,7 @@ const Product = () => {
       }
     };
     getProductPaging();
-  }, [page]);
+  }, [page, directoryId]);
 
   return (
     <>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+// import { useState } from "react";
 
 import { Checkbox, IconButton, Tooltip } from "@material-ui/core";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
@@ -6,7 +6,6 @@ import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
 import ClearIcon from "@material-ui/icons/Clear";
 
 import "./cart.styles.scss";
-import { useEffect } from "react";
 
 const Cart = ({
   index,

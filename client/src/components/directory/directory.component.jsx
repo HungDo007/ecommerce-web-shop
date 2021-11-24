@@ -25,7 +25,7 @@ const Directory = () => {
     };
 
     fetchDirectoryList();
-  }, []);
+  }, [dispatch]);
 
   return (
     <>

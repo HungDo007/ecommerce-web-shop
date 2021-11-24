@@ -22,7 +22,7 @@ const AddComponentToDirectory = ({ directoryId, dispatch, setNotify }) => {
     };
 
     fetchComponentOfDirectory();
-  }, []);
+  }, [directoryId]);
 
   useEffect(() => {
     const ls = compoOfDirect

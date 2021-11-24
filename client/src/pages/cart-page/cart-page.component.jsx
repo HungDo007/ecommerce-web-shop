@@ -7,16 +7,17 @@ import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
 import ClearIcon from "@material-ui/icons/Clear";
 
 import "./cart-page.styles.scss";
+import { useEffect } from "react";
 
 const CartPage = () => {
   const itemsDb = [
     {
       id: 23,
-      name: "Blue Tanktop",
+      name: "Blue Tank Top",
       imageUrl: "https://i.ibb.co/7CQVJNm/blue-tank.png",
       price: 25,
       quantity: 1,
-      isChecked: false,
+      stock: 100,
     },
     {
       id: 24,
@@ -24,53 +25,28 @@ const CartPage = () => {
       imageUrl: "https://i.ibb.co/4W2DGKm/floral-blouse.png",
       price: 20,
       quantity: 1,
-      isChecked: false,
-    },
-    {
-      id: 25,
-      name: "Floral Dress",
-      imageUrl: "https://i.ibb.co/KV18Ysr/floral-skirt.png",
-      price: 80,
-      quantity: 1,
-      isChecked: false,
-    },
-    {
-      id: 26,
-      name: "Red Dots Dress",
-      imageUrl: "https://i.ibb.co/N3BN1bh/red-polka-dot-dress.png",
-      price: 80,
-      quantity: 1,
-      isChecked: false,
-    },
-    {
-      id: 27,
-      name: "Striped Sweater",
-      imageUrl: "https://i.ibb.co/KmSkMbH/striped-sweater.png",
-      price: 45,
-      quantity: 1,
-      isChecked: false,
-    },
-    {
-      id: 28,
-      name: "Yellow Track Suit",
-      imageUrl: "https://i.ibb.co/v1cvwNf/yellow-track-suit.png",
-      price: 135,
-      quantity: 1,
-      isChecked: false,
-    },
-    {
-      id: 29,
-      name: "White Blouse",
-      imageUrl: "https://i.ibb.co/qBcrsJg/white-vest.png",
-      price: 20,
-      quantity: 1,
-      isChecked: false,
+      stock: 100,
     },
   ];
 
   const [checked, setChecked] = useState(false);
-  const [cartItems, setCartItems] = useState(itemsDb);
+
+  const [cartItems, setCartItems] = useState([]);
+
   const [items, setItems] = useState([]);
+
+  useEffect(() => {
+    setTimeout(() => setCartItems(itemsDb), 1000);
+  }, []);
+
+  useEffect(() => {
+    if (items.length === cartItems.length && items.length !== 0) {
+      setChecked(true);
+    }
+    if (items.length < cartItems.length) {
+      setChecked(false);
+    }
+  }, [items]);
 
   const handleChange = (event, position) => {
     const id = Number(event.target.value);
@@ -81,18 +57,8 @@ const CartPage = () => {
         setItems(cartItems);
       } else {
         setItems([]);
-        setCartItems(cartItems);
       }
     } else {
-      const newCartItem = [...cartItems];
-
-      newCartItem[position] = {
-        ...newCartItem[position],
-        isChecked: !newCartItem[position].isChecked,
-      };
-
-      setCartItems(newCartItem);
-
       if (event.target.checked) {
         if (!items.some((item) => item.id === id)) {
           setItems([...items, cartItems[position]]);
@@ -104,10 +70,8 @@ const CartPage = () => {
   };
 
   const handleCheckout = () => {
-    console.log(cartItems);
+    console.log(items);
   };
-
-  console.log(items);
 
   return (
     <div className="cart-page">
@@ -126,7 +90,7 @@ const CartPage = () => {
           <span>Name</span>
         </div>
         <div className="header-block">
-          <span>Quantity</span>
+          <span>Amount</span>
         </div>
         <div className="header-block">
           <span>Price</span>
@@ -140,7 +104,7 @@ const CartPage = () => {
           <div>
             <Checkbox
               value={cartItem.id}
-              checked={cartItem.isChecked}
+              checked={items.map((item) => item.id).includes(cartItem.id)}
               onChange={(event) => handleChange(event, index)}
             />
           </div>
