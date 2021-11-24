@@ -35,14 +35,25 @@ namespace Application.Catalog
                 var user = await _userManager.FindByNameAsync(username);
                 var proDetail = await _context.ProductDetails.FindAsync(request.ProductDetailId);
 
-                var cart = new Cart()
-                {
-                    UserId = user.Id,
-                    ProductDetailId = request.ProductDetailId,
-                    Quantity = request.Quantity,
-                    Price = request.Quantity * proDetail.Price
-                };
 
+                Cart cart = await _context.Carts.Where(x => x.UserId == user.Id && x.ProductDetailId == proDetail.Id).FirstOrDefaultAsync();
+
+                if (cart != null)
+                {
+                    cart.Quantity++;
+                    await _context.SaveChangesAsync();
+                    return true;
+                }
+                else
+                {
+                    cart = new Cart()
+                    {
+                        UserId = user.Id,
+                        ProductDetailId = request.ProductDetailId,
+                        Quantity = request.Quantity,
+                        Price = request.Quantity * proDetail.Price
+                    };
+                }
                 _context.Carts.Add(cart);
                 await _context.SaveChangesAsync();
                 return true;
@@ -57,18 +68,13 @@ namespace Application.Catalog
         {
             try
             {
-                //var user = await _userManager.FindByNameAsync(username);
-
-                //var cart = await _context.Carts.Include(x => x.ProductDetail).Where(x => x.UserId == user.Id).ToListAsync();
-
                 var a = from c in _context.Carts
                         join pd in _context.ProductDetails on c.ProductDetailId equals pd.Id
                         join p in _context.Products on pd.ProductId equals p.Id
                         join pi in _context.ProductImages on p.Id equals pi.ProductId
-                        join u in _context.Users on p.UserId equals u.Id
+                        join u in _context.Users on c.UserId equals u.Id
                         where u.UserName == username && pi.IsPoster == true
-                        select new { c, pd, p, pi };
-
+                        select new { c, pd, p, pi, u };
 
 
                 if (!string.IsNullOrEmpty(request.Keyword))
@@ -134,7 +140,7 @@ namespace Application.Catalog
                     proD.c.Price -= proD.pd.Price;
                 }
 
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
                 return true;
             }
             catch
