@@ -1,5 +1,4 @@
 import { useState } from "react";
-import Cart from "../../components/cart/cart.component";
 
 import { Button, Checkbox, IconButton, Tooltip } from "@material-ui/core";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
@@ -12,26 +11,9 @@ import salesApi from "../../api/sales.api";
 import { Pagination } from "@material-ui/lab";
 
 const CartPage = () => {
-  const itemsDb = [
-    {
-      id: 23,
-      name: "Blue Tank Top",
-      imageUrl: "https://i.ibb.co/7CQVJNm/blue-tank.png",
-      price: 25,
-      quantity: 1,
-      stock: 100,
-    },
-    {
-      id: 24,
-      name: "Floral Blouse",
-      imageUrl: "https://i.ibb.co/4W2DGKm/floral-blouse.png",
-      price: 20,
-      quantity: 1,
-      stock: 100,
-    },
-  ];
-
   const [checked, setChecked] = useState(false);
+
+  const [total, setTotal] = useState(0);
 
   const [page, setPage] = useState(1);
 
@@ -45,19 +27,21 @@ const CartPage = () => {
 
   const [items, setItems] = useState([]);
 
+  const getCart = async () => {
+    try {
+      const params = {
+        pageIndex: page,
+        pageSize: 5,
+      };
+      const response = await salesApi.getCart(params);
+      console.log(response);
+      setCartPaging(response);
+    } catch (error) {
+      console.log("Failed to get cart: ", error?.response);
+    }
+  };
+
   useEffect(() => {
-    const getCart = async () => {
-      try {
-        const params = {
-          pageIndex: page,
-          pageSize: 5,
-        };
-        const response = await salesApi.getCart(params);
-        setCartPaging(response);
-      } catch (error) {
-        console.log("Failed to get cart: ", error?.response);
-      }
-    };
     getCart();
   }, []);
 
@@ -68,6 +52,12 @@ const CartPage = () => {
     if (items.length < cartPaging.items.length) {
       setChecked(false);
     }
+
+    const total = items.reduce(
+      (accumulate, item) => accumulate + item.price,
+      0
+    );
+    setTotal(total);
   }, [items]);
 
   const handleChange = (event, position) => {
@@ -82,20 +72,36 @@ const CartPage = () => {
       }
     } else {
       if (event.target.checked) {
-        if (!items.some((item) => item.id === id)) {
+        if (!items.some((item) => item.cartId === id)) {
           setItems([...items, cartPaging.items[position]]);
         }
       } else {
-        setItems(items.filter((item) => item.id !== id));
+        setItems(items.filter((item) => item.cartId !== id));
       }
     }
+  };
+
+  const handleUpdateAmount = (string, id) => {
+    const payload = {
+      cartId: id,
+      isIncrease: string === "increase" ? true : false,
+    };
+    const editAmount = async () => {
+      try {
+        const response = await salesApi.editAmount(payload);
+        getCart();
+      } catch (error) {
+        console.log("Failed to edit amount: ", error?.response);
+      }
+    };
+    editAmount();
   };
 
   const handleCheckout = () => {
     console.log(items);
   };
 
-  console.log(cartPaging);
+  console.log(items);
 
   return (
     <div className="cart-page">
@@ -117,18 +123,20 @@ const CartPage = () => {
           <span>Amount</span>
         </div>
         <div className="header-block">
-          <span>Unit Price</span>
+          <span>Price</span>
         </div>
         <div className="header-block">
           <span>Remove</span>
         </div>
       </div>
       {cartPaging.items.map((cartItem, index) => (
-        <div key={cartItem.id} className="c-item">
+        <div key={cartItem.cartId} className="c-item">
           <div>
             <Checkbox
-              value={cartItem.id}
-              checked={items.map((item) => item.id).includes(cartItem.id)}
+              value={cartItem.cartId}
+              checked={items
+                .map((item) => item.cartId)
+                .includes(cartItem.cartId)}
               onChange={(event) => handleChange(event, index)}
             />
           </div>
@@ -141,13 +149,20 @@ const CartPage = () => {
           <span className="name">{cartItem.name}</span>
           <span className="quantity">
             <Tooltip title="Decrease item by 1">
-              <IconButton aria-label="decrease item">
+              <IconButton
+                value="Decrease"
+                onClick={() => handleUpdateAmount("decrease", cartItem.cartId)}
+                aria-label="decrease item"
+              >
                 <ArrowBackIosIcon />
               </IconButton>
             </Tooltip>
             <span className="value">{cartItem.quantity}</span>
             <Tooltip title="Increase item by 1">
-              <IconButton aria-label="increase item">
+              <IconButton
+                onClick={() => handleUpdateAmount("increase", cartItem.cartId)}
+                aria-label="increase item"
+              >
                 <ArrowForwardIosIcon />
               </IconButton>
             </Tooltip>
@@ -160,7 +175,7 @@ const CartPage = () => {
           </Tooltip>
         </div>
       ))}
-      <div className="total">TOTAL: $999</div>
+      <div className="total">TOTAL: ${total}</div>
       <div>
         <Pagination
           defaultPage={1}
