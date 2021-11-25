@@ -33,14 +33,19 @@ const CartPage = () => {
 
   const [checked, setChecked] = useState(false);
 
-  const [cartItems, setCartItems] = useState([]);
+  const [page, setPage] = useState(1);
+
+  const [cartPaging, setCartPaging] = useState({
+    items: [],
+    pageIndex: page,
+    pageSize: 5,
+    pageCount: 0,
+    totalRecord: 0,
+  });
 
   const [items, setItems] = useState([]);
 
-  const [page, setPage] = useState(1);
-
   useEffect(() => {
-    setTimeout(() => setCartItems(itemsDb), 1000);
     const getCart = async () => {
       try {
         const params = {
@@ -48,19 +53,19 @@ const CartPage = () => {
           pageSize: 5,
         };
         const response = await salesApi.getCart(params);
-        console.log(response);
+        setCartPaging(response);
       } catch (error) {
         console.log("Failed to get cart: ", error?.response);
       }
     };
-    //getCart();
+    getCart();
   }, []);
 
   useEffect(() => {
-    if (items.length === cartItems.length && items.length !== 0) {
+    if (items.length === cartPaging.items.length && items.length !== 0) {
       setChecked(true);
     }
-    if (items.length < cartItems.length) {
+    if (items.length < cartPaging.items.length) {
       setChecked(false);
     }
   }, [items]);
@@ -71,14 +76,14 @@ const CartPage = () => {
     if (position === -1) {
       setChecked(event.target.checked);
       if (event.target.checked === true) {
-        setItems(cartItems);
+        setItems(cartPaging.items);
       } else {
         setItems([]);
       }
     } else {
       if (event.target.checked) {
         if (!items.some((item) => item.id === id)) {
-          setItems([...items, cartItems[position]]);
+          setItems([...items, cartPaging.items[position]]);
         }
       } else {
         setItems(items.filter((item) => item.id !== id));
@@ -89,6 +94,8 @@ const CartPage = () => {
   const handleCheckout = () => {
     console.log(items);
   };
+
+  console.log(cartPaging);
 
   return (
     <div className="cart-page">
@@ -116,7 +123,7 @@ const CartPage = () => {
           <span>Remove</span>
         </div>
       </div>
-      {cartItems.map((cartItem, index) => (
+      {cartPaging.items.map((cartItem, index) => (
         <div key={cartItem.id} className="c-item">
           <div>
             <Checkbox
@@ -126,7 +133,10 @@ const CartPage = () => {
             />
           </div>
           <div className="image-container">
-            <img src={cartItem.imageUrl} alt="item" />
+            <img
+              src={process.env.REACT_APP_IMAGE_URL + cartItem.productImg}
+              alt="item"
+            />
           </div>
           <span className="name">{cartItem.name}</span>
           <span className="quantity">
@@ -142,7 +152,7 @@ const CartPage = () => {
               </IconButton>
             </Tooltip>
           </span>
-          <span className="price">{cartItem.price}</span>
+          <span className="price">$ {cartItem.price}</span>
           <Tooltip title="Remove item">
             <IconButton aria-label="remove item">
               <ClearIcon />
@@ -156,7 +166,8 @@ const CartPage = () => {
           defaultPage={1}
           shape="rounded"
           color="primary"
-          count={10}
+          count={cartPaging.pageCount}
+          onChange={(event, page) => setPage(page)}
         />
       </div>
       <div>
