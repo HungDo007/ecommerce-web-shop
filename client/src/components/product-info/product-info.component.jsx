@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
+import { useHistory } from "react-router";
 
 import { Button } from "@material-ui/core";
 import CheckIcon from "@material-ui/icons/Check";
@@ -8,6 +10,7 @@ import AddIcon from "@material-ui/icons/Add";
 import Notification from "../notification/notification.component";
 
 import catalogApi from "../../api/catalog-api";
+import salesApi from "../../api/sales.api";
 
 import "./product-info.styles.scss";
 
@@ -19,12 +22,20 @@ const ProductInfo = ({ productId }) => {
     price: "",
     description: "",
     poster: "",
+    viewCount: 0,
     images: [],
     productDetails: [],
   });
 
-  const { name, price, poster, images, description, productDetails } =
-    productInfo;
+  const {
+    name,
+    price,
+    poster,
+    images,
+    viewCount,
+    description,
+    productDetails,
+  } = productInfo;
 
   const [listImage, setListImage] = useState([]);
 
@@ -48,6 +59,9 @@ const ProductInfo = ({ productId }) => {
     type: "",
   });
 
+  const currentUser = useSelector((state) => state.user.currentUser);
+  const history = useHistory();
+
   const incrementValue = Number(cartItem.amount) || 1;
 
   const imgRef = useRef(null);
@@ -67,6 +81,7 @@ const ProductInfo = ({ productId }) => {
         const response = await catalogApi.getProductById(productId);
         console.log(response);
         setProductInfo(response);
+        await catalogApi.addViewCount(productId);
       } catch (error) {
         console.log("Failed to get product: ", error.response);
       }
@@ -147,9 +162,6 @@ const ProductInfo = ({ productId }) => {
         }
       });
 
-      console.log(a);
-      console.log(b);
-
       setCartItem({ amount: 1, productDetailId });
 
       setAvailableItem({ price, stock });
@@ -187,26 +199,49 @@ const ProductInfo = ({ productId }) => {
   };
 
   const handleAddToCart = () => {
-    if (cartItem.productDetailId === 0) {
-      setNotify({
-        isOpen: true,
-        message: "Please select component!",
-        type: "warning",
-      });
-    } else if (cartItem.amount > availableItem.stock) {
-      setNotify({
-        isOpen: true,
-        message: "The amount must smaller than available product!",
-        type: "warning",
-      });
+    if (currentUser) {
+      if (cartItem.productDetailId === 0) {
+        setNotify({
+          isOpen: true,
+          message: "Please select component!",
+          type: "warning",
+        });
+      } else if (cartItem.amount > availableItem.stock) {
+        setNotify({
+          isOpen: true,
+          message: "The amount must smaller than available product!",
+          type: "warning",
+        });
+      } else {
+        // let amount = 1;
+        // console.log(amount);
+        const payload = {
+          productDetailId: cartItem.productDetailId,
+          quantity: cartItem.amount,
+        };
+        if (cartItem.amount === "") {
+          payload.quantity = 1;
+        }
+        const addToCart = async () => {
+          try {
+            const response = await salesApi.addToCart(payload);
+            if (response.status === 200 && response.statusText === "OK") {
+              setNotify({
+                isOpen: true,
+                message: "Add to cart successfully!",
+                type: "success",
+              });
+            }
+          } catch (error) {
+            console.log("Failed to add product to cart", error.response);
+          }
+        };
+        addToCart();
+        //console.log(payload);
+      }
+    } else {
+      history.push("/signin");
     }
-
-    // else if (cartItem.amount === "") {
-    //   let amount = 1;
-    //   console.log(amount);
-    // }
-
-    console.log(cartItem);
   };
 
   return (
@@ -235,6 +270,9 @@ const ProductInfo = ({ productId }) => {
         <div className="box">
           <div className="row">
             <h2>{name}</h2>
+            <div className="product-info-view-count">
+              {viewCount} View Count
+            </div>
             <div className="product-price">${availableItem.price}</div>
           </div>
           <div className="component-container">
@@ -304,7 +342,11 @@ const ProductInfo = ({ productId }) => {
           <Button
             variant="contained"
             color="primary"
-            disabled={availableItem.stock === 0 ? true : false}
+            disabled={
+              availableItem.stock === 0 || cartItem.productDetailId === 0
+                ? true
+                : false
+            }
             className="cart"
             onClick={handleAddToCart}
           >

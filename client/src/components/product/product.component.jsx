@@ -55,7 +55,7 @@ const Product = () => {
           </div>
         ) : (
           <div className="items">
-            {productPaging?.items
+            {productPaging.items
               // .filter((item, index) => index < 4)
               .map((item) => (
                 <ProductItem key={item.id} item={item} />

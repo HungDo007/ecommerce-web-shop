@@ -29,12 +29,13 @@
     .name {
       width: 90%;
       margin-bottom: 15px;
-      height: 8%;
+      height: 7%;
       overflow: hidden;
     }
 
-    .price {
-      width: 10%;
+    .product-info {
+      display: flex;
+      justify-content: space-between;
     }
   }
 }

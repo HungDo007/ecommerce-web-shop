@@ -20,6 +20,11 @@ const catalogApi = {
     const url = `/Catalogs/product/${id}`;
     return axiosClient.get(url);
   },
+
+  addViewCount: (data) => {
+    const url = "/Catalogs/addViewCount";
+    return axiosClient.post(url, data);
+  },
 };
 
 export default catalogApi;

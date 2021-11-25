@@ -8,6 +8,8 @@ import ClearIcon from "@material-ui/icons/Clear";
 
 import "./cart-page.styles.scss";
 import { useEffect } from "react";
+import salesApi from "../../api/sales.api";
+import { Pagination } from "@material-ui/lab";
 
 const CartPage = () => {
   const itemsDb = [
@@ -35,8 +37,23 @@ const CartPage = () => {
 
   const [items, setItems] = useState([]);
 
+  const [page, setPage] = useState(1);
+
   useEffect(() => {
     setTimeout(() => setCartItems(itemsDb), 1000);
+    const getCart = async () => {
+      try {
+        const params = {
+          pageIndex: page,
+          pageSize: 5,
+        };
+        const response = await salesApi.getCart(params);
+        console.log(response);
+      } catch (error) {
+        console.log("Failed to get cart: ", error?.response);
+      }
+    };
+    //getCart();
   }, []);
 
   useEffect(() => {
@@ -93,7 +110,7 @@ const CartPage = () => {
           <span>Amount</span>
         </div>
         <div className="header-block">
-          <span>Price</span>
+          <span>Unit Price</span>
         </div>
         <div className="header-block">
           <span>Remove</span>
@@ -133,9 +150,24 @@ const CartPage = () => {
           </Tooltip>
         </div>
       ))}
-      <div className="total">TOTAL:</div>
+      <div className="total">TOTAL: $999</div>
       <div>
-        <Button onClick={handleCheckout}>Checkout</Button>
+        <Pagination
+          defaultPage={1}
+          shape="rounded"
+          color="primary"
+          count={10}
+        />
+      </div>
+      <div>
+        <Button
+          className="cart-page-checkout"
+          variant="contained"
+          color="primary"
+          onClick={handleCheckout}
+        >
+          Checkout
+        </Button>
       </div>
     </div>
   );

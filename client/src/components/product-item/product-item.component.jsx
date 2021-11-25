@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import "./product-item.styles.scss";
 
 const ProductItem = ({ item }) => {
-  const { id, name, price, poster } = item;
+  const { id, name, price, poster, viewCount } = item;
   //const [clicked, setClicked] = useState(false)
 
   const useStyles = makeStyles({
@@ -29,7 +29,10 @@ const ProductItem = ({ item }) => {
             />
             <div className="product-footer">
               <span className="name">{name}</span>
-              <span className="price">{`$${price}`}</span>
+              <div className="product-info">
+                <span>{`$${price}`}</span>
+                <span>View Count {viewCount}</span>
+              </div>
             </div>
           </div>
         </CardContent>
