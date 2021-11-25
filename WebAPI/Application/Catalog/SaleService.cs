@@ -86,6 +86,7 @@ namespace Application.Catalog
                 {
                     CartId = x.c.Id,
                     ProductId = x.p.Id,
+                    Name = x.p.Name,
                     ProductImg = x.pi.Path,
                     Quantity = x.c.Quantity,
                     Price = x.c.Price,
