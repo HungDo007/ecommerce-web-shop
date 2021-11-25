@@ -13,6 +13,7 @@ import SignUp from "../../../components/sign-up/sign-up.component";
 import { toggleModal } from "../../../redux/modal/modal.actions";
 
 import "./manage-account-page.styles.scss";
+import adminApi from "../../../api/admin-api";
 
 const ManageAccountPage = () => {
   const [value, setValue] = useState(0);
@@ -21,6 +22,7 @@ const ManageAccountPage = () => {
 
   const modalIsOpen = useSelector((state) => state.modal.isOpen);
   const currentUser = useSelector((state) => state.user.currentUser);
+
   const dispatch = useDispatch();
 
   const handleChange = (event, value) => {
@@ -29,6 +31,19 @@ const ManageAccountPage = () => {
 
   const handleDialog = () => {
     setAction("sign-up");
+    dispatch(toggleModal());
+  };
+
+  const handleUnlockAccount = () => {
+    const unlockAccount = async () => {
+      try {
+        const response = await adminApi.unlockAccount({ username: username });
+        console.log(response);
+      } catch (error) {
+        console.log("Failed to unlock account: ", error.response);
+      }
+    };
+    unlockAccount();
     dispatch(toggleModal());
   };
 
@@ -62,10 +77,14 @@ const ManageAccountPage = () => {
         <AdminTable />
       </TabPanel>
       <TabPanel value={value} index={1}>
-        <UserTable actionLockUser={setAction} setUsername={setUsername} />
+        <UserTable
+          actionLockUser={setAction}
+          setUsername={setUsername}
+          dispatch={dispatch}
+        />
       </TabPanel>
       <TabPanel value={value} index={2}>
-        <LockedUserTable />
+        <LockedUserTable actionLockUser={setAction} setUsername={setUsername} />
       </TabPanel>
       {action === "sign-up" && (
         <CustomDialog
@@ -83,6 +102,19 @@ const ManageAccountPage = () => {
           dispatch={dispatch}
         >
           <Confirm title="Are you sure to lock this account?" data={username} />
+        </CustomDialog>
+      )}
+      {action === "unlock-user" && (
+        <CustomDialog
+          title="Unlock user account"
+          open={modalIsOpen}
+          dispatch={dispatch}
+        >
+          <Confirm
+            title="Are you sure to unlock this account?"
+            data={username}
+            onSubmit={handleUnlockAccount}
+          />
         </CustomDialog>
       )}
     </div>

@@ -6,14 +6,24 @@ const catalogApi = {
     return axiosClient.get(url);
   },
 
-  getAllProductOfStore: (username) => {
+  getAllProduct: (params) => {
+    const url = "/Catalogs/product";
+    return axiosClient.get(url, { params });
+  },
+
+  getAllProductOfStore: (username, params) => {
     const url = `/Catalogs/allProductOfUser/${username}`;
-    return axiosClient.get(url);
+    return axiosClient.get(url, { params });
   },
 
   getProductById: (id) => {
     const url = `/Catalogs/product/${id}`;
     return axiosClient.get(url);
+  },
+
+  addViewCount: (data) => {
+    const url = "/Catalogs/addViewCount";
+    return axiosClient.post(url, data);
   },
 };
 

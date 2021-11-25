@@ -10,6 +10,8 @@ import {
 } from "@material-ui/core";
 import { Visibility, VisibilityOff } from "@material-ui/icons";
 
+import Notification from "../notification/notification.component";
+
 import adminApi from "../../api/admin-api";
 import userApi from "../../api/user-api";
 
@@ -51,6 +53,12 @@ const SignUp = ({ setAction, currentUser }) => {
   });
 
   const [errors, setErrors] = useState({});
+
+  const [notify, setNotify] = useState({
+    isOpen: false,
+    message: "",
+    type: "",
+  });
 
   const { username, email, password, confirmPassword, showPassword } = userInfo;
 
@@ -136,8 +144,27 @@ const SignUp = ({ setAction, currentUser }) => {
           try {
             const response = await userApi.signUp(data);
             console.log(response);
+            if (response.statusText === "OK" && response.status === 200) {
+              setNotify({
+                isOpen: true,
+                message: "Sign up successfully!",
+                type: "success",
+              });
+            }
           } catch (error) {
-            console.log(error);
+            console.log(error.response);
+            if (error.response?.data == "Username already used") {
+              setNotify({
+                isOpen: true,
+                message: `Fail to sign up. Username already used!`,
+                type: "error",
+              });
+            }
+            // setNotify({
+            //   isOpen: true,
+            //   message: `Fail to sign up: ${error?.response.data}`,
+            //   type: "error",
+            // });
           }
         };
         signUp();
@@ -254,6 +281,7 @@ const SignUp = ({ setAction, currentUser }) => {
           )}
         </div>
       </div>
+      <Notification notify={notify} setNotify={setNotify} />
     </form>
   );
 };

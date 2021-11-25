@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useHistory } from "react-router";
 
 import DateFnsUtils from "@date-io/date-fns";
 import { Button, TextField } from "@material-ui/core";
@@ -7,6 +8,10 @@ import {
   KeyboardDatePicker,
   MuiPickersUtilsProvider,
 } from "@material-ui/pickers";
+
+import Notification from "../notification/notification.component";
+
+import { setCurrentUser } from "../../redux/user/user.actions";
 
 import userApi from "../../api/user-api";
 
@@ -16,8 +21,15 @@ const defaultImg = "/img/default-img.png";
 
 const ProfileForm = ({ values, setValues }) => {
   const [errors, setErrors] = useState({});
+  const [notify, setNotify] = useState({
+    isOpen: false,
+    message: "",
+    type: "",
+  });
 
   const currentUser = useSelector((state) => state.user.currentUser);
+  const dispatch = useDispatch();
+  const history = useHistory();
 
   const {
     avatar,
@@ -28,6 +40,7 @@ const ProfileForm = ({ values, setValues }) => {
     email,
     phoneNumber,
     address,
+    emailConfirmed,
   } = values;
 
   const validate = (fieldValues = values) => {
@@ -45,7 +58,9 @@ const ProfileForm = ({ values, setValues }) => {
     }
     if ("phoneNumber" in fieldValues)
       temp.phoneNumber =
-        fieldValues.phoneNumber.length > 9 ? "" : "Minimum 10 numbers required";
+        fieldValues.phoneNumber?.length > 9
+          ? ""
+          : "Minimum 10 numbers required";
     if ("address" in fieldValues)
       temp.address = fieldValues.address ? "" : "This field is required";
 
@@ -59,6 +74,20 @@ const ProfileForm = ({ values, setValues }) => {
 
     setValues({ ...values, [name]: value });
     validate({ [name]: value });
+  };
+
+  const formatDate = (date) => {
+    let year = date.getFullYear();
+    let month = (1 + date.getMonth()).toString().padStart(2, "0");
+    let day = date.getDate().toString().padStart(2, "0");
+
+    return month + "/" + day + "/" + year;
+  };
+
+  const signOut = () => {
+    dispatch(setCurrentUser(null));
+    localStorage.removeItem("jwtToken");
+    history.push("/signin");
   };
 
   const handleDateChange = (date) => {
@@ -91,10 +120,10 @@ const ProfileForm = ({ values, setValues }) => {
 
     if (validate()) {
       const formData = new FormData();
-      formData.append("username", currentUser.unique_name);
+      formData.append("username", currentUser?.unique_name);
       formData.append("firstName", firstName);
       formData.append("lastName", lastName);
-      formData.append("dob", dob);
+      formData.append("dob", formatDate(new Date(dob)));
       formData.append("phoneNumber", phoneNumber);
       formData.append("address", address);
       formData.append("email", email);
@@ -103,17 +132,37 @@ const ProfileForm = ({ values, setValues }) => {
       const editUserProfile = async () => {
         try {
           const response = await userApi.editProfile(formData);
-          console.log(response);
+          setNotify({
+            isOpen: true,
+            message: "Edit profile successfully! Please sign in again",
+            type: "success",
+          });
+          if (emailConfirmed === false) {
+            setTimeout(() => signOut(), 3000);
+          }
         } catch (error) {
-          console.log("Failed to edit profile: ", error);
+          if (error?.response.data === "Email already in user.") {
+            setNotify({
+              isOpen: true,
+              message: "Email has been used! Try another!",
+              type: "error",
+            });
+          } else {
+            setNotify({
+              isOpen: true,
+              message: "Edit profile fail!",
+              type: "error",
+            });
+            // let reason = "";
+            // error.response ? error.response : error
+            console.log("Failed to edit profile: ", error?.response);
+          }
         }
       };
 
       editUserProfile();
     }
   };
-
-  console.log("profile form has re rendered");
 
   return (
     <form className="profile-block" onSubmit={handleSubmit}>
@@ -148,7 +197,9 @@ const ProfileForm = ({ values, setValues }) => {
         </div>
         <div className="profile-field">
           <div className="profile-info">Username</div>
-          <div className="profile-value">{currentUser.unique_name}</div>
+          <div className="profile-value">
+            {currentUser ? currentUser.unique_name : ""}
+          </div>
         </div>
         <div className="profile-field">
           <div className="profile-info">First Name</div>
@@ -260,6 +311,7 @@ const ProfileForm = ({ values, setValues }) => {
           </Button>
         </div>
       </div>
+      <Notification notify={notify} setNotify={setNotify} />
     </form>
   );
 };

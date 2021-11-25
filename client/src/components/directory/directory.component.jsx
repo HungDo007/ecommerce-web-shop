@@ -25,13 +25,14 @@ const Directory = () => {
     };
 
     fetchDirectoryList();
-  }, []);
+  }, [dispatch]);
+
   return (
     <>
       <div className="directory-title">Directory</div>
       <div className="directory-menu">
         {directoryList.map(({ id, ...otherProps }) => (
-          <MenuItem key={id} {...otherProps} />
+          <MenuItem key={id} id={id} {...otherProps} />
         ))}
       </div>
     </>

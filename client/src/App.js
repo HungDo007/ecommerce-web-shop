@@ -14,25 +14,31 @@ import StorePage from "./pages/store-page/store-page.component";
 import Footer from "./components/footer/footer.component";
 import Sidebar from "./components/sidebar/sidebar.component";
 import UserPage from "./pages/user-page/user-page.component";
-// import Test from "./pages/sign-in-and-sign-up/test-sign";
 
 const App = ({ currentUser }) => {
-  //currentUser ? console.log("có user") : console.log("user is null");
-  // user.currentUser
-  //   ? user.currentUser.role == "Admin"
-  //     ? console.log("is admin")
-  //     : console.log("not admin")
-  //   : console.log("null");
   return (
     <div>
-      <Sidebar currentUser={currentUser} />
+      <Sidebar />
       <Switch>
-        <Route exact path="/" component={HomePage} />
+        <Route
+          exact
+          path="/"
+          render={() =>
+            currentUser?.role === "Admin" ? (
+              <Redirect to="/Admin" />
+            ) : (
+              <HomePage />
+            )
+          }
+        />
         <Route path="/admin" component={AdminPage} />
         <Route path="/cart" component={CartPage} />
         <Route path="/directory" component={DirectoryPage} />
         <Route path="/product" component={ProductPage} />
-        <Route path="/store" component={StorePage} />
+        <Route
+          path="/store"
+          render={(props) => <StorePage {...props} currentUser={currentUser} />}
+        />
         <Route path="/user" component={UserPage} />
         <Route
           exact

@@ -1,14 +1,14 @@
-import { useEffect } from "react";
-import { useState } from "react";
+import { useDispatch } from "react-redux";
 
 import MaterialTable from "material-table";
-
 import LockOpenIcon from "@material-ui/icons/LockOpen";
+
+import { toggleModal } from "../../../../redux/modal/modal.actions";
 
 import adminApi from "../../../../api/admin-api";
 
-const LockedUserTable = () => {
-  const [lockedUserList, setLockedUserList] = useState([]);
+const LockedUserTable = ({ actionLockUser, setUsername }) => {
+  const dispatch = useDispatch();
 
   const columns = [
     {
@@ -35,37 +35,52 @@ const LockedUserTable = () => {
     },
   ];
 
-  const handleLockAccount = (event, rowData) => {
-    console.log(rowData);
+  const handleUnlockAccount = (event, rowData) => {
+    actionLockUser("unlock-user");
+    setUsername(rowData.username);
+    dispatch(toggleModal());
   };
 
-  useEffect(() => {
-    const fetchLockedUserList = async () => {
-      try {
-        const response = await adminApi.getAllLockedUser();
-        setLockedUserList(response);
-      } catch (error) {
-        console.log("Failed to fetch list: ", error);
-      }
-    };
-    fetchLockedUserList();
-  }, []);
   return (
-    <MaterialTable
-      options={{ actionsColumnIndex: -1 }}
-      title="User Accounts"
-      data={lockedUserList}
-      columns={columns}
-      actions={[
-        {
-          icon: LockOpenIcon,
-          tooltip: "Unlock user account",
-          onClick: (event, rowData) => {
-            handleLockAccount(event, rowData);
+    <div>
+      <MaterialTable
+        options={{ actionsColumnIndex: -1 }}
+        title="User Accounts"
+        data={(query) =>
+          new Promise((resolve, reject) => {
+            console.log(query);
+            const params = {
+              pageIndex: query.page + 1,
+              pageSize: query.pageSize,
+              keyword: query.search,
+            };
+            adminApi
+              .getLockedUserPaging(params)
+              .then((response) => {
+                resolve({
+                  data: response.items,
+                  page: query.page,
+                  totalCount: response.totalRecords,
+                });
+              })
+              .catch((error) => {
+                console.log(error);
+                reject();
+              });
+          })
+        }
+        columns={columns}
+        actions={[
+          {
+            icon: LockOpenIcon,
+            tooltip: "Unlock user account",
+            onClick: (event, rowData) => {
+              handleUnlockAccount(event, rowData);
+            },
           },
-        },
-      ]}
-    />
+        ]}
+      />
+    </div>
   );
 };
 

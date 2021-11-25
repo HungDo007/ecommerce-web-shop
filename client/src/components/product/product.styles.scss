@@ -7,18 +7,15 @@
 .product {
   display: flex;
   flex-direction: column;
+  margin: 0 5.4rem;
 
   .items {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
     grid-gap: 12px;
-
-    & .product-item {
-      margin-bottom: 15px;
-    }
   }
 }
 
 .more-button {
-  margin-bottom: 3rem;
+  margin: 3rem 0;
 }

@@ -7,6 +7,7 @@ import AddCircleIcon from "@material-ui/icons/AddCircle";
 import catalogApi from "../../../api/catalog-api";
 import adminApi from "../../../api/admin-api";
 
+import Notification from "../../../components/notification/notification.component";
 import CustomDialog from "../../../components/dialog/dialog.component";
 import AddComponentToDirectory from "../../../components/directory/add-directory/add-component-to-directory/add-component-to-directory.component";
 import { toggleModal } from "../../../redux/modal/modal.actions";
@@ -24,6 +25,12 @@ const ManageDirectoryPage = () => {
   const { directoryId, imageSrc, imageFile } = values;
 
   const [directoryList, setDirectoryList] = useState([]);
+
+  const [notify, setNotify] = useState({
+    isOpen: false,
+    message: "",
+    type: "",
+  });
 
   const modalIsOpen = useSelector((state) => state.modal.isOpen);
 
@@ -67,12 +74,12 @@ const ManageDirectoryPage = () => {
         </div>
       ),
       render: (rowData) =>
-        rowData.image === undefined ? (
+        rowData.image ? (
           <img
             height="100"
             width="150"
-            style={{ objectFit: "cover" }}
-            src={defaultImg}
+            style={{ objectFit: "cover", border: "1px solid" }}
+            src={process.env.REACT_APP_IMAGE_URL + rowData.image}
             aria-hidden
             alt="image of directory"
           />
@@ -80,8 +87,8 @@ const ManageDirectoryPage = () => {
           <img
             height="100"
             width="150"
-            style={{ objectFit: "cover" }}
-            src={process.env.REACT_APP_IMAGE_URL + rowData.image}
+            style={{ objectFit: "cover", border: "1px solid" }}
+            src={defaultImg}
             aria-hidden
             alt="image of directory"
           />
@@ -125,8 +132,6 @@ const ManageDirectoryPage = () => {
   useEffect(() => {
     fetchDirectoryList();
   }, []);
-
-  console.log("manage-directory has re rendered");
 
   return (
     <div className="manage-account-block">
@@ -184,7 +189,10 @@ const ManageDirectoryPage = () => {
                     fetchDirectoryList();
                     resolve(response);
                   })
-                  .catch((error) => console.log(error.response));
+                  .catch((error) => {
+                    console.log(error.response);
+                    reject();
+                  });
               } else {
                 formData.append("id", newData.id);
                 formData.append("name", newData.name);
@@ -225,8 +233,10 @@ const ManageDirectoryPage = () => {
         <AddComponentToDirectory
           directoryId={directoryId}
           dispatch={dispatch}
+          setNotify={setNotify}
         />
       </CustomDialog>
+      <Notification notify={notify} setNotify={setNotify} />
     </div>
   );
 };

@@ -1,59 +1,24 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { useHistory } from "react-router";
 
 import { IconContext } from "react-icons";
-import * as FaIcons from "react-icons/fa";
 import * as AiIcons from "react-icons/ai";
 
-import CartDropDown from "../cart-dropdown/cart-dropdown.component";
-import CartIcon from "../cart-icon/cart-icon.component";
-import { setCurrentUser } from "../../redux/user/user.actions";
+import CustomAppBar from "../custom-appbar/custom-appbar";
+
 import { DataArr } from "./sidebarData";
 
 import "./sidebar.styles.css";
 
-const Sidebar = ({ currentUser }) => {
+const Sidebar = () => {
   const [sidebar, setSidebar] = useState(false);
   const showSideBar = () => setSidebar(!sidebar);
-
-  const [cartDrop, setCartDrop] = useState(false);
-  const showCartDrop = () => setCartDrop(!cartDrop);
-
-  const dispatch = useDispatch();
-
-  const history = useHistory();
-  const handleSignOut = () => {
-    dispatch(setCurrentUser(null));
-    localStorage.removeItem("jwtToken");
-    history.push("/");
-  };
 
   return (
     <>
       <IconContext.Provider value={{ color: "#fff" }}>
         <div>
-          <div className="sidebar">
-            <Link to="#" className="menu-bars">
-              <FaIcons.FaBars onClick={showSideBar} />
-            </Link>
-            <div className="options">
-              {currentUser ? (
-                <div className="option" onClick={handleSignOut}>
-                  SIGN OUT
-                </div>
-              ) : (
-                <Link className="option" to="/signin">
-                  SIGN IN
-                </Link>
-              )}
-              <div onClick={showCartDrop}>
-                <CartIcon />
-              </div>
-            </div>
-            {cartDrop ? <CartDropDown /> : null}
-          </div>
+          <CustomAppBar sidebar={sidebar} setSidebar={setSidebar} />
           <nav className={sidebar ? "nav-menu active" : "nav-menu"}>
             <ul className="nav-menu-items" onClick={showSideBar}>
               <li className="navbar-toggle">

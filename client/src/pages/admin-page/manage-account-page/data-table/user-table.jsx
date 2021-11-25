@@ -1,6 +1,3 @@
-import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-
 import MaterialTable from "material-table";
 
 import LockIcon from "@material-ui/icons/Lock";
@@ -8,11 +5,7 @@ import LockIcon from "@material-ui/icons/Lock";
 import adminApi from "../../../../api/admin-api";
 import { toggleModal } from "../../../../redux/modal/modal.actions";
 
-const UserTable = ({ actionLockUser, setUsername }) => {
-  const [userList, setUserList] = useState([]);
-
-  const dispatch = useDispatch();
-
+const UserTable = ({ actionLockUser, setUsername, dispatch }) => {
   const columns = [
     {
       title: "Username",
@@ -44,24 +37,33 @@ const UserTable = ({ actionLockUser, setUsername }) => {
     dispatch(toggleModal());
   };
 
-  useEffect(() => {
-    const fetchUserList = async () => {
-      try {
-        const response = await adminApi.getAllUser();
-        setUserList(response);
-      } catch (error) {
-        console.log("Failed to fetch user list: ", error);
-      }
-    };
-    fetchUserList();
-  }, []);
-
   return (
     <div>
       <MaterialTable
         options={{ actionsColumnIndex: -1 }}
         title="User Accounts"
-        data={userList}
+        data={(query) =>
+          new Promise((resolve, reject) => {
+            const params = {
+              pageIndex: query.page + 1,
+              pageSize: query.pageSize,
+              keyword: query.search,
+            };
+            adminApi
+              .getUserPaging(params)
+              .then((response) => {
+                resolve({
+                  data: response.items,
+                  page: query.page,
+                  totalCount: response.totalRecords,
+                });
+              })
+              .catch((error) => {
+                console.log(error);
+                reject();
+              });
+          })
+        }
         columns={columns}
         actions={[
           {

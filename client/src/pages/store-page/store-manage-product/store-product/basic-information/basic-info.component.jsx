@@ -17,19 +17,17 @@ const BasicInformation = ({
   errors,
   onChange,
 }) => {
-  // if (productInfo.name && productInfo.description && productInfo.poster) {
-  //   productInfo.poster = process.env.REACT_APP_IMAGE_URL + productInfo.poster;
-  //   productInfo.images = [process.env.REACT_APP_IMAGE_URL + productInfo.images];
-  //   const length = productInfo.images.length;
-  //   if (length < 4) {
-  //     for (let index = 0; index < 4 - length; index++) {
-  //       productInfo.images.push(defaultImg);
-  //     }
-  //   }
-  // }
+  if (productInfo.id) {
+    const length = productInfo.images.length;
+    if (length < 4) {
+      for (let index = 0; index < 4 - length; index++) {
+        productInfo.images.push(defaultImg);
+      }
+    }
+  }
 
   const {
-    directoryId,
+    category,
     name,
     description,
     poster,
@@ -69,7 +67,7 @@ const BasicInformation = ({
   };
 
   const handleImages = (selectorFiles, position) => {
-    if (selectorFiles) {
+    if (selectorFiles && selectorFiles[0]) {
       let imageFile = selectorFiles[0];
       const reader = new FileReader();
       reader.onload = (x) => {
@@ -92,8 +90,9 @@ const BasicInformation = ({
       });
     }
   };
+
   return (
-    <div>
+    <div className="basic-info-container">
       <h3 className="store-product-title">Basic Information</h3>
       <div className="store-product-basic-info">
         <div className="store-product-group">
@@ -102,13 +101,13 @@ const BasicInformation = ({
             <FormControl
               fullWidth
               variant="outlined"
-              {...(errors.directoryId && {
+              {...(errors.category && {
                 error: true,
               })}
             >
               <Select
-                name="directoryId"
-                value={directoryId}
+                name="category"
+                value={category}
                 onChange={handleInputChange}
               >
                 {initialDirectories.map((item) => (
@@ -117,8 +116,8 @@ const BasicInformation = ({
                   </MenuItem>
                 ))}
               </Select>
-              {errors.directoryId && (
-                <FormHelperText>{errors.directoryId}</FormHelperText>
+              {errors.category && (
+                <FormHelperText>{errors.category}</FormHelperText>
               )}
             </FormControl>
           </div>

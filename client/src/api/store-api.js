@@ -16,6 +16,36 @@ const storeApi = {
     return axiosClient.post(url, data);
   },
 
+  editProduct: (data) => {
+    const url = "/Stores/updatePro";
+    return axiosClient.post(url, data);
+  },
+
+  editDetail: (data) => {
+    const url = "/Stores/updateDetail";
+    return axiosClient.post(url, data);
+  },
+
+  removeProduct: (proId) => {
+    const url = `/Stores/${proId}`;
+    return axiosClient.delete(url);
+  },
+
+  getHiddenProduct: (username, params) => {
+    const url = `/Stores/productHideOfUser/${username}`;
+    return axiosClient.get(url, { params });
+  },
+
+  hideProduct: (data) => {
+    const url = "/Stores/hideProduct";
+    return axiosClient.post(url, data);
+  },
+
+  showProduct: (data) => {
+    const url = "/Stores/unhideProduct";
+    return axiosClient.post(url, data);
+  },
+
   getProfile: (username) => {
     const url = `/Stores/storeInfo/${username}`;
     return axiosClient.get(url);

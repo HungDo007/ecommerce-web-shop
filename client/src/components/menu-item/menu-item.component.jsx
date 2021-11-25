@@ -1,11 +1,13 @@
 import { useHistory } from "react-router";
 import "./menu-item.styles.scss";
 
-const MenuItem = ({ name, image }) => {
+const MenuItem = ({ id, name, image }) => {
   const history = useHistory();
+
   const ToDirectory = () => {
-    history.push(`directory/${name}`);
+    history.push(`directory/${id}`);
   };
+
   return (
     <div className="menu-item" onClick={ToDirectory}>
       <div

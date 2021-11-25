@@ -1,12 +1,26 @@
-import { Button, TextField } from "@material-ui/core";
 import { useState } from "react";
+import { useSelector } from "react-redux";
+
+import { Button, TextField } from "@material-ui/core";
+
+import Notification from "../notification/notification.component";
+
 import userApi from "../../api/user-api";
 
-const ActiveEmailForm = ({ currentUser }) => {
+const ActiveEmailForm = () => {
   const [state, setState] = useState({
     code: "",
   });
+
   const [errors, setErrors] = useState({});
+
+  const [notify, setNotify] = useState({
+    isOpen: false,
+    message: "",
+    type: "",
+  });
+
+  const currentUser = useSelector((state) => state.user.currentUser);
 
   const validate = (fieldValues = state) => {
     let temp = { ...errors };
@@ -15,7 +29,9 @@ const ActiveEmailForm = ({ currentUser }) => {
 
     setErrors({ ...temp });
 
-    if (fieldValues == state) return Object.values(temp).every((x) => x == "");
+    if (fieldValues === state) {
+      return Object.values(temp).every((x) => x === "");
+    }
   };
 
   const handleOnChange = (event) => {
@@ -26,7 +42,7 @@ const ActiveEmailForm = ({ currentUser }) => {
   };
 
   const data = {
-    username: currentUser.username,
+    username: currentUser.unique_name,
     email: currentUser.email,
   };
 
@@ -35,6 +51,13 @@ const ActiveEmailForm = ({ currentUser }) => {
       try {
         const response = await userApi.sendCode(data);
         console.log(response);
+        if (response.status === 200 && response.statusText === "OK") {
+          setNotify({
+            isOpen: true,
+            message: "Send code successfully. Check your email!",
+            type: "success",
+          });
+        }
       } catch (error) {
         console.log("Failed to send code: ", error.response);
       }
@@ -52,9 +75,16 @@ const ActiveEmailForm = ({ currentUser }) => {
           const payload = { ...data, code: state.code };
           const response = await userApi.verifyEmail(payload);
           console.log(response);
+          if (response.status === 200 && response.statusText === "OK") {
+            setNotify({
+              isOpen: true,
+              message: "Active email successfully!",
+              type: "success",
+            });
+          }
         } catch (error) {
           console.log("Failed to verify email: ", error.response);
-          if (error.response.data === "Mã nhập không đúng")
+          if (error.response?.data === "Incorrect code")
             setErrors({ code: "Code is incorrect" });
         }
       };
@@ -66,8 +96,8 @@ const ActiveEmailForm = ({ currentUser }) => {
   return (
     <div style={{ width: 375, textAlign: "center" }}>
       <div style={{ margin: 15 }}>
-        Check your email after clicking on Send Code button and entering the
-        code here
+        Active email to create store. Check your email after clicking on Send
+        Code button and entering the code here.
       </div>
       <div style={{ margin: 15 }}>
         <Button
@@ -113,6 +143,7 @@ const ActiveEmailForm = ({ currentUser }) => {
           </Button>
         </div>
       </form>
+      <Notification notify={notify} setNotify={setNotify} />
     </div>
   );
 };

@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import NumberFormat from "react-number-format";
 
 import { Button, TextField, InputAdornment } from "@material-ui/core";
 
@@ -15,56 +14,34 @@ const SaleInformation = ({
   actualComponents,
   setActualComponents,
 }) => {
-  const { directoryId, productDetail } = productInfo;
+  const { category, productDetails } = productInfo;
 
   const [componentList, setComponentList] = useState([]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    // const list = [...productDetail];
-    // list[0][name] = value;
-    // setBasicInformation({ ...productInfo, productDetail: list });
-    //console.log(name, value);
     onChange(name, value, 0);
   };
 
   // handle input change
   const handleInputChange = (e, index) => {
     const { name, value } = e.target;
-    // const list = [...productDetail];
-
-    // if (name !== "price" && name !== "stock") {
-    //   list[index].componentDetails = actualComponents.map((item) => ({
-    //     compId: item.id,
-    //     value:
-    //       item.name === name
-    //         ? value
-    //         : list[index].componentDetails.length > 0
-    //         ? list[index].componentDetails.find((i) => i.compId === item.id)
-    //             .value
-    //         : "",
-    //   }));
-    // } else {
-    //   list[index][name] = value;
-    // }
-
-    // setBasicInformation({ ...productInfo, productDetail: list });
     onChange(name, value, index);
   };
 
   // handle click event of the Add button
   const handleAddClick = (index) => {
-    if (!actualComponents.includes(componentList[index])) {
+    if (!actualComponents.some((item) => item.id === componentList[index].id)) {
       setActualComponents(actualComponents.concat(componentList[index]));
     } else {
       setBasicInformation({
         ...productInfo,
-        productDetail: [
-          ...productDetail,
+        productDetails: [
+          ...productDetails,
           {
-            price: 0,
-            stock: 0,
-            componentDetails: [],
+            price: "",
+            stock: "",
+            componentDetails: [{ compId: 0, value: "" }],
           },
         ],
       });
@@ -73,9 +50,9 @@ const SaleInformation = ({
 
   // handle click event of the Remove button to remove input
   const handleRemoveClick = (index) => {
-    const list = [...productDetail];
+    const list = [...productDetails];
     list.splice(index, 1);
-    setBasicInformation({ ...productInfo, productDetail: list });
+    setBasicInformation({ ...productInfo, productDetails: list });
     if (list.length === 0) {
       setActualComponents([]);
     }
@@ -88,7 +65,7 @@ const SaleInformation = ({
     list.splice(index, 1);
     setActualComponents(list);
 
-    const ls = [...productDetail];
+    const ls = [...productDetails];
     ls.forEach((element) => {
       element.componentDetails.forEach((i) => {
         if (i.compId === item.id) {
@@ -99,15 +76,34 @@ const SaleInformation = ({
         }
       });
     });
-    setBasicInformation({ ...productInfo, productDetail: ls });
+    setBasicInformation({ ...productInfo, productDetails: ls });
   };
 
-  //set list inputs of component is empty when actualComponent change
+  useEffect(() => {
+    if (productInfo.id) {
+      if (
+        productDetails.length !== 1 ||
+        productDetails[0].componentDetails.length > 0
+      ) {
+        const array = productDetails[0].componentDetails.map((item) => {
+          const compo = componentList.find((i) => i.id === item.compId);
+          return {
+            id: compo ? compo.id : "",
+            name: compo ? compo.name : "",
+          };
+        });
+
+        setActualComponents(array);
+      }
+    }
+  }, [componentList]);
+
+  //set list inputs of component is empty when actualComponent is 0
   useEffect(() => {
     if (actualComponents.length === 0) {
       setBasicInformation({
         ...productInfo,
-        productDetail: [{ price: 0, stock: 0, componentDetails: [] }],
+        productDetails: [{ price: "", stock: "", componentDetails: [] }],
       });
     }
   }, [actualComponents]);
@@ -123,15 +119,15 @@ const SaleInformation = ({
       }
     };
 
-    if (directoryId != 0) {
-      fetchComponentsOfDirectory(directoryId);
+    if (category !== 0) {
+      fetchComponentsOfDirectory(category);
     } else {
       setComponentList([]);
     }
-  }, [directoryId]);
+  }, [category]);
 
   return (
-    <div>
+    <div className="basic-info-container">
       <h3 className="store-product-title">Sales Information</h3>
       <div className="store-product-basic-info">
         {actualComponents.length === 0 ? (
@@ -143,6 +139,9 @@ const SaleInformation = ({
                   fullWidth
                   name="price"
                   type="number"
+                  value={
+                    productDetails[0]?.price ? productDetails[0].price : ""
+                  }
                   variant="outlined"
                   onChange={handleChange}
                   InputProps={{
@@ -163,6 +162,9 @@ const SaleInformation = ({
                 <TextField
                   fullWidth
                   name="stock"
+                  value={
+                    productDetails[0]?.stock ? productDetails[0].stock : ""
+                  }
                   type="number"
                   variant="outlined"
                   onChange={handleChange}
@@ -220,15 +222,21 @@ const SaleInformation = ({
                 <div className="store-product-title-component">Stock</div>
                 <div style={{ width: 18 }}></div>
               </div>
-              {productDetail.map((x, i) => (
+              {productDetails.map((x, i) => (
                 <div key={i} className="store-product-component-header">
-                  {actualComponents.map((item) => (
-                    <div className="store-product-input-component">
+                  {actualComponents.map((item, index) => (
+                    <div
+                      className="store-product-input-component"
+                      key={item.id}
+                    >
                       <TextField
                         variant="outlined"
-                        key={item.id}
                         name={item.name}
-                        value={x.name}
+                        value={
+                          x.componentDetails[index]?.value
+                            ? x.componentDetails[index].value
+                            : ""
+                        }
                         onChange={(e) => handleInputChange(e, i)}
                         {...(errors.component && {
                           error: true,
@@ -269,12 +277,15 @@ const SaleInformation = ({
                     />
                   </div>
                   <div className="store-product-component-remove">
-                    {productDetail.length !== 0 && (
+                    {productDetails.length !== 0 && (
                       <MdIcon.MdDelete onClick={() => handleRemoveClick(i)} />
                     )}
                   </div>
                 </div>
               ))}
+              {/* <div style={{ marginTop: 20 }}>
+                {JSON.stringify(productDetails)}
+              </div> */}
             </div>
           </div>
         )}

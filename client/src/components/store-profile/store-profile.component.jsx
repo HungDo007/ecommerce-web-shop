@@ -1,8 +1,13 @@
-import { Button, TextField } from "@material-ui/core";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+
+import { Button, TextField } from "@material-ui/core";
+
+import Notification from "../notification/notification.component";
+
 import storeApi from "../../api/store-api";
+
 import "./store-profile.styles.scss";
 const defaultImg = "/img/default-img.png";
 
@@ -14,10 +19,17 @@ const StoreProfile = ({ match }) => {
     description: "",
     avatar: defaultImg,
     imageFile: null,
+    rate: undefined,
+    totalProduct: 0,
   };
 
   const [values, setValues] = useState(storeInfo);
   const [errors, setErrors] = useState({});
+  const [notify, setNotify] = useState({
+    isOpen: false,
+    message: "",
+    type: "",
+  });
 
   const currentUser = useSelector((state) => state.user.currentUser);
 
@@ -96,8 +108,20 @@ const StoreProfile = ({ match }) => {
         try {
           const response = await storeApi.editProfile(formData);
           console.log(response);
+          if (response.status === 200 && response.statusText === "OK") {
+            setNotify({
+              isOpen: true,
+              message: "Edit store profile successfully!",
+              type: "success",
+            });
+          }
         } catch (error) {
-          console.log("Failed to edit profile: ", error);
+          console.log("Failed to edit profile: ", error.response);
+          setNotify({
+            isOpen: true,
+            message: "Failed to edit profile!",
+            type: "error",
+          });
         }
       };
 
@@ -109,9 +133,19 @@ const StoreProfile = ({ match }) => {
     const getStoreProfile = async () => {
       try {
         const response = await storeApi.getProfile(currentUser.unique_name);
-        setValues(response);
+        setValues({
+          address: response.address,
+          avatar: response.avatar
+            ? process.env.REACT_APP_IMAGE_URL + response.avatar
+            : avatar,
+          description: response.description,
+          nameStore: response.nameStore,
+          phoneNumber: response.phoneNumber,
+          rate: response.rate,
+          totalProduct: response.totalProduct,
+        });
       } catch (error) {
-        console.log("Failed to get store profile: ", error);
+        console.log("Failed to get store profile: ", error.response);
       }
     };
 
@@ -121,7 +155,7 @@ const StoreProfile = ({ match }) => {
   return (
     <form onSubmit={handleSubmit} className="store-container">
       <h3 className="store-main-title">Store Profile</h3>
-      <div className="details">
+      <div className="store-box">
         <div className="store-content-left">
           <img
             className="store-image"
@@ -218,6 +252,7 @@ const StoreProfile = ({ match }) => {
           Save Change
         </Button>
       </div>
+      <Notification notify={notify} setNotify={setNotify} />
     </form>
   );
 };

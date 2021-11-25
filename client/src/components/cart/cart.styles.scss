@@ -2,10 +2,11 @@
   width: 100%;
   display: flex;
   min-height: 100px;
-  border-bottom: 1px solid darkgrey;
   padding: 15px 0;
   font-size: 20px;
   align-items: center;
+  background: #f5f5f5;
+  margin: 10px 0;
 
   .image-container {
     width: 23%;
@@ -19,23 +20,14 @@
   .name,
   .quantity,
   .price {
-    width: 23%;
+    width: 30%;
   }
 
   .quantity {
-    display: flex;
-
-    .arrow {
-      cursor: pointer;
-    }
+    display: block;
 
     .value {
       margin: 0 10px;
     }
-  }
-
-  .remove-button {
-    padding-left: 12px;
-    cursor: pointer;
   }
 }

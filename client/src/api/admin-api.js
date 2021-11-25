@@ -2,19 +2,19 @@ import axiosClient from "./axios-client";
 
 const adminApi = {
   //manage account
-  getAllAdmin: () => {
-    const url = "/Admins/user/allAdmin";
-    return axiosClient.get(url);
+  getAdminPaging: (params) => {
+    const url = "/Admins/user/adminPaging";
+    return axiosClient.get(url, { params });
   },
 
-  getAllUser: () => {
-    const url = "/Admins/user/allUser";
-    return axiosClient.get(url);
+  getUserPaging: (params) => {
+    const url = "/Admins/user/userPaging";
+    return axiosClient.get(url, { params });
   },
 
-  getAllLockedUser: () => {
-    const url = "/Admins/user/allUserLocked";
-    return axiosClient(url);
+  getLockedUserPaging: (params) => {
+    const url = "/Admins/user/userLockedPaging";
+    return axiosClient(url, { params });
   },
 
   addAmin: (data) => {
@@ -24,6 +24,11 @@ const adminApi = {
 
   lockAccount: (data) => {
     const url = "/Admins/user/lockAccount";
+    return axiosClient.post(url, data);
+  },
+
+  unlockAccount: (data) => {
+    const url = "/Admins/user/unlockAccount";
     return axiosClient.post(url, data);
   },
 
@@ -72,6 +77,27 @@ const adminApi = {
   removeComponent: (id) => {
     const url = `/Admins/component/${id}`;
     return axiosClient.delete(url);
+  },
+
+  //manage product
+  getProductPaging: (params) => {
+    const url = "/Admins/product/productAll";
+    return axiosClient.get(url, { params });
+  },
+
+  getLockedProductPaging: (params) => {
+    const url = "/Admins/product/productLocked";
+    return axiosClient.get(url, { params });
+  },
+
+  lockProduct: (data) => {
+    const url = "/Admins/product/lockProduct";
+    return axiosClient.post(url, data);
+  },
+
+  unlockProduct: (data) => {
+    const url = "/Admins/product/unlockProduct";
+    return axiosClient.post(url, data);
   },
 };
 

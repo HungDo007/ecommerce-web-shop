@@ -39,7 +39,7 @@ const ManageComponentPage = () => {
     <div className="manage-account-block">
       <MaterialTable
         options={{ actionsColumnIndex: -1, addRowPosition: "first" }}
-        title="Components"
+        title="Component"
         columns={columns}
         data={componentList}
         editable={{
@@ -54,7 +54,10 @@ const ManageComponentPage = () => {
                   fetchComponentList();
                   resolve(response);
                 })
-                .catch((error) => console.log(error.response));
+                .catch((error) => {
+                  console.log(error.response);
+                  reject();
+                });
             }),
           onRowUpdate: (newData) =>
             new Promise((resolve) => {

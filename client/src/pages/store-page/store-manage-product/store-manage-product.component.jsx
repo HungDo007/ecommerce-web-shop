@@ -1,66 +1,77 @@
-import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useState, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
-import EditIcon from "@material-ui/icons/Edit";
-import { Button } from "@material-ui/core";
-import MaterialTable from "material-table";
+import { Button, Tabs, Tab } from "@material-ui/core";
 
-import catalogApi from "../../../api/catalog-api";
+import CustomDialog from "../../../components/dialog/dialog.component";
+import Confirm from "../../../components/confirm/confirm.component";
+import SellerProductTable from "./data-table/seller-product-table";
+import HiddenProductTable from "./data-table/hidden-product-table";
+import storeApi from "../../../api/store-api";
+
+import { toggleModal } from "../../../redux/modal/modal.actions";
 
 const StoreManagesProduct = ({ history }) => {
-  const [productList, setProductList] = useState([]);
+  const [value, setValue] = useState(0);
+  const [action, setAction] = useState("");
+  const [productId, setProductId] = useState(0);
+
+  const tableRef = useRef(null);
 
   const currentUser = useSelector((state) => state.user.currentUser);
+  const modalIsOpen = useSelector((state) => state.modal.isOpen);
 
-  const columns = [
-    {
-      title: "Name",
-      field: "name",
-    },
-    {
-      title: "Image",
-      field: "poster",
-      render: (rowData) => (
-        <img
-          height="100"
-          width="150"
-          style={{ objectFit: "cover" }}
-          src={process.env.REACT_APP_IMAGE_URL + rowData.poster}
-          aria-hidden
-          alt="image of directory"
-        />
-      ),
-    },
-  ];
+  const dispatch = useDispatch();
 
   const handleAddProduct = () => {
     history.push("product");
   };
 
-  const handleEditProduct = (event, rowData) => {
-    // history.push(`product/${rowData.id}`);
-    // history.push({
-    //   pathname: "product",
-    //   state: rowData.id,
-    // });
-    console.log(rowData);
+  const handleChange = (event, value) => {
+    setValue(value);
   };
 
-  useEffect(() => {
-    const getProductsOfStore = async () => {
+  const handleHideProduct = () => {
+    const hideProduct = async () => {
       try {
-        const response = await catalogApi.getAllProductOfStore(
-          currentUser.unique_name
-        );
-        setProductList(response);
+        const response = await storeApi.hideProduct(productId);
+        tableRef.current.onQueryChange();
         console.log(response);
       } catch (error) {
-        console.log("Failed to get products of store: ", error);
+        console.log("Failed to hide product: ", error.response);
       }
     };
+    hideProduct();
+    dispatch(toggleModal());
+  };
 
-    getProductsOfStore();
-  }, []);
+  const handleShowProduct = () => {
+    const showProduct = async () => {
+      try {
+        const response = await storeApi.showProduct(productId);
+        tableRef.current.onQueryChange();
+        console.log(response);
+      } catch (error) {
+        console.log("Failed to show product: ", error.response);
+      }
+    };
+    showProduct();
+    dispatch(toggleModal());
+  };
+
+  const handleRemoveProduct = () => {
+    const removeProduct = async () => {
+      try {
+        const response = await storeApi.removeProduct(productId);
+        tableRef.current.onQueryChange();
+        console.log(response);
+      } catch (error) {
+        console.log("Failed to remove product: ", error.response);
+      }
+    };
+    removeProduct();
+    dispatch(toggleModal());
+  };
 
   return (
     <div className="manage-account-block">
@@ -78,24 +89,77 @@ const StoreManagesProduct = ({ history }) => {
         >
           Add new product
         </Button>
+        <div>
+          <Tabs value={value} onChange={handleChange}>
+            <Tab label="Product" />
+            <Tab label="Hidden Product" />
+          </Tabs>
+        </div>
       </div>
-      <MaterialTable
-        options={{ actionsColumnIndex: -1 }}
-        title="Product"
-        data={productList}
-        columns={columns}
-        actions={[
-          {
-            icon: EditIcon,
-            tooltip: "Edit product",
-            onClick: (event, rowData) => {
-              handleEditProduct(event, rowData);
-            },
-          },
-        ]}
-      />
+      <TabPanel value={value} index={0}>
+        <SellerProductTable
+          tableRef={tableRef}
+          currentUser={currentUser}
+          actionHideProduct={setAction}
+          setProductId={setProductId}
+          dispatch={dispatch}
+        />
+      </TabPanel>
+      <TabPanel value={value} index={1}>
+        <HiddenProductTable
+          tableRef={tableRef}
+          currentUser={currentUser}
+          actionHideProduct={setAction}
+          setProductId={setProductId}
+          dispatch={dispatch}
+        />
+      </TabPanel>
+      {action === "hide-product" && (
+        <CustomDialog
+          title="Hide product"
+          open={modalIsOpen}
+          dispatch={dispatch}
+        >
+          <Confirm
+            title="Are you sure to hide this product?"
+            data={productId}
+            onSubmit={handleHideProduct}
+          />
+        </CustomDialog>
+      )}
+      {action === "show-product" && (
+        <CustomDialog
+          title="Show product"
+          open={modalIsOpen}
+          dispatch={dispatch}
+        >
+          <Confirm
+            title="Are you sure to show this product?"
+            data={productId}
+            onSubmit={handleShowProduct}
+          />
+        </CustomDialog>
+      )}
+      {action === "remove-product" && (
+        <CustomDialog
+          title="Remove product"
+          open={modalIsOpen}
+          dispatch={dispatch}
+        >
+          <Confirm
+            title="Are you sure to remove this product?"
+            data={productId}
+            onSubmit={handleRemoveProduct}
+          />
+        </CustomDialog>
+      )}
     </div>
   );
+};
+
+const TabPanel = (props) => {
+  const { children, value, index } = props;
+  return <div>{value === index && children}</div>;
 };
 
 export default StoreManagesProduct;
