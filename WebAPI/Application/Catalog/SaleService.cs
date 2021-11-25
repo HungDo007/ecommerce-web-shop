@@ -64,6 +64,17 @@ namespace Application.Catalog
             }
         }
 
+        public async Task<bool> CancelOrder(int OrderId)
+        {
+            var order = await _context.Orders.Include(x => x.OrderDetails).Where(x => x.Id == OrderId).FirstOrDefaultAsync();
+
+            order.OrderDetails.Clear();
+
+            _context.Orders.Remove(order);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
         public async Task<PagedResult<CartVm>> GetCart(string username, PagingRequestBase request)
         {
             try
@@ -90,8 +101,16 @@ namespace Application.Catalog
                     ProductImg = x.pi.Path,
                     Quantity = x.c.Quantity,
                     Price = x.c.Price,
-                    StockOfDetail = x.pd.Stock
+                    StockOfDetail = x.pd.Stock,
+                    ProductDetailId = x.pd.Id
+                    //Details = GetComponentOfDetail(x.pd.Id)
                 }).ToListAsync();
+
+                foreach (var item in data)
+                {
+                    item.Details = GetComponentOfDetail(item.ProductDetailId);
+                }
+
 
                 var result = PagingService.Paging<CartVm>(data, request.PageIndex, request.PageSize);
                 return result;
@@ -102,9 +121,44 @@ namespace Application.Catalog
             }
         }
 
-        public async Task<bool> Order()
+        public Task<PagedResult<OrderVm>> GetOrder(string username, PagingRequestBase request)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<bool> OrderProduct(string username, OrderRequest request)
+        {
+            var user = await _userManager.FindByNameAsync(username);
+            List<OrderDetail> ods = new List<OrderDetail>();
+
+            foreach (var item in request.OrderItemId)
+            {
+                var c = await _context.Carts.FindAsync(item);
+                if (c != null)
+                {
+                    OrderDetail od = new OrderDetail()
+                    {
+                        ProductDetailId = c.ProductDetailId,
+                        Price = c.Price,
+                        Quantity = c.Quantity
+                    };
+                    ods.Add(od);
+                    _context.Carts.Remove(c);
+                }
+            }
+
+            Order order = new Order()
+            {
+                ShipAddress = request.ShipAddress,
+                ShipEmail = request.ShipEmail,
+                ShipPhonenumber = request.ShipPhonenumber,
+                OrderDetails = ods,
+                UserId = user.Id
+            };
+
+            _context.Orders.Add(order);
+            await _context.SaveChangesAsync();
+            return true;
         }
 
         public async Task<bool> RemoveFromCart(List<int> cartIds)
@@ -148,6 +202,21 @@ namespace Application.Catalog
             {
                 return false;
             }
+        }
+
+
+        private string GetComponentOfDetail(int proDetailId)
+        {
+            var pd = _context.ProductDetails.Include(x => x.ComponentDetails).Where(x => x.Id == proDetailId).FirstOrDefault();
+
+            string detail = "";
+            foreach (var item in pd.ComponentDetails)
+            {
+                detail += $" {item.ToString()}";
+            }
+
+            //return _mapper.Map<List<ComponentDetailVm>>(pd.ComponentDetails);
+            return detail;
         }
     }
 }

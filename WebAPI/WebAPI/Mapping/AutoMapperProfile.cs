@@ -39,8 +39,6 @@ namespace WebAPI.Mapping
             CreateMap<Component, CompVm>();
 
             CreateMap<Component, CompAdminVm>();
-
-
         }
     }
 }

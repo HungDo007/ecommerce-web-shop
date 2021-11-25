@@ -57,5 +57,24 @@ namespace WebAPI.Controllers
 
             return BadRequest();
         }
+
+
+        [HttpPost("Order")]
+        public async Task<IActionResult> OrderProduct([FromBody] OrderRequest request)
+        {
+            if (await _saleService.OrderProduct(User.Identity.Name, request))
+                return Ok();
+
+            return BadRequest();
+        }
+
+        [HttpDelete("Order/{orderId}")]
+        public async Task<IActionResult> OrderProduct(int orderId)
+        {
+            if (await _saleService.CancelOrder(orderId))
+                return Ok();
+
+            return BadRequest();
+        }
     }
 }
