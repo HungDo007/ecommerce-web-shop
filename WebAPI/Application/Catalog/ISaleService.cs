@@ -12,6 +12,10 @@ namespace Application.Catalog
         Task<bool> UpdateQuantity(UpdateQuantityRequest request);
         Task<bool> RemoveFromCart(List<int> cartIds);
 
-        Task<bool> Order();
+        Task<bool> OrderProduct(string username, OrderRequest request);
+
+        Task<bool> CancelOrder(int OrderId);
+
+        Task<PagedResult<OrderVm>> GetOrder(string username, PagingRequestBase request);
     }
 }

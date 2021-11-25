@@ -12,5 +12,10 @@ namespace Data.Entities
 
         public Component Component { get; set; }
         public List<ProductDetail> ProductDetails { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Name}: {Value};";
+        }
     }
 }
