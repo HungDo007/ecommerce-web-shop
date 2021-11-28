@@ -9,9 +9,10 @@ namespace Data.Entities
         public DateTime OrderDate { set; get; }
         public Guid UserId { set; get; }
         public string ShipAddress { set; get; }
-        public string ShipEmail { set; get; }
+        public string ShipName { set; get; }
         public string ShipPhonenumber { set; get; }
-        
+        public bool Paid { get; set; }
+
         public AppUser User { get; set; }
         public TransactionOrder TransactionOrder { get; set; }
         public List<OrderDetail> OrderDetails { get; set; }
