@@ -129,10 +129,11 @@ namespace Application.Catalog
             List<OrderVm> odVms = new List<OrderVm>();
             foreach (var item in orders)
             {
+                string temp = item.OrderDetails.Count == 1 ? "" : $"+{item.OrderDetails.Count - 1}";
                 OrderVm orderVm = new OrderVm
                 {
                     Id = item.Id,
-                    Name = $"{item.OrderDetails[0].Name}+{item.OrderDetails.Count - 1}",
+                    Name = $"{item.OrderDetails[0].Name}{temp}",
                     Paid = item.Paid,
                     Quantity = item.OrderDetails.Count,
                     SumPrice = item.OrderDetails.Sum(x => x.Price)
