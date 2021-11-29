@@ -309,7 +309,7 @@ namespace Application.Catalog
                 return;
 
             var order = await _context.Orders.Where(x => x.Id == po.OrderId).FirstOrDefaultAsync();
-            order.Paid = true;
+            order.Paid = request.IsSuccess;
             await _context.SaveChangesAsync();
         }
     }
