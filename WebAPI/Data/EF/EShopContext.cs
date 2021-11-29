@@ -39,6 +39,7 @@ namespace Data.EF
             modelBuilder.Entity<IdentityUserLogin<Guid>>().ToTable("AppUserLogins").HasKey(x => x.UserId);
             modelBuilder.Entity<IdentityRoleClaim<Guid>>().ToTable("AppRoleClaims");
             modelBuilder.Entity<IdentityUserToken<Guid>>().ToTable("AppUserTokens").HasKey(x => x.UserId);
+            modelBuilder.Entity<PaymentOnline>().HasKey(x => x.Token);
 
             //base.OnModelCreating(builder);
 
@@ -59,5 +60,6 @@ namespace Data.EF
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<ProductImage> ProductImages { get; set; }
         public DbSet<UserActiveEmail> UserActiveEmails { get; set; }
+        public DbSet<PaymentOnline> PaymentOnlines { get; set; }
     }
 }

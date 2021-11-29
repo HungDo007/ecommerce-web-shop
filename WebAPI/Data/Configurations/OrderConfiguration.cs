@@ -13,6 +13,7 @@ namespace Data.Configurations
             builder.Property(x => x.Id).UseIdentityColumn();
             builder.HasOne(x => x.User).WithMany(x => x.Orders).HasForeignKey(x => x.UserId);
             builder.Property(x => x.OrderDate).HasDefaultValue(DateTime.Now);
+            builder.Property(x => x.Paid).HasDefaultValue(false);
         }
     }
 }

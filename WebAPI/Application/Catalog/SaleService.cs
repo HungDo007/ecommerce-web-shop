@@ -121,27 +121,76 @@ namespace Application.Catalog
             }
         }
 
-        public Task<PagedResult<OrderVm>> GetOrder(string username, PagingRequestBase request)
+        public async Task<PagedResult<OrderVm>> GetOrder(string username, PagingRequestBase request)
         {
-            throw new NotImplementedException();
+            var user = await _userManager.FindByNameAsync(username);
+            var orders = await _context.Orders.Include(x => x.OrderDetails).Where(x => x.UserId == user.Id).ToListAsync();
+
+            List<OrderVm> odVms = new List<OrderVm>();
+            foreach (var item in orders)
+            {
+                string temp = item.OrderDetails.Count == 1 ? "" : $"+{item.OrderDetails.Count - 1}";
+                OrderVm orderVm = new OrderVm
+                {
+                    Id = item.Id,
+                    Name = $"{item.OrderDetails[0].Name}{temp}",
+                    Paid = item.Paid,
+                    Quantity = item.OrderDetails.Count,
+                    SumPrice = item.OrderDetails.Sum(x => x.Price)
+                };
+                odVms.Add(orderVm);
+            }
+
+            if (!string.IsNullOrEmpty(request.Keyword))
+            {
+                odVms = odVms.Where(x => x.Name.Contains(request.Keyword)).ToList();
+            }
+
+            return PagingService.Paging<OrderVm>(odVms, request.PageIndex, request.PageSize);
         }
 
-        public async Task<bool> OrderProduct(string username, OrderRequest request)
+        public async Task<List<OrderDetailVm>> GetOrderDetail(int orderId)
+        {
+            var a = from od in _context.OrderDetails
+                    join pd in _context.ProductDetails on od.ProductDetailId equals pd.Id
+                    join p in _context.Products on pd.ProductId equals p.Id
+                    join pi in _context.ProductImages on p.Id equals pi.ProductId
+                    where od.OrderId == orderId && pi.IsPoster == true
+                    select new { od, pd, p, pi };
+
+            var data = await a.Select(x => new OrderDetailVm()
+            {
+                Name = x.p.Name,
+                ProductImg = x.pi.Path,
+                Quantity = x.od.Quantity,
+                Price = x.od.Price,
+            }).ToListAsync();
+
+            return data;
+        }
+
+        public async Task<OrderResponse> OrderProduct(string username, OrderRequest request)
         {
             var user = await _userManager.FindByNameAsync(username);
             List<OrderDetail> ods = new List<OrderDetail>();
-
+            List<CartVm> cartVms = new List<CartVm>();
             foreach (var item in request.OrderItemId)
             {
-                var c = await _context.Carts.FindAsync(item);
+                var c = await _context.Carts.Include(x => x.ProductDetail).Where(x => x.Id == item).FirstOrDefaultAsync();
                 if (c != null)
                 {
+                    c.ProductDetail.Stock -= c.Quantity;
                     OrderDetail od = new OrderDetail()
                     {
                         ProductDetailId = c.ProductDetailId,
                         Price = c.Price,
                         Quantity = c.Quantity
                     };
+
+                    var cvm = GetCartVm(c.Id);
+                    cartVms.Add(cvm);
+
+                    od.Name = cvm.ToString();
                     ods.Add(od);
                     _context.Carts.Remove(c);
                 }
@@ -150,7 +199,7 @@ namespace Application.Catalog
             Order order = new Order()
             {
                 ShipAddress = request.ShipAddress,
-                ShipEmail = request.ShipEmail,
+                ShipName = request.ShipName,
                 ShipPhonenumber = request.ShipPhonenumber,
                 OrderDetails = ods,
                 UserId = user.Id
@@ -158,7 +207,13 @@ namespace Application.Catalog
 
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
-            return true;
+
+            OrderResponse orderResponse = new OrderResponse()
+            {
+                OrderId = order.Id,
+                CartVms = cartVms
+            };
+            return orderResponse;
         }
 
         public async Task<bool> RemoveFromCart(List<int> cartIds)
@@ -217,6 +272,45 @@ namespace Application.Catalog
 
             //return _mapper.Map<List<ComponentDetailVm>>(pd.ComponentDetails);
             return detail;
+        }
+
+        private CartVm GetCartVm(int cartId)
+        {
+            var a = from c in _context.Carts
+                    join pd in _context.ProductDetails on c.ProductDetailId equals pd.Id
+                    join p in _context.Products on pd.ProductId equals p.Id
+                    where c.Id == cartId
+                    select new { c, pd, p };
+            return a.Select(x => new CartVm()
+            {
+                Name = x.p.Name,
+                Quantity = x.c.Quantity,
+                Price = x.c.Price,
+            }).FirstOrDefault();
+        }
+
+        public async Task SaveToken(string token, int orderId)
+        {
+            PaymentOnline po = new PaymentOnline()
+            {
+                Token = token,
+                OrderId = orderId
+            };
+
+            _context.PaymentOnlines.Add(po);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task Checkout(CheckoutStatusRequest request)
+        {
+            var po = await _context.PaymentOnlines.FindAsync(request.Token);
+
+            if (po == null)
+                return;
+
+            var order = await _context.Orders.Where(x => x.Id == po.OrderId).FirstOrDefaultAsync();
+            order.Paid = request.IsSuccess;
+            await _context.SaveChangesAsync();
         }
     }
 }
