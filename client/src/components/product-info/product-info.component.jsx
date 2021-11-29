@@ -13,6 +13,8 @@ import catalogApi from "../../api/catalog-api";
 import salesApi from "../../api/sales.api";
 
 import "./product-info.styles.scss";
+import { useDispatch } from "react-redux";
+import { toggleNotification } from "../../redux/modal/modal.actions";
 
 const ProductInfo = ({ productId }) => {
   const [listComponent, setListComponent] = useState([]);
@@ -60,6 +62,9 @@ const ProductInfo = ({ productId }) => {
   });
 
   const currentUser = useSelector((state) => state.user.currentUser);
+
+  const dispatch = useDispatch();
+
   const history = useHistory();
 
   const incrementValue = Number(cartItem.amount) || 1;
@@ -79,7 +84,6 @@ const ProductInfo = ({ productId }) => {
     const getProduct = async () => {
       try {
         const response = await catalogApi.getProductById(productId);
-        console.log(response);
         setProductInfo(response);
         await catalogApi.addViewCount(productId);
       } catch (error) {
@@ -231,6 +235,7 @@ const ProductInfo = ({ productId }) => {
                 message: "Add to cart successfully!",
                 type: "success",
               });
+              dispatch(toggleNotification());
             }
           } catch (error) {
             console.log("Failed to add product to cart", error.response);

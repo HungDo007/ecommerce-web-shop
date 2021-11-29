@@ -2,7 +2,7 @@ import { ModalActionTypes } from "./modal.types";
 
 const INITIAL_STATE = {
   isOpen: false,
-  notification: null,
+  notification: false,
 };
 
 const modalReducer = (state = INITIAL_STATE, action) => {
@@ -15,7 +15,7 @@ const modalReducer = (state = INITIAL_STATE, action) => {
     case ModalActionTypes.TOGGLE_NOTIFICATION:
       return {
         ...state,
-        notification: action.payload,
+        notification: !state.notification,
       };
     default:
       return state;

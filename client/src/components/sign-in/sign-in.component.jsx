@@ -67,8 +67,7 @@ const SignIn = ({ setAction }) => {
 
     setErrors({ ...temp });
 
-    if (fieldValues == userInfo)
-      return Object.values(temp).every((x) => x == "");
+    return Object.values(temp).every((x) => x === "");
   };
 
   const handleChange = (event) => {

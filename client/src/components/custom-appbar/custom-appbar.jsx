@@ -39,6 +39,8 @@ const CustomAppBar = ({ sidebar, setSidebar }) => {
 
   const currentUser = useSelector((state) => state.user.currentUser);
 
+  const cartItems = useSelector((state) => state.cart.cartItems);
+
   const dispatch = useDispatch();
 
   const history = useHistory();
@@ -166,7 +168,7 @@ const CustomAppBar = ({ sidebar, setSidebar }) => {
                   aria-haspopup="true"
                   onClick={handleCartOpen}
                 >
-                  <Badge badgeContent={1} color="secondary">
+                  <Badge badgeContent={cartItems.length} color="secondary">
                     <ShoppingCartIcon />
                   </Badge>
                 </IconButton>
@@ -215,7 +217,7 @@ const CustomAppBar = ({ sidebar, setSidebar }) => {
         transformOrigin={{ vertical: "top", horizontal: "center" }}
       >
         <MenuItem>
-          <CartDropDown />
+          <CartDropDown items={cartItems} />
         </MenuItem>
       </Menu>
     </div>

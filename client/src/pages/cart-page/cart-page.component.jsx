@@ -1,14 +1,19 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useHistory } from "react-router";
+import { useDispatch } from "react-redux";
 
 import { Button, Checkbox, IconButton, Tooltip } from "@material-ui/core";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
 import ClearIcon from "@material-ui/icons/Clear";
+import { Pagination } from "@material-ui/lab";
+
+import { setOrderItems } from "../../redux/order/order.actions";
+
+import salesApi from "../../api/sales.api";
 
 import "./cart-page.styles.scss";
-import { useEffect } from "react";
-import salesApi from "../../api/sales.api";
-import { Pagination } from "@material-ui/lab";
+import { toggleNotification } from "../../redux/modal/modal.actions";
 
 const CartPage = () => {
   const [checked, setChecked] = useState(false);
@@ -27,6 +32,12 @@ const CartPage = () => {
 
   const [items, setItems] = useState([]);
 
+  const [removeItems, setRemoveItems] = useState([]);
+
+  const history = useHistory();
+
+  const dispatch = useDispatch();
+
   const getCart = async () => {
     try {
       const params = {
@@ -34,10 +45,21 @@ const CartPage = () => {
         pageSize: 5,
       };
       const response = await salesApi.getCart(params);
-      console.log(response);
       setCartPaging(response);
     } catch (error) {
       console.log("Failed to get cart: ", error?.response);
+    }
+  };
+
+  const removeItem = async () => {
+    try {
+      const response = await salesApi.removeItemFromCart(removeItems);
+      if (response.status === 200 && response.statusText === "OK") {
+        getCart();
+        dispatch(toggleNotification());
+      }
+    } catch (error) {
+      console.log("Failed to remove cart item: ", error?.response);
     }
   };
 
@@ -60,6 +82,10 @@ const CartPage = () => {
     setTotal(total);
   }, [items]);
 
+  useEffect(() => {
+    removeItem();
+  }, [removeItems]);
+
   const handleChange = (event, position) => {
     const id = Number(event.target.value);
 
@@ -81,15 +107,26 @@ const CartPage = () => {
     }
   };
 
-  const handleUpdateAmount = (string, id) => {
+  const handleUpdateAmount = (string, id, quantity, stock) => {
     const payload = {
       cartId: id,
       isIncrease: string === "increase" ? true : false,
     };
+
+    if (quantity === 1 && string === "decrease") {
+      setRemoveItems([id]);
+    }
+
+    if (quantity === stock && string === "increase") {
+      return;
+    }
+
     const editAmount = async () => {
       try {
         const response = await salesApi.editAmount(payload);
-        getCart();
+        if (response.status === 200 && response.statusText === "OK") {
+          getCart();
+        }
       } catch (error) {
         console.log("Failed to edit amount: ", error?.response);
       }
@@ -97,11 +134,21 @@ const CartPage = () => {
     editAmount();
   };
 
-  const handleCheckout = () => {
-    console.log(items);
+  const handleRemove = (cartId) => {
+    if (cartId === -1) {
+      let items = [];
+      items = cartPaging.items.map((item) => item.cartId);
+      setRemoveItems(items);
+    } else {
+      setRemoveItems([cartId]);
+    }
   };
 
-  console.log(items);
+  const handleCheckout = () => {
+    //console.log(items);
+    dispatch(setOrderItems(items));
+    history.push("/checkout");
+  };
 
   return (
     <div className="cart-page">
@@ -120,12 +167,18 @@ const CartPage = () => {
           <span>Name</span>
         </div>
         <div className="header-block">
+          <span>Component</span>
+        </div>
+        <div className="header-block">
           <span>Amount</span>
         </div>
         <div className="header-block">
           <span>Price</span>
         </div>
-        <div className="header-block">
+        <div
+          className="header-block remove-all"
+          onClick={() => handleRemove(-1)}
+        >
           <span>Remove</span>
         </div>
       </div>
@@ -147,29 +200,50 @@ const CartPage = () => {
             />
           </div>
           <span className="name">{cartItem.name}</span>
-          <span className="quantity">
-            <Tooltip title="Decrease item by 1">
-              <IconButton
-                value="Decrease"
-                onClick={() => handleUpdateAmount("decrease", cartItem.cartId)}
-                aria-label="decrease item"
-              >
-                <ArrowBackIosIcon />
-              </IconButton>
-            </Tooltip>
-            <span className="value">{cartItem.quantity}</span>
-            <Tooltip title="Increase item by 1">
-              <IconButton
-                onClick={() => handleUpdateAmount("increase", cartItem.cartId)}
-                aria-label="increase item"
-              >
-                <ArrowForwardIosIcon />
-              </IconButton>
-            </Tooltip>
-          </span>
+          <span className="name">{cartItem.details}</span>
+          <div className="quantity">
+            <div>
+              <Tooltip title="Decrease item by 1">
+                <IconButton
+                  value="Decrease"
+                  onClick={() =>
+                    handleUpdateAmount(
+                      "decrease",
+                      cartItem.cartId,
+                      cartItem.quantity,
+                      cartItem.stockOfDetail
+                    )
+                  }
+                  aria-label="decrease item"
+                >
+                  <ArrowBackIosIcon />
+                </IconButton>
+              </Tooltip>
+              <span className="value">{cartItem.quantity}</span>
+              <Tooltip title="Increase item by 1">
+                <IconButton
+                  onClick={() =>
+                    handleUpdateAmount(
+                      "increase",
+                      cartItem.cartId,
+                      cartItem.quantity,
+                      cartItem.stockOfDetail
+                    )
+                  }
+                  aria-label="increase item"
+                >
+                  <ArrowForwardIosIcon />
+                </IconButton>
+              </Tooltip>
+            </div>
+            <div className="stock">{cartItem.stockOfDetail} available</div>
+          </div>
           <span className="price">$ {cartItem.price}</span>
           <Tooltip title="Remove item">
-            <IconButton aria-label="remove item">
+            <IconButton
+              aria-label="remove item"
+              onClick={() => handleRemove(cartItem.cartId)}
+            >
               <ClearIcon />
             </IconButton>
           </Tooltip>
@@ -191,6 +265,7 @@ const CartPage = () => {
           variant="contained"
           color="primary"
           onClick={handleCheckout}
+          disabled={items.length === 0 ? true : false}
         >
           Checkout
         </Button>

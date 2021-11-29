@@ -5,6 +5,7 @@ import * as AiIcons from "react-icons/ai";
 import * as FaIcons from "react-icons/fa";
 import * as RiIcons from "react-icons/ri";
 import * as GiIcons from "react-icons/gi";
+import * as MdIcons from "react-icons/md";
 
 export const DataArr = () => {
   const currentUser = useSelector((state) => state.user.currentUser);
@@ -36,6 +37,12 @@ export const DataArr = () => {
       title: "My Store",
       path: "/store",
       icon: <FaIcons.FaStore />,
+      cName: "nav-text",
+    },
+    {
+      title: "My Order",
+      path: "/order",
+      icon: <MdIcons.MdReceipt />,
       cName: "nav-text",
     },
   ];

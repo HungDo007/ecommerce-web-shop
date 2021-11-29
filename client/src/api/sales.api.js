@@ -20,6 +20,11 @@ const salesApi = {
     const url = "/Sales/RemoveCart";
     return axiosClient.post(url, data);
   },
+
+  order: (data) => {
+    const url = "/Sales/Order";
+    return axiosClient.post(url, data);
+  },
 };
 
 export default salesApi;
