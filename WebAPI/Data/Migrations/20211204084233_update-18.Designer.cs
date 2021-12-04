@@ -4,14 +4,16 @@ using Data.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Data.Migrations
 {
     [DbContext(typeof(EShopContext))]
-    partial class EShopContextModelSnapshot : ModelSnapshot
+    [Migration("20211204084233_update-18")]
+    partial class update18
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -149,7 +151,7 @@ namespace Data.Migrations
                             Id = new Guid("f82493f3-ab61-477b-8bb8-daebc61cf148"),
                             AccessFailedCount = 0,
                             Address = "TPHCM",
-                            ConcurrencyStamp = "82b8b669-6530-4ac7-b4d9-57448b969269",
+                            ConcurrencyStamp = "a3623e97-e875-4bd9-b9bd-b3f40c56c49d",
                             Dob = new DateTime(2020, 1, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "webshop@gmail.com",
                             EmailConfirmed = true,
@@ -159,7 +161,7 @@ namespace Data.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "webshop@gmail.com",
                             NormalizedUserName = "admin",
-                            PasswordHash = "AQAAAAEAACcQAAAAEBwdnPWNGlI8YmCCG7j3WY7txanri9WDg5/dDzm/7e//mv+d6vhuzfPwxGgfSr73dw==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEMuDmtJBkADUgsVX9gLxm4wTYLKUAqNwEl+DmhSn5X4C5/+dwJi7babFj+njqmwQjw==",
                             PhoneNumber = "1234567",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
@@ -179,7 +181,7 @@ namespace Data.Migrations
                     b.Property<DateTime>("DateCreated")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2021, 12, 4, 17, 58, 44, 191, DateTimeKind.Local).AddTicks(8539));
+                        .HasDefaultValue(new DateTime(2021, 12, 4, 15, 42, 32, 666, DateTimeKind.Local).AddTicks(6714));
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
@@ -287,15 +289,12 @@ namespace Data.Migrations
                     b.Property<DateTime>("OrderDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2021, 12, 4, 17, 58, 44, 207, DateTimeKind.Local).AddTicks(7798));
+                        .HasDefaultValue(new DateTime(2021, 12, 4, 15, 42, 32, 683, DateTimeKind.Local).AddTicks(1109));
 
                     b.Property<bool>("Paid")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
-
-                    b.Property<string>("Seller")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ShipAddress")
                         .HasColumnType("nvarchar(max)");
@@ -304,9 +303,6 @@ namespace Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ShipPhonenumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ShopName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("UserId")
@@ -368,7 +364,7 @@ namespace Data.Migrations
                     b.Property<DateTime>("DateCreated")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2021, 12, 4, 17, 58, 44, 214, DateTimeKind.Local).AddTicks(9907));
+                        .HasDefaultValue(new DateTime(2021, 12, 4, 15, 42, 32, 690, DateTimeKind.Local).AddTicks(3110));
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -697,7 +693,7 @@ namespace Data.Migrations
                         new
                         {
                             Id = new Guid("ae7f2c5c-8241-4e88-9e2e-4e9342f98a51"),
-                            ConcurrencyStamp = "6967c10f-d8df-4db4-aa54-9510ba9300d9",
+                            ConcurrencyStamp = "bbf145f0-adfe-427b-b569-1843838aa51c",
                             Name = "Admin",
                             NormalizedName = "admin",
                             Description = "Administrator"
@@ -705,7 +701,7 @@ namespace Data.Migrations
                         new
                         {
                             Id = new Guid("8daf1440-3444-416d-807c-edbe207f8fba"),
-                            ConcurrencyStamp = "9b0a12a2-ea05-4c3f-8a56-a778e4cdc230",
+                            ConcurrencyStamp = "5b65b828-873d-4684-9dc1-fd67a747d107",
                             Name = "User",
                             NormalizedName = "user",
                             Description = "Website Users"

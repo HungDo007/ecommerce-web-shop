@@ -23,5 +23,7 @@ namespace Application.Catalog
         Task<List<OrderDetailVm>> GetOrderDetail(int orderId);
 
         Task Checkout(CheckoutStatusRequest request);
+
+        Task<PagedResult<OrderVm>> GetOrderInProcessBuyer(string username, PagingRequestBase request);
     }
 }

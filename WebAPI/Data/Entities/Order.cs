@@ -7,6 +7,8 @@ namespace Data.Entities
     {
         public int Id { set; get; }
         public DateTime OrderDate { set; get; }
+        public string Seller { get; set; }
+        public string ShopName { get; set; }
         public Guid UserId { set; get; }
         public string ShipAddress { set; get; }
         public string ShipName { set; get; }
