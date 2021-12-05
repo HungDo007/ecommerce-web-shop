@@ -43,8 +43,15 @@ namespace Data.Extentions
                 FirstName = "Super",
                 LastName = "Admin",
                 Dob = new DateTime(2020, 01, 31),
-                Address="TPHCM",
-                PhoneNumber="1234567"
+                Address = "TPHCM",
+                PhoneNumber = "1234567"
+            });
+
+            modelBuilder.Entity<Transaction>().HasData(new Transaction
+            {
+                Id = 999,
+                Fee = 1,
+                Provider = "MySHop"
             });
         }
     }

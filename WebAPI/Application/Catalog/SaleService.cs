@@ -4,6 +4,7 @@ using Application.ViewModels.Common;
 using AutoMapper;
 using Data.EF;
 using Data.Entities;
+using Data.Enum;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Org.BouncyCastle.Math.EC.Rfc7748;
@@ -70,6 +71,8 @@ namespace Application.Catalog
 
             order.OrderDetails.Clear();
 
+            TransactionOrder transactionOrder = _context.TransactionOrders.Where(x => x.OrderId == order.Id).FirstOrDefault();
+            _context.TransactionOrders.Remove(transactionOrder);
             _context.Orders.Remove(order);
             await _context.SaveChangesAsync();
             return true;
@@ -82,10 +85,13 @@ namespace Application.Catalog
                 var a = from c in _context.Carts
                         join pd in _context.ProductDetails on c.ProductDetailId equals pd.Id
                         join p in _context.Products on pd.ProductId equals p.Id
+                        join seller in _context.Users on p.UserId equals seller.Id
+                        join s in _context.Stores on seller.Id equals s.UserId
                         join pi in _context.ProductImages on p.Id equals pi.ProductId
                         join u in _context.Users on c.UserId equals u.Id
+
                         where u.UserName == username && pi.IsPoster == true
-                        select new { c, pd, p, pi, u };
+                        select new { c, pd, p, pi, u, s, seller };
 
 
                 if (!string.IsNullOrEmpty(request.Keyword))
@@ -95,6 +101,8 @@ namespace Application.Catalog
 
                 var data = await a.Select(x => new CartVm()
                 {
+                    ShopName = x.s.Name,
+                    Seller = x.seller.UserName,
                     CartId = x.c.Id,
                     ProductId = x.p.Id,
                     Name = x.p.Name,
@@ -124,7 +132,11 @@ namespace Application.Catalog
         public async Task<PagedResult<OrderVm>> GetOrder(string username, PagingRequestBase request)
         {
             var user = await _userManager.FindByNameAsync(username);
-            var orders = await _context.Orders.Include(x => x.OrderDetails).Where(x => x.UserId == user.Id).ToListAsync();
+            var orders = await _context.Orders
+                .Include(x => x.OrderDetails)
+                .Include(x => x.TransactionOrder)
+                .Where(x => x.UserId == user.Id)
+                .ToListAsync();
 
             List<OrderVm> odVms = new List<OrderVm>();
             foreach (var item in orders)
@@ -136,7 +148,10 @@ namespace Application.Catalog
                     Name = $"{item.OrderDetails[0].Name}{temp}",
                     Paid = item.Paid,
                     Quantity = item.OrderDetails.Count,
-                    SumPrice = item.OrderDetails.Sum(x => x.Price)
+                    SumPrice = item.OrderDetails.Sum(x => x.Price),
+                    OrderStatus = item.TransactionOrder.Status,
+                    Seller = item.Seller,
+                    ShopName = item.ShopName
                 };
                 odVms.Add(orderVm);
             }
@@ -172,8 +187,22 @@ namespace Application.Catalog
         public async Task<OrderResponse> OrderProduct(string username, OrderRequest request)
         {
             var user = await _userManager.FindByNameAsync(username);
+            var store = (from s in _context.Stores
+                         join u in _context.Users on s.UserId equals u.Id
+                         where u.UserName == request.Seller
+                         select new { s })
+                         .Select(x => new
+                         {
+                             ShopName = x.s.Name
+                         }).First();
+
             List<OrderDetail> ods = new List<OrderDetail>();
             List<CartVm> cartVms = new List<CartVm>();
+
+            Transaction transaction = await _context.Transactions.FindAsync(999);
+
+
+
             foreach (var item in request.OrderItemId)
             {
                 var c = await _context.Carts.Include(x => x.ProductDetail).Where(x => x.Id == item).FirstOrDefaultAsync();
@@ -198,12 +227,25 @@ namespace Application.Catalog
 
             Order order = new Order()
             {
+                Seller = request.Seller,
+                ShopName = store.ShopName,
                 ShipAddress = request.ShipAddress,
                 ShipName = request.ShipName,
                 ShipPhonenumber = request.ShipPhonenumber,
                 OrderDetails = ods,
-                UserId = user.Id
+                UserId = user.Id,
+
             };
+
+            TransactionOrder transactionOrder = new TransactionOrder()
+            {
+                OrderId = order.Id,
+                TransactionId = 999,
+                ExpectedDate = DateTime.Now,
+                Status = OrderStatus.InProgress
+            };
+
+            order.TransactionOrder = transactionOrder;
 
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
@@ -311,6 +353,17 @@ namespace Application.Catalog
             var order = await _context.Orders.Where(x => x.Id == po.OrderId).FirstOrDefaultAsync();
             order.Paid = request.IsSuccess;
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<PagedResult<OrderVm>> GetOrderInProcessBuyer(string username, PagingRequestBase request)
+        {
+            //var data = from o in _context.Orders
+            //           join pd in _context.ProductDetails
+            //           join p in _context.Products on pd.ProductId equals p.Id
+            //           join seller in _context.Users on p.UserId equals seller.Id
+            //           join buyer in _context.Users on
+
+            return null;
         }
     }
 }

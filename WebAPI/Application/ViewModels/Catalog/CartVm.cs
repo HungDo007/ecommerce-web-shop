@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Application.ViewModels.Catalog
 {
     public class CartVm
     {
+        public string ShopName { get; set; }
+        public string Seller { get; set; }
         public int CartId { get; set; }
         public int ProductId { get; set; }
         public int ProductDetailId { get; set; }
