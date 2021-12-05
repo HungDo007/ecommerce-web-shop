@@ -202,12 +202,11 @@ const StoreProduct = (props) => {
     }
   };
 
-  console.log(productInfo);
-
   useEffect(() => {
     const getProduct = async (id) => {
       try {
         const response = await catalogApi.getProductById(id);
+        console.log(response);
         let array = response.images;
         array.forEach((element, index, newArr) => {
           newArr[index] = process.env.REACT_APP_IMAGE_URL + element;

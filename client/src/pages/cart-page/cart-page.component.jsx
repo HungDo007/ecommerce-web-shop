@@ -34,6 +34,8 @@ const CartPage = () => {
 
   const [removeItems, setRemoveItems] = useState([]);
 
+  const [shopItems, setShopItems] = useState([]);
+
   const history = useHistory();
 
   const dispatch = useDispatch();
@@ -68,6 +70,20 @@ const CartPage = () => {
   }, []);
 
   useEffect(() => {
+    let a = [];
+    cartPaging.items.forEach((element, index, arr) => {
+      if (!a.some((item) => item.shopName === element.shopName)) {
+        let obj = {
+          shopName: element.shopName,
+          item: cartPaging.items.filter((c) => c.shopName === element.shopName),
+        };
+        a.push(obj);
+      }
+    });
+    setShopItems(a);
+  }, [cartPaging]);
+
+  useEffect(() => {
     if (items.length === cartPaging.items.length && items.length !== 0) {
       setChecked(true);
     }
@@ -86,7 +102,7 @@ const CartPage = () => {
     removeItem();
   }, [removeItems]);
 
-  const handleChange = (event, position) => {
+  const handleChange = (event, position, index) => {
     const id = Number(event.target.value);
 
     if (position === -1) {
@@ -99,7 +115,7 @@ const CartPage = () => {
     } else {
       if (event.target.checked) {
         if (!items.some((item) => item.cartId === id)) {
-          setItems([...items, cartPaging.items[position]]);
+          setItems([...items, shopItems[position].item[index]]);
         }
       } else {
         setItems(items.filter((item) => item.cartId !== id));
@@ -126,6 +142,7 @@ const CartPage = () => {
         const response = await salesApi.editAmount(payload);
         if (response.status === 200 && response.statusText === "OK") {
           getCart();
+          setItems([]);
         }
       } catch (error) {
         console.log("Failed to edit amount: ", error?.response);
@@ -142,10 +159,10 @@ const CartPage = () => {
     } else {
       setRemoveItems([cartId]);
     }
+    setItems([]);
   };
 
   const handleCheckout = () => {
-    //console.log(items);
     const orderItems = {
       items,
       total,
@@ -186,73 +203,79 @@ const CartPage = () => {
           <span>Remove</span>
         </div>
       </div>
-      {cartPaging.items.map((cartItem, index) => (
-        <div key={cartItem.cartId} className="c-item">
-          <div>
-            <Checkbox
-              value={cartItem.cartId}
-              checked={items
-                .map((item) => item.cartId)
-                .includes(cartItem.cartId)}
-              onChange={(event) => handleChange(event, index)}
-            />
-          </div>
-          <div className="image-container">
-            <img
-              src={process.env.REACT_APP_IMAGE_URL + cartItem.productImg}
-              alt="item"
-            />
-          </div>
-          <span className="name">{cartItem.name}</span>
-          <span className="name">{cartItem.details}</span>
-          <div className="quantity">
-            <div>
-              <Tooltip title="Decrease item by 1">
+      {shopItems.map((shopItem, idx) => (
+        <div className="cart-shop-container" key={idx}>
+          <div>{shopItem.shopName ? shopItem.shopName : "Shop"}</div>
+          {shopItem.item.map((cartItem, index) => (
+            <div key={cartItem.cartId} className="c-item">
+              <div>
+                <Checkbox
+                  value={cartItem.cartId}
+                  checked={items
+                    .map((item) => item.cartId)
+                    .includes(cartItem.cartId)}
+                  onChange={(event) => handleChange(event, idx, index)}
+                />
+              </div>
+              <div className="image-container">
+                <img
+                  src={process.env.REACT_APP_IMAGE_URL + cartItem.productImg}
+                  alt="item"
+                />
+              </div>
+              <span className="name">{cartItem.name}</span>
+              <span className="name">{cartItem.details}</span>
+              <div className="quantity">
+                <div>
+                  <Tooltip title="Decrease item by 1">
+                    <IconButton
+                      value="Decrease"
+                      onClick={() =>
+                        handleUpdateAmount(
+                          "decrease",
+                          cartItem.cartId,
+                          cartItem.quantity,
+                          cartItem.stockOfDetail
+                        )
+                      }
+                      aria-label="decrease item"
+                    >
+                      <ArrowBackIosIcon />
+                    </IconButton>
+                  </Tooltip>
+                  <span className="value">{cartItem.quantity}</span>
+                  <Tooltip title="Increase item by 1">
+                    <IconButton
+                      onClick={() =>
+                        handleUpdateAmount(
+                          "increase",
+                          cartItem.cartId,
+                          cartItem.quantity,
+                          cartItem.stockOfDetail
+                        )
+                      }
+                      aria-label="increase item"
+                    >
+                      <ArrowForwardIosIcon />
+                    </IconButton>
+                  </Tooltip>
+                </div>
+                <div className="stock">{cartItem.stockOfDetail} available</div>
+              </div>
+              <span className="price">${cartItem.price}</span>
+              <Tooltip title="Remove item">
                 <IconButton
-                  value="Decrease"
-                  onClick={() =>
-                    handleUpdateAmount(
-                      "decrease",
-                      cartItem.cartId,
-                      cartItem.quantity,
-                      cartItem.stockOfDetail
-                    )
-                  }
-                  aria-label="decrease item"
+                  aria-label="remove item"
+                  onClick={() => handleRemove(cartItem.cartId)}
                 >
-                  <ArrowBackIosIcon />
-                </IconButton>
-              </Tooltip>
-              <span className="value">{cartItem.quantity}</span>
-              <Tooltip title="Increase item by 1">
-                <IconButton
-                  onClick={() =>
-                    handleUpdateAmount(
-                      "increase",
-                      cartItem.cartId,
-                      cartItem.quantity,
-                      cartItem.stockOfDetail
-                    )
-                  }
-                  aria-label="increase item"
-                >
-                  <ArrowForwardIosIcon />
+                  <ClearIcon />
                 </IconButton>
               </Tooltip>
             </div>
-            <div className="stock">{cartItem.stockOfDetail} available</div>
-          </div>
-          <span className="price">$ {cartItem.price}</span>
-          <Tooltip title="Remove item">
-            <IconButton
-              aria-label="remove item"
-              onClick={() => handleRemove(cartItem.cartId)}
-            >
-              <ClearIcon />
-            </IconButton>
-          </Tooltip>
+          ))}
         </div>
       ))}
+
       <div className="total">TOTAL: ${total}</div>
       <div>
         <Pagination

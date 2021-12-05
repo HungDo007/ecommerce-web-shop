@@ -22,10 +22,11 @@
 
         .image {
           margin: 0 auto;
-          height: 100%;
+          width: 500px;
+          height: 520px;
           max-height: 400px;
           display: block;
-          object-fit: cover;
+          object-fit: contain;
         }
 
         .thumb {

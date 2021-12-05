@@ -155,7 +155,7 @@ const ProductInfo = ({ productId }) => {
       });
 
       let productDetailId = undefined;
-      let price = 100;
+      let price = "unavailable";
       let stock = 0;
 
       a.forEach((element, idx) => {
