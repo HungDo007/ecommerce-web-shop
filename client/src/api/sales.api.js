@@ -1,6 +1,7 @@
 import axiosClient from "./axios-client";
 
 const salesApi = {
+  //cart
   getCart: (params) => {
     const url = "/Sales/cart";
     return axiosClient.get(url, { params });
@@ -21,9 +22,35 @@ const salesApi = {
     return axiosClient.post(url, data);
   },
 
+  //order
+  getOrder: (params) => {
+    const url = "/Sales/Order";
+    return axiosClient.get(url, { params });
+  },
+
+  getOrderDetail: (orderId) => {
+    const url = `/Sales/Order/${orderId}`;
+    return axiosClient.get(url);
+  },
+
   order: (data) => {
     const url = "/Sales/Order";
     return axiosClient.post(url, data);
+  },
+
+  payWithPaypal: (data) => {
+    const url = "/Sales/PaymentOrder";
+    return axiosClient.post(url, data);
+  },
+
+  checkoutStatus: (data) => {
+    const url = "/Sales/CheckoutStatus";
+    return axiosClient.post(url, data);
+  },
+
+  cancelOrder: (orderId) => {
+    const url = `/Sales/Order/${orderId}`;
+    return axiosClient.delete(url);
   },
 };
 

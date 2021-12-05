@@ -1,36 +1,35 @@
 import { Button, TextField } from "@material-ui/core";
 import { useEffect } from "react";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import salesApi from "../../api/sales.api";
 import userApi from "../../api/user-api";
+import { toggleNotification } from "../../redux/modal/modal.actions";
 import "./checkout.styles.scss";
 
-const Checkout = () => {
+const Checkout = (props) => {
   const [orderInfo, setOrderInfo] = useState({
     address: "",
-    email: "",
+    name: "",
     phoneNumber: "",
   });
 
-  const { address, email, phoneNumber } = orderInfo;
+  const { address, name, phoneNumber } = orderInfo;
 
   const [errors, setErrors] = useState({});
 
   const orderItems = useSelector((state) => state.order.orderItems);
   const currentUser = useSelector((state) => state.user.currentUser);
 
+  const dispatch = useDispatch();
+
   const validate = (fieldValues = orderInfo) => {
     let temp = { ...errors };
     if ("address" in fieldValues)
       temp.address = fieldValues.address ? "" : "This field is required";
-    if ("email" in fieldValues) {
-      temp.email = fieldValues.email ? "" : "This field is required";
-      if (fieldValues.email)
-        temp.email = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(fieldValues.email)
-          ? ""
-          : "Email is not valid.";
-    }
+    if ("name" in fieldValues)
+      temp.name = fieldValues.name ? "" : "This field is required";
     if ("phoneNumber" in fieldValues)
       temp.phoneNumber = fieldValues.phoneNumber
         ? ""
@@ -49,22 +48,51 @@ const Checkout = () => {
   };
 
   const handleOrder = () => {
-    if (validate()) {
+    if (validate() && orderItems.items.length !== 0) {
       const payload = {
         shipAddress: address,
-        shipEmail: email,
+        shipName: name,
         shipPhonenumber: phoneNumber,
-        orderItemId: orderItems.map((item) => item.cartId),
+        orderItemId: orderItems.items.map((item) => item.cartId),
       };
       const order = async () => {
         try {
           const response = await salesApi.order(payload);
-          console.log(response);
+          if (response.status === 200 && response.statusText === "OK") {
+            dispatch(toggleNotification());
+            props.history.push("/order");
+          }
         } catch (error) {
           console.log("Failed to order: ", error?.response);
         }
       };
-      console.log(payload);
+      //console.log(payload);
+      order();
+    }
+  };
+
+  const handlePayWithPaypal = () => {
+    if (validate() && orderItems.items.length !== 0) {
+      const payload = {
+        shipAddress: address,
+        shipName: name,
+        shipPhonenumber: phoneNumber,
+        orderItemId: orderItems.items.map((item) => item.cartId),
+      };
+
+      const paymentWithPayPal = async () => {
+        try {
+          const response = await salesApi.payWithPaypal(payload);
+          window.location.href = response;
+        } catch (error) {
+          console.log("failed to pay: ", error?.response);
+          dispatch(toggleNotification());
+          props.history.push("/order");
+        }
+      };
+
+      paymentWithPayPal();
+      //console.log(payload);
     }
   };
 
@@ -74,7 +102,7 @@ const Checkout = () => {
         const response = await userApi.getProfile(currentUser.unique_name);
         setOrderInfo({
           address: response.address,
-          email: response.email,
+          name: `${response.firstName} ${response.lastName}`,
           phoneNumber: response.phoneNumber,
         });
       } catch (error) {
@@ -106,14 +134,14 @@ const Checkout = () => {
           </div>
           <div className="input">
             <TextField
-              name="email"
-              value={email}
+              name="name"
+              value={name}
               onChange={handleChange}
               fullWidth
-              label="Email"
-              {...(errors.email && {
+              label="Name"
+              {...(errors.name && {
                 error: true,
-                helperText: errors.email,
+                helperText: errors.name,
               })}
             />
           </div>
@@ -140,7 +168,7 @@ const Checkout = () => {
           <div className="header-block">Amount</div>
           <div className="header-block">Item Subtotal</div>
         </div>
-        {orderItems.map((i) => (
+        {orderItems.items.map((i) => (
           <div key={i.cartId} className="checkout-ordered-header">
             <img
               className="header-block"
@@ -153,10 +181,20 @@ const Checkout = () => {
             <div className="header-block">$ {i.price}</div>
           </div>
         ))}
+        <div className="products-ordered-total">
+          Merchandise Total: ${orderItems.total}
+        </div>
       </div>
       <div className="place-order">
-        <Button variant="contained" color="primary" onClick={handleOrder}>
-          Place Order
+        <Button variant="contained" color="secondary" onClick={handleOrder}>
+          Cash On Delivery
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handlePayWithPaypal}
+        >
+          Pay with Paypal
         </Button>
       </div>
     </div>

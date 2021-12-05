@@ -34,11 +34,18 @@
         width: 100px;
       }
     }
+
+    .products-ordered-total {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 2rem;
+      font-size: 24px;
+    }
   }
 
   .place-order {
     margin: 2rem 0;
     display: flex;
-    justify-content: center;
+    justify-content: space-around;
   }
 }

@@ -5,7 +5,7 @@ import LockIcon from "@material-ui/icons/Lock";
 import adminApi from "../../../../api/admin-api";
 import { toggleModal } from "../../../../redux/modal/modal.actions";
 
-const UserTable = ({ actionLockUser, setUsername, dispatch }) => {
+const UserTable = ({ tableRef, actionLockUser, setUsername, dispatch }) => {
   const columns = [
     {
       title: "Username",
@@ -40,8 +40,9 @@ const UserTable = ({ actionLockUser, setUsername, dispatch }) => {
   return (
     <div>
       <MaterialTable
-        options={{ actionsColumnIndex: -1 }}
         title="User Accounts"
+        tableRef={tableRef}
+        options={{ actionsColumnIndex: -1 }}
         data={(query) =>
           new Promise((resolve, reject) => {
             const params = {
@@ -59,7 +60,7 @@ const UserTable = ({ actionLockUser, setUsername, dispatch }) => {
                 });
               })
               .catch((error) => {
-                console.log(error);
+                console.log(error?.response);
                 reject();
               });
           })

@@ -43,7 +43,7 @@ const CssTextField = withStyles({
   },
 })(TextField);
 
-const SignUp = ({ setAction, currentUser }) => {
+const SignUp = ({ setAction, currentUser, tableRef }) => {
   const [userInfo, setUserInfo] = useState({
     username: "",
     email: "",
@@ -77,16 +77,17 @@ const SignUp = ({ setAction, currentUser }) => {
           : "Email is not valid.";
     }
 
-    if ("password" in fieldValues)
+    if ("password" in fieldValues) {
       temp.password = fieldValues.password ? "" : "This field is required";
 
-    if (fieldValues.password)
-      temp.password =
-        /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])[0-9a-zA-Z!@#$%^&*]{8,}$/.test(
-          fieldValues.password
-        )
-          ? ""
-          : "Password has at least 8 character with special character, number and uppercase character";
+      if (fieldValues.password)
+        temp.password =
+          /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])[0-9a-zA-Z!@#$%^&*]{8,}$/.test(
+            fieldValues.password
+          )
+            ? ""
+            : "Password has at least 8 character with special character, number and uppercase character";
+    }
 
     if ("confirmPassword" in fieldValues) {
       temp.confirmPassword = fieldValues.confirmPassword
@@ -131,10 +132,16 @@ const SignUp = ({ setAction, currentUser }) => {
           const addAdmin = async () => {
             try {
               const response = await adminApi.addAmin(data);
-              console.log(response);
+              if (response.status === 200 && response.statusText === "OK") {
+                tableRef.current.onQueryChange();
+              }
               dispatch(toggleModal());
             } catch (error) {
-              console.log(error);
+              setNotify({
+                isOpen: true,
+                message: `Fail to add new admin account!`,
+                type: "error",
+              });
             }
           };
           addAdmin();

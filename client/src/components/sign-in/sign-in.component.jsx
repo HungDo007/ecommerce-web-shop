@@ -18,6 +18,7 @@ import { setCurrentUser } from "../../redux/user/user.actions";
 import userApi from "../../api/user-api";
 
 import "./sign-in.styles.scss";
+import { toggleNotification } from "../../redux/modal/modal.actions";
 
 const CssTextField = withStyles({
   root: {
@@ -99,6 +100,7 @@ const SignIn = ({ setAction }) => {
           localStorage.setItem("jwtToken", response);
           const user = jwtDecode(response);
           dispatch(setCurrentUser(user));
+          dispatch(toggleNotification());
         } catch (error) {
           console.log("Fail to authenticate: ", error.response);
           if (error.response?.data === "Incorrect Username.") {

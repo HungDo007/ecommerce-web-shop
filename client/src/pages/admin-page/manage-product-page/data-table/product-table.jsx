@@ -76,7 +76,6 @@ const ProductTable = ({ actionLockProduct, setProductId, dispatch }) => {
                 page: query.page,
                 totalCount: response.totalRecords,
               });
-              console.log(response);
             })
             .catch((error) => {
               console.log(error);

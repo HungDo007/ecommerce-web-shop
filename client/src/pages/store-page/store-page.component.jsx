@@ -18,7 +18,7 @@ const StorePage = ({ match, currentUser, history }) => {
           history.replace("/user");
         }
       } catch (error) {
-        console.log("Failed to get user profile: ", error.response);
+        console.log("Failed to get user profile: ", error?.response);
       }
     };
     getUserProfile();

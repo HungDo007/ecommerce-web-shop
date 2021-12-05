@@ -1,7 +1,10 @@
 import { OrderActionTypes } from "./order.types";
 
 const INITIAL_STATE = {
-  orderItems: [],
+  orderItems: {
+    items: [],
+    total: 0,
+  },
 };
 
 const orderReducer = (state = INITIAL_STATE, action) => {

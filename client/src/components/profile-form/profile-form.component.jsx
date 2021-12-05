@@ -94,18 +94,38 @@ const ProfileForm = ({ values, setValues }) => {
     setValues({ ...values, dob: date });
   };
 
+  function isFileImage(file) {
+    const acceptedImageTypes = [
+      "image/gif",
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+    ];
+
+    return file && acceptedImageTypes.includes(file["type"]);
+  }
+
   const handleReview = (event) => {
     if (event.target.files && event.target.files[0]) {
       let imageFile = event.target.files[0];
-      const reader = new FileReader();
-      reader.onload = (x) => {
-        setValues({
-          ...values,
-          avatarFile: imageFile,
-          avatar: x.target.result,
+      if (!isFileImage(imageFile)) {
+        setNotify({
+          isOpen: true,
+          message: "Please select image file",
+          type: "error",
         });
-      };
-      reader.readAsDataURL(imageFile);
+        return;
+      } else {
+        const reader = new FileReader();
+        reader.onload = (x) => {
+          setValues({
+            ...values,
+            avatarFile: imageFile,
+            avatar: x.target.result,
+          });
+        };
+        reader.readAsDataURL(imageFile);
+      }
     } else {
       setValues({
         ...values,
@@ -165,7 +185,7 @@ const ProfileForm = ({ values, setValues }) => {
   };
 
   return (
-    <form className="profile-block" onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit}>
       <div className="profile-user-info">
         <h2>User Profile</h2>
         <div className="profile-user-avatar">

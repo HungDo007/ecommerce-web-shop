@@ -2,7 +2,7 @@ import MaterialTable from "material-table";
 
 import adminApi from "../../../../api/admin-api";
 
-const AdminTable = () => {
+const AdminTable = ({ tableRef }) => {
   const columns = [
     {
       title: "Username",
@@ -32,6 +32,8 @@ const AdminTable = () => {
   return (
     <MaterialTable
       title="Admin Account"
+      tableRef={tableRef}
+      columns={columns}
       data={(query) =>
         new Promise((resolve, reject) => {
           const params = {
@@ -48,7 +50,6 @@ const AdminTable = () => {
           });
         })
       }
-      columns={columns}
     />
   );
 };

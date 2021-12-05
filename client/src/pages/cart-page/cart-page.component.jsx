@@ -146,7 +146,11 @@ const CartPage = () => {
 
   const handleCheckout = () => {
     //console.log(items);
-    dispatch(setOrderItems(items));
+    const orderItems = {
+      items,
+      total,
+    };
+    dispatch(setOrderItems(orderItems));
     history.push("/checkout");
   };
 

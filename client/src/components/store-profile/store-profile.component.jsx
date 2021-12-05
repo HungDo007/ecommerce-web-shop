@@ -145,7 +145,7 @@ const StoreProfile = ({ match }) => {
           totalProduct: response.totalProduct,
         });
       } catch (error) {
-        console.log("Failed to get store profile: ", error.response);
+        console.log("Failed to get store profile: ", error?.response);
       }
     };
 

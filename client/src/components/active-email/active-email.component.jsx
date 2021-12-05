@@ -94,7 +94,7 @@ const ActiveEmailForm = () => {
   };
 
   return (
-    <div style={{ width: 375, textAlign: "center" }}>
+    <div style={{ margin: "0 auto", width: 400, textAlign: "center" }}>
       <div style={{ margin: 15 }}>
         Active email to create store. Check your email after clicking on Send
         Code button and entering the code here.
