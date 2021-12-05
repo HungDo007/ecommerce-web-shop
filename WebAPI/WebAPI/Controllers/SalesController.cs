@@ -2,6 +2,7 @@
 using Application.ViewModels.Catalog;
 using Application.ViewModels.Common;
 using BraintreeHttp;
+using Data.Enum;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -74,10 +75,10 @@ namespace WebAPI.Controllers
 
 
         [HttpPost("Order")]
-        public async Task<IActionResult> OrderProduct([FromBody] OrderRequest request)
+        public async Task<IActionResult> OrderProduct([FromBody] List<OrderRequest> requests)
         {
-            var carts = await _saleService.OrderProduct(User.Identity.Name, request);
-            if (carts.CartVms.Count != 0)
+            var carts = await _saleService.OrderProduct(User.Identity.Name, requests);
+            if (carts.Count != 0)
                 return Ok();
 
             return BadRequest();
@@ -85,13 +86,13 @@ namespace WebAPI.Controllers
 
 
         [HttpPost("PaymentOrder")]
-        public async Task<IActionResult> PaymentOrderProduct([FromBody] OrderRequest requests)
+        public async Task<IActionResult> PaymentOrderProduct([FromBody] List<OrderRequest> requests)
         {
             var environment = new SandboxEnvironment(_clientId, _secretKey);
             var client = new PayPalHttpClient(environment);
 
             var carts = await _saleService.OrderProduct(User.Identity.Name, requests);
-            if (carts.CartVms.Count == 0)
+            if (carts.Count == 0)
                 return BadRequest();
 
             #region Create Paypal Order
@@ -99,20 +100,24 @@ namespace WebAPI.Controllers
             {
                 Items = new List<Item>()
             };
-            var total = carts.CartVms.Sum(p => p.Price);
-            foreach (var item in carts.CartVms)
-            {
-                itemList.Items.Add(new Item()
-                {
-                    Name = item.ToString(),
-                    Currency = "USD",
-                    Price = item.Price.ToString(),
-                    Quantity = item.Quantity.ToString(),
-                    Sku = "sku",
-                    Tax = "0"
-                });
-            }
 
+            decimal total = 0;
+            foreach (var cart in carts)
+            {
+                total += cart.CartVms.Sum(p => p.Price);
+                foreach (var item in cart.CartVms)
+                {
+                    itemList.Items.Add(new Item()
+                    {
+                        Name = item.ToString(),
+                        Currency = "USD",
+                        Price = item.Price.ToString(),
+                        Quantity = item.Quantity.ToString(),
+                        Sku = "sku",
+                        Tax = "0"
+                    });
+                }
+            }
             #endregion
 
             var paypalOrderId = DateTime.Now.Ticks;
@@ -174,8 +179,12 @@ namespace WebAPI.Controllers
                 }
 
                 string token = paypalRedirectUrl.Substring(_substringToken);
-                await _saleService.SaveToken(token, carts.OrderId);
 
+                //save token
+                foreach (var item in carts)
+                {
+                    await _saleService.SaveToken(token, item.OrderId);
+                }
                 return Ok(paypalRedirectUrl);
             }
             catch (HttpException httpException)
@@ -215,5 +224,25 @@ namespace WebAPI.Controllers
             return Ok(await _saleService.GetOrderDetail(orderId));
         }
 
+
+        [HttpGet("OrderInProcess")]
+        public async Task<IActionResult> GetOrderInProcess([FromQuery] PagingRequestBase request)
+        {
+            return Ok(await _saleService.GetOrderOfSeller(User.Identity.Name, request, OrderStatus.InProgress));
+        }
+
+
+        [HttpGet("OrderAllOfSeller")]
+        public async Task<IActionResult> GetOrderAllOfSeller([FromQuery] PagingRequestBase request)
+        {
+            return Ok(await _saleService.GetOrderOfSeller(User.Identity.Name, request, OrderStatus.GetAll));
+        }
+
+        [HttpPost("ConfirmOrder")]
+        public async Task<IActionResult> ConfirmOrder([FromBody] int orderId)
+        {
+            await _saleService.ConfirmedOrder(orderId);
+            return Ok();
+        }
     }
 }
