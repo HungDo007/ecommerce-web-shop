@@ -1,6 +1,7 @@
 ﻿using Application.ViewModels.Catalog;
 using Application.ViewModels.Common;
 using Data.Entities;
+using Data.Enum;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -13,7 +14,7 @@ namespace Application.Catalog
         Task<bool> UpdateQuantity(UpdateQuantityRequest request);
         Task<bool> RemoveFromCart(List<int> cartIds);
 
-        Task<OrderResponse> OrderProduct(string username, OrderRequest request);
+        Task<List<OrderResponse>> OrderProduct(string username, List<OrderRequest> requests);
 
         Task<bool> CancelOrder(int OrderId);
         Task SaveToken(string token, int orderId);
@@ -24,6 +25,8 @@ namespace Application.Catalog
 
         Task Checkout(CheckoutStatusRequest request);
 
-        Task<PagedResult<OrderVm>> GetOrderInProcessBuyer(string username, PagingRequestBase request);
+        Task<PagedResult<OrderVm>> GetOrderOfSeller(string username, PagingRequestBase request, OrderStatus orderStatus);
+
+        Task ConfirmedOrder(int orderId);
     }
 }
