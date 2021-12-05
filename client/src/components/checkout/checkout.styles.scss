@@ -21,17 +21,24 @@
   .products-ordered {
     margin-top: 12px;
 
-    .checkout-ordered-header {
-      width: 100%;
-      padding: 10px 0;
-      display: flex;
-      justify-content: space-between;
-      border-bottom: 1px solid darkgrey;
-      align-items: center;
+    .checkout-ordered-shop-container {
+      background: white;
+      padding: 10px;
 
-      .header-block {
-        text-transform: capitalize;
-        width: 100px;
+      .checkout-ordered-header {
+        width: 100%;
+        padding: 10px 0;
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 1px solid darkgrey;
+        align-items: center;
+
+        .header-block {
+          text-transform: capitalize;
+          width: 100px;
+          height: 100px;
+          object-fit: cover;
+        }
       }
     }
 

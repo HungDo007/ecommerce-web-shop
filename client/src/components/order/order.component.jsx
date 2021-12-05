@@ -133,6 +133,7 @@ const Order = (props) => {
                   page: query.page,
                   totalCount: response.totalRecords,
                 });
+                console.log(response);
               })
               .catch((error) => {
                 console.log(error?.response);

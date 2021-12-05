@@ -18,6 +18,7 @@ const Checkout = (props) => {
   const { address, name, phoneNumber } = orderInfo;
 
   const [errors, setErrors] = useState({});
+  const [requestItems, setRequestItem] = useState([]);
 
   const orderItems = useSelector((state) => state.order.orderItems);
   const currentUser = useSelector((state) => state.user.currentUser);
@@ -49,12 +50,14 @@ const Checkout = (props) => {
 
   const handleOrder = () => {
     if (validate() && orderItems.items.length !== 0) {
-      const payload = {
+      const payload = requestItems.map((item) => ({
+        seller: item.seller,
         shipAddress: address,
         shipName: name,
         shipPhonenumber: phoneNumber,
-        orderItemId: orderItems.items.map((item) => item.cartId),
-      };
+        orderItemId: item.orderItems.map((i) => i.cartId),
+      }));
+
       const order = async () => {
         try {
           const response = await salesApi.order(payload);
@@ -66,19 +69,19 @@ const Checkout = (props) => {
           console.log("Failed to order: ", error?.response);
         }
       };
-      //console.log(payload);
       order();
     }
   };
 
   const handlePayWithPaypal = () => {
     if (validate() && orderItems.items.length !== 0) {
-      const payload = {
+      const payload = requestItems.map((item) => ({
+        seller: item.seller,
         shipAddress: address,
         shipName: name,
         shipPhonenumber: phoneNumber,
-        orderItemId: orderItems.items.map((item) => item.cartId),
-      };
+        orderItemId: item.orderItems.map((i) => i.cartId),
+      }));
 
       const paymentWithPayPal = async () => {
         try {
@@ -92,7 +95,6 @@ const Checkout = (props) => {
       };
 
       paymentWithPayPal();
-      //console.log(payload);
     }
   };
 
@@ -111,6 +113,21 @@ const Checkout = (props) => {
     };
 
     getUserProfile();
+
+    let a = [];
+    orderItems.items.forEach((element) => {
+      if (!a.some((item) => item.shopName === element.shopName)) {
+        let obj = {
+          seller: element.seller,
+          shopName: element.shopName ? element.shopName : "Shop",
+          orderItems: orderItems.items.filter(
+            (c) => c.shopName === element.shopName
+          ),
+        };
+        a.push(obj);
+      }
+    });
+    setRequestItem(a);
   }, []);
 
   return (
@@ -161,26 +178,37 @@ const Checkout = (props) => {
         </div>
       </div>
       <div className="products-ordered checkout-page-container">
-        <div className="checkout-ordered-header">
-          <div className="header-block">Image</div>
-          <div className="header-block">Name</div>
-          <div className="header-block">Component</div>
-          <div className="header-block">Amount</div>
-          <div className="header-block">Item Subtotal</div>
+        <div className="checkout-ordered-shop-container">
+          <div className="checkout-ordered-header">
+            <div className="header-block">Image</div>
+            <div className="header-block">Name</div>
+            <div className="header-block">Component</div>
+            <div className="header-block">Amount</div>
+            <div className="header-block">Item Subtotal</div>
+          </div>
         </div>
-        {orderItems.items.map((i) => (
-          <div key={i.cartId} className="checkout-ordered-header">
-            <img
-              className="header-block"
-              src={process.env.REACT_APP_IMAGE_URL + i.productImg}
-              alt="item"
-            />
-            <div className="header-block">{i.name}</div>
-            <div className="header-block">{i.details}</div>
-            <div className="header-block">{i.quantity}</div>
-            <div className="header-block">$ {i.price}</div>
+        {requestItems.map((requestItem) => (
+          <div
+            key={requestItem.seller}
+            className="checkout-ordered-shop-container"
+          >
+            <div>{requestItem.shopName}</div>
+            {requestItem.orderItems.map((i) => (
+              <div key={i.cartId} className="checkout-ordered-header">
+                <img
+                  className="header-block"
+                  src={process.env.REACT_APP_IMAGE_URL + i.productImg}
+                  alt="item"
+                />
+                <div className="header-block">{i.name}</div>
+                <div className="header-block">{i.details}</div>
+                <div className="header-block">{i.quantity}</div>
+                <div className="header-block">$ {i.price}</div>
+              </div>
+            ))}
           </div>
         ))}
+
         <div className="products-ordered-total">
           Merchandise Total: ${orderItems.total}
         </div>

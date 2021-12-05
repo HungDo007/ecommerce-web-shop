@@ -33,24 +33,29 @@ const OrderDetail = (props) => {
     <div className="checkout-page-block">
       <div>Order Detail</div>
       <div className="products-ordered checkout-page-container">
-        <div className="checkout-ordered-header">
-          <div className="header-block">Image</div>
-          <div className="header-block">Name</div>
-          <div className="header-block">Amount</div>
-          <div className="header-block">Item Subtotal</div>
-        </div>
-        {orders.map((item, index) => (
-          <div key={index} className="checkout-ordered-header">
-            <img
-              className="header-block"
-              src={process.env.REACT_APP_IMAGE_URL + item.productImg}
-              alt="item"
-            />
-            <div className="header-block">{item.name}</div>
-            <div className="header-block">{item.quantity}</div>
-            <div className="header-block">$ {item.price}</div>
+        <div className="checkout-ordered-shop-container">
+          <div className="checkout-ordered-header">
+            <div className="header-block">Image</div>
+            <div className="header-block">Name</div>
+            <div className="header-block">Amount</div>
+            <div className="header-block">Item Subtotal</div>
           </div>
-        ))}
+        </div>
+        <div className="checkout-ordered-shop-container">
+          {orders.map((item, index) => (
+            <div key={index} className="checkout-ordered-header">
+              <img
+                className="header-block"
+                src={process.env.REACT_APP_IMAGE_URL + item.productImg}
+                alt="item"
+              />
+              <div className="header-block">{item.name}</div>
+              <div className="header-block">{item.quantity}</div>
+              <div className="header-block">$ {item.price}</div>
+            </div>
+          ))}
+        </div>
+
         <div className="products-ordered-total">
           Merchandise Total: ${orderTotal}
         </div>
