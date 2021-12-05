@@ -207,6 +207,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("CheckoutStatus")]
+
         public async Task<IActionResult> CheckoutStatus([FromBody] CheckoutStatusRequest request)
         {
             await _saleService.Checkout(request);
@@ -218,6 +219,8 @@ namespace WebAPI.Controllers
         {
             return Ok(await _saleService.GetOrder(User.Identity.Name, request));
         }
+
+
         [HttpGet("Order/{orderId}")]
         public async Task<IActionResult> GetOrderDetails(int orderId)
         {
