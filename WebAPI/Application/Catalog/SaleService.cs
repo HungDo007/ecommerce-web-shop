@@ -251,10 +251,10 @@ namespace Application.Catalog
 
                 order.TransactionOrder = transactionOrder;
 
-                _context.Orders.Add(order);
+
                 OrderResponse orderResponse = new OrderResponse()
                 {
-                    OrderId = order.Id,
+                    OrderId = await AddOrder(order),
                     CartVms = cartVms
                 };
 
@@ -264,6 +264,14 @@ namespace Application.Catalog
 
             await _context.SaveChangesAsync();
             return rp;
+        }
+
+
+        private async Task<int> AddOrder(Order order)
+        {
+            _context.Orders.Add(order);
+            await _context.SaveChangesAsync();
+            return order.Id;
         }
 
         public async Task<bool> RemoveFromCart(List<int> cartIds)
