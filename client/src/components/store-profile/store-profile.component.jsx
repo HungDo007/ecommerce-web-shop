@@ -11,7 +11,7 @@ import storeApi from "../../api/store-api";
 import "./store-profile.styles.scss";
 const defaultImg = "/img/default-img.png";
 
-const StoreProfile = ({ match }) => {
+const StoreProfile = ({ match, history }) => {
   const storeInfo = {
     nameStore: "",
     phoneNumber: "",
@@ -134,18 +134,21 @@ const StoreProfile = ({ match }) => {
       try {
         const response = await storeApi.getProfile(currentUser.unique_name);
         setValues({
-          address: response.address,
+          address: response.address ? response.address : "",
           avatar: response.avatar
             ? process.env.REACT_APP_IMAGE_URL + response.avatar
             : avatar,
-          description: response.description,
-          nameStore: response.nameStore,
-          phoneNumber: response.phoneNumber,
+          description: response.description ? response.description : "",
+          nameStore: response.nameStore ? response.nameStore : "",
+          phoneNumber: response.phoneNumber ? response.phoneNumber : "",
           rate: response.rate,
           totalProduct: response.totalProduct,
         });
       } catch (error) {
         console.log("Failed to get store profile: ", error?.response);
+        if (error?.response.status === 400) {
+          history.replace("/user");
+        }
       }
     };
 
@@ -177,10 +180,7 @@ const StoreProfile = ({ match }) => {
               <Link to={`${match.path}/manageProduct`}>Product</Link>
             </div>
             <div className="store-link">
-              <Link to="/allProduct">Purchase order</Link>
-            </div>
-            <div className="store-link">
-              <Link to="/allProduct">Statistic</Link>{" "}
+              <Link to={`${match.path}/manageOrder`}>Purchase order</Link>
             </div>
           </div>
         </div>

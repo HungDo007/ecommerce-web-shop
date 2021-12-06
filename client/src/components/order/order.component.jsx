@@ -37,9 +37,20 @@ const Order = (props) => {
       render: (rowData) => <div>${rowData.sumPrice}</div>,
     },
     {
-      title: "Status",
+      title: "Payment",
       field: "paid",
       lookup: { true: "Paid", false: "Not Paid" },
+    },
+    {
+      title: "Status",
+      field: "orderStatus",
+      lookup: {
+        0: "Unconfirmed",
+        1: "Confirmed",
+        2: "Shipping",
+        3: "Complete",
+        4: "Cancelled",
+      },
     },
   ];
 
@@ -133,7 +144,7 @@ const Order = (props) => {
                   page: query.page,
                   totalCount: response.totalRecords,
                 });
-                console.log(response);
+                // console.log(response);
               })
               .catch((error) => {
                 console.log(error?.response);

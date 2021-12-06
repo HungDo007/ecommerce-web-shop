@@ -6,7 +6,7 @@ import CheckCircleOutlineIcon from "@material-ui/icons/CheckCircleOutline";
 
 import salesApi from "../../api/sales.api";
 
-const CheckoutSuccess = () => {
+const CheckoutSuccess = (props) => {
   // const [isSuccess, setIsSuccess] = useState(false);
   const location = useLocation();
   const query = new URLSearchParams(location.search);
@@ -21,14 +21,15 @@ const CheckoutSuccess = () => {
       };
       try {
         const response = await salesApi.checkoutStatus(payload);
-        //console.log(payload);
-        console.log(response);
+        if (response.status === 200 && response.statusText === "OK") {
+          props.history.replace("/order");
+        }
       } catch (error) {
         console.log(error?.response);
       }
     };
 
-    checkoutStatus();
+    setTimeout(() => checkoutStatus(), 3000);
   }, []);
 
   return (

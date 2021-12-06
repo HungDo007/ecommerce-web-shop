@@ -52,6 +52,21 @@ const salesApi = {
     const url = `/Sales/Order/${orderId}`;
     return axiosClient.delete(url);
   },
+
+  getUnconfirmedOrder: (params) => {
+    const url = "/Sales/OrderInProcess";
+    return axiosClient.get(url, { params });
+  },
+
+  getAllOrderOfSeller: (params) => {
+    const url = "/Sales/OrderAllOfSeller";
+    return axiosClient.get(url, { params });
+  },
+
+  confirmOrder: (orderId) => {
+    const url = "/Sales/ConfirmOrder";
+    return axiosClient.post(url, orderId);
+  },
 };
 
 export default salesApi;

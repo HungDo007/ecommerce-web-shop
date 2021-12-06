@@ -11,11 +11,11 @@ import ProductPage from "./pages/product-page/product-page.component";
 import SignInAndSignUpPage from "./pages/sign-in-and-sign-up/sign-in-and-sign-up.component";
 import StorePage from "./pages/store-page/store-page.component";
 import OrderPage from "./pages/order-page/order-page.component";
+import UserPage from "./pages/user-page/user-page.component";
+import CheckoutPage from "./pages/checkout-page/checkout-page.component";
 
 import Footer from "./components/footer/footer.component";
 import Sidebar from "./components/sidebar/sidebar.component";
-import UserPage from "./pages/user-page/user-page.component";
-import CheckoutPage from "./pages/checkout-page/checkout-page.component";
 
 const App = ({ currentUser }) => {
   return (
@@ -39,10 +39,7 @@ const App = ({ currentUser }) => {
         <Route path="/directory" component={DirectoryPage} />
         <Route path="/product" component={ProductPage} />
         <Route path="/order" component={OrderPage} />
-        <Route
-          path="/store"
-          render={(props) => <StorePage {...props} currentUser={currentUser} />}
-        />
+        <Route path="/store" component={StorePage} />
         <Route path="/user" component={UserPage} />
         <Route
           exact

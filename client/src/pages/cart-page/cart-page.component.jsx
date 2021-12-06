@@ -12,8 +12,10 @@ import { setOrderItems } from "../../redux/order/order.actions";
 
 import salesApi from "../../api/sales.api";
 
-import "./cart-page.styles.scss";
 import { toggleNotification } from "../../redux/modal/modal.actions";
+import "./cart-page.styles.scss";
+
+const emptyCart = "/img/empty-cart.jpg";
 
 const CartPage = () => {
   const [checked, setChecked] = useState(false);
@@ -173,130 +175,147 @@ const CartPage = () => {
 
   return (
     <div className="cart-page">
-      <div className="cart-header">
+      {shopItems.length ? (
         <div>
-          <Checkbox
-            checked={checked}
-            onChange={(event) => handleChange(event, -1)}
-            inputProps={{ "aria-label": "primary checkbox" }}
-          />
-        </div>
-        <div className="header-block">
-          <span>Image</span>
-        </div>
-        <div className="header-block">
-          <span>Name</span>
-        </div>
-        <div className="header-block">
-          <span>Component</span>
-        </div>
-        <div className="header-block">
-          <span>Amount</span>
-        </div>
-        <div className="header-block">
-          <span>Price</span>
-        </div>
-        <div
-          className="header-block remove-all"
-          onClick={() => handleRemove(-1)}
-        >
-          <span>Remove</span>
-        </div>
-      </div>
-      {shopItems.map((shopItem, idx) => (
-        <div className="cart-shop-container" key={idx}>
-          <div>{shopItem.shopName ? shopItem.shopName : "Shop"}</div>
-          {shopItem.item.map((cartItem, index) => (
-            <div key={cartItem.cartId} className="c-item">
-              <div>
-                <Checkbox
-                  value={cartItem.cartId}
-                  checked={items
-                    .map((item) => item.cartId)
-                    .includes(cartItem.cartId)}
-                  onChange={(event) => handleChange(event, idx, index)}
-                />
-              </div>
-              <div className="image-container">
-                <img
-                  src={process.env.REACT_APP_IMAGE_URL + cartItem.productImg}
-                  alt="item"
-                />
-              </div>
-              <span className="name">{cartItem.name}</span>
-              <span className="name">{cartItem.details}</span>
-              <div className="quantity">
-                <div>
-                  <Tooltip title="Decrease item by 1">
-                    <IconButton
-                      value="Decrease"
-                      onClick={() =>
-                        handleUpdateAmount(
-                          "decrease",
-                          cartItem.cartId,
-                          cartItem.quantity,
-                          cartItem.stockOfDetail
-                        )
+          <div className="cart-header">
+            <div>
+              <Checkbox
+                checked={checked}
+                onChange={(event) => handleChange(event, -1)}
+                inputProps={{ "aria-label": "primary checkbox" }}
+              />
+            </div>
+            <div className="header-block">
+              <span>Image</span>
+            </div>
+            <div className="header-block">
+              <span>Name</span>
+            </div>
+            <div className="header-block">
+              <span>Component</span>
+            </div>
+            <div className="header-block">
+              <span>Amount</span>
+            </div>
+            <div className="header-block">
+              <span>Price</span>
+            </div>
+            <div
+              className="header-block remove-all"
+              onClick={() => handleRemove(-1)}
+            >
+              <span>Remove</span>
+            </div>
+          </div>
+          {shopItems.map((shopItem, idx) => (
+            <div className="cart-shop-container" key={idx}>
+              <div>{shopItem.shopName ? shopItem.shopName : "Shop"}</div>
+              {shopItem.item.map((cartItem, index) => (
+                <div key={cartItem.cartId} className="c-item">
+                  <div>
+                    <Checkbox
+                      value={cartItem.cartId}
+                      checked={items
+                        .map((item) => item.cartId)
+                        .includes(cartItem.cartId)}
+                      onChange={(event) => handleChange(event, idx, index)}
+                    />
+                  </div>
+                  <div className="image-container">
+                    <img
+                      src={
+                        process.env.REACT_APP_IMAGE_URL + cartItem.productImg
                       }
-                      aria-label="decrease item"
-                    >
-                      <ArrowBackIosIcon />
-                    </IconButton>
-                  </Tooltip>
-                  <span className="value">{cartItem.quantity}</span>
-                  <Tooltip title="Increase item by 1">
+                      alt="item"
+                    />
+                  </div>
+                  <span className="name">{cartItem.name}</span>
+                  <span className="name">{cartItem.details}</span>
+                  <div className="quantity">
+                    <div>
+                      <Tooltip title="Decrease item by 1">
+                        <IconButton
+                          value="Decrease"
+                          onClick={() =>
+                            handleUpdateAmount(
+                              "decrease",
+                              cartItem.cartId,
+                              cartItem.quantity,
+                              cartItem.stockOfDetail
+                            )
+                          }
+                          aria-label="decrease item"
+                        >
+                          <ArrowBackIosIcon />
+                        </IconButton>
+                      </Tooltip>
+                      <span className="value">{cartItem.quantity}</span>
+                      <Tooltip title="Increase item by 1">
+                        <IconButton
+                          onClick={() =>
+                            handleUpdateAmount(
+                              "increase",
+                              cartItem.cartId,
+                              cartItem.quantity,
+                              cartItem.stockOfDetail
+                            )
+                          }
+                          aria-label="increase item"
+                        >
+                          <ArrowForwardIosIcon />
+                        </IconButton>
+                      </Tooltip>
+                    </div>
+                    <div className="stock">
+                      {cartItem.stockOfDetail} available
+                    </div>
+                  </div>
+                  <span className="price">${cartItem.price}</span>
+                  <Tooltip title="Remove item">
                     <IconButton
-                      onClick={() =>
-                        handleUpdateAmount(
-                          "increase",
-                          cartItem.cartId,
-                          cartItem.quantity,
-                          cartItem.stockOfDetail
-                        )
-                      }
-                      aria-label="increase item"
+                      aria-label="remove item"
+                      onClick={() => handleRemove(cartItem.cartId)}
                     >
-                      <ArrowForwardIosIcon />
+                      <ClearIcon />
                     </IconButton>
                   </Tooltip>
                 </div>
-                <div className="stock">{cartItem.stockOfDetail} available</div>
-              </div>
-              <span className="price">${cartItem.price}</span>
-              <Tooltip title="Remove item">
-                <IconButton
-                  aria-label="remove item"
-                  onClick={() => handleRemove(cartItem.cartId)}
-                >
-                  <ClearIcon />
-                </IconButton>
-              </Tooltip>
+              ))}
             </div>
           ))}
-        </div>
-      ))}
 
-      <div className="total">TOTAL: ${total}</div>
-      <div>
-        <Pagination
-          defaultPage={1}
-          shape="rounded"
-          color="primary"
-          count={cartPaging.pageCount}
-          onChange={(event, page) => setPage(page)}
-        />
-      </div>
-      <div>
-        <Button
-          className="cart-page-checkout"
-          variant="contained"
-          color="primary"
-          onClick={handleCheckout}
-          disabled={items.length === 0 ? true : false}
-        >
-          Checkout
-        </Button>
-      </div>
+          <div className="total">TOTAL: ${total}</div>
+          <div>
+            <Pagination
+              defaultPage={1}
+              shape="rounded"
+              color="primary"
+              count={cartPaging.pageCount}
+              onChange={(event, page) => setPage(page)}
+            />
+          </div>
+          <div>
+            <Button
+              className="cart-page-checkout"
+              variant="contained"
+              color="primary"
+              onClick={handleCheckout}
+              disabled={items.length === 0 ? true : false}
+            >
+              Checkout
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <div className="cart-empty-block">
+          <img
+            className="cart-empty-img"
+            alt="cart-empty-img"
+            src={emptyCart}
+          />
+          <span className="empty-message">Your cart is empty</span>
+        </div>
+      )}
     </div>
   );
 };

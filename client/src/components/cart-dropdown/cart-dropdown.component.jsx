@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import { Button } from "@material-ui/core";
 import "./cart-dropdown.styles.scss";
 
+const emptyCart = "/img/empty-cart.jpg";
+
 const CartDropDown = ({ items }) => {
   return (
     <div className="cart-dropdown">
@@ -17,7 +19,7 @@ const CartDropDown = ({ items }) => {
             <img
               className="cart-empty-img"
               alt="cart-empty-img"
-              src="https://image.shutterstock.com/image-vector/opened-empty-box-cute-frustrated-600w-690994567.jpg"
+              src={emptyCart}
             />
             <span className="empty-message">Your cart is empty</span>
           </div>

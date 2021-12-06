@@ -10,10 +10,10 @@ const CheckoutPage = ({ match }) => {
       <Switch>
         <Route exact path={match.path} component={Checkout} />
         <Route
-          path={`${match.path}/checkoutSuccess`}
+          path={`${match.path}/CheckoutSuccess`}
           component={CheckoutSuccess}
         />
-        <Route path={`${match.path}/checkoutFail`} component={CheckoutFailed} />
+        <Route path={`${match.path}/CheckoutFail`} component={CheckoutFailed} />
       </Switch>
     </div>
   );
