@@ -27,6 +27,6 @@ namespace Application.Catalog
 
         Task<PagedResult<OrderVm>> GetOrderOfSeller(string username, PagingRequestBase request, OrderStatus orderStatus);
 
-        Task ConfirmedOrder(int orderId);
+        Task ConfirmedOrder(List<int> orderIds);
     }
 }
