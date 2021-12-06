@@ -13,6 +13,7 @@ namespace WebAPI.Controllers
     {
         private readonly IUserService _userService;
 
+
         public UsersController(IUserService userService)
         {
             _userService = userService;
@@ -99,6 +100,44 @@ namespace WebAPI.Controllers
                 return Ok();
             }
             return BadRequest("You are not allowed to edit other people's infomation.");
+        }
+
+
+        [HttpPost("RequestResetPassword")]
+        [AllowAnonymous]
+        public async Task<IActionResult> RequestResetPassword([FromBody] string email)
+        {
+            var response = await _userService.RequestResetPassword(email);
+
+            if (response.Status == true)
+            {
+                return Ok(response.Response);
+            }
+            return BadRequest(response.Response);
+        }
+
+        [HttpPost("ResetPassword")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+        {
+            var response = await _userService.ResetPassword(request);
+
+            if (response.Status == true)
+            {
+                return Ok();
+            }
+            return BadRequest(response.Response);
+        }
+
+
+        [HttpPost("ChangePassword")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
+        {
+            if (await _userService.ChangePassword(User.Identity.Name, request))
+            {
+                return Ok();
+            }
+            return BadRequest();
         }
     }
 }

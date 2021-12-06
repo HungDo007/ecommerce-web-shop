@@ -28,7 +28,7 @@ namespace Application.System
         private readonly IMailService _mailService;
         private readonly EShopContext _context;
         private readonly IStorageService _storageService;
-        //static PagingService _pagingService;
+        private string _callbackUrl;
 
         public UserService(UserManager<AppUser> userManager,
             SignInManager<AppUser> signInManager,
@@ -45,6 +45,7 @@ namespace Application.System
             _mailService = mailService;
             _context = context;
             _storageService = storageService;
+            _callbackUrl = config["ResetPasswordSettings:CallbackUrl"];
         }
 
 
@@ -77,9 +78,9 @@ namespace Application.System
             await _context.SaveChangesAsync();
         }
 
-        public async Task<LoginResponse> Authenticate(LoginRequest request)
+        public async Task<ServiceResponse> Authenticate(LoginRequest request)
         {
-            LoginResponse response = new LoginResponse();
+            ServiceResponse response = new ServiceResponse();
             var user = await _userManager.FindByNameAsync(request.Username);
             if (user == null)
             {
@@ -442,6 +443,59 @@ namespace Application.System
             {
                 return false;
             }
+        }
+
+
+        public async Task<ServiceResponse> RequestResetPassword(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user == null)
+                return new ServiceResponse { Status = false, Response = "Incorrect Email" };
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+
+            var callbaclUrl = $"{_callbackUrl}?email={email}&token={token}";
+
+            SendMailRequest mailRequest = new SendMailRequest();
+            mailRequest.Subject = SystemConstants.ResetPassword;
+            mailRequest.ToEmail = user.Email;
+            mailRequest.Body = $"Click vào <a href=\"{callbaclUrl}\">đây</a> để đặt lại mật khẩu của bạn.";
+
+            await _mailService.SendMail(mailRequest);
+
+            return new ServiceResponse { Status = true, Response = "" };
+        }
+
+        public async Task<ServiceResponse> ResetPassword(ResetPasswordRequest request)
+        {
+            var user = await _userManager.FindByEmailAsync(request.Email);
+
+            if (user == null)
+                return new ServiceResponse { Status = false, Response = "Incorrect Email" };
+
+            var resetPassResult = await _userManager.ResetPasswordAsync(user, request.Token, request.NewPassword);
+
+            if (resetPassResult.Succeeded)
+            {
+                return new ServiceResponse { Status = true, Response = "Successed" };
+            }
+
+            return new ServiceResponse { Status = false, Response = "Incorrect token for this email" };
+        }
+
+        public async Task<bool> ChangePassword(string username, ChangePasswordRequest request)
+        {
+            var user = await _userManager.FindByNameAsync(username);
+
+
+            var result = await _userManager.ChangePasswordAsync(user, request.OldPassword, request.NewPassword);
+
+            if (!result.Succeeded)
+                return false;
+            await _signInManager.RefreshSignInAsync(user);
+            return true;
         }
     }
 }

@@ -187,6 +187,10 @@ namespace Application.Catalog
         public async Task<List<OrderResponse>> OrderProduct(string username, List<OrderRequest> requests)
         {
             var user = await _userManager.FindByNameAsync(username);
+
+            if (user.EmailConfirmed == false)
+                return null;
+
             List<OrderResponse> rp = new List<OrderResponse>();
 
             foreach (var request in requests)
@@ -417,13 +421,16 @@ namespace Application.Catalog
             return PagingService.Paging<OrderVm>(odVms, request.PageIndex, request.PageSize);
         }
 
-        public async Task ConfirmedOrder(int orderId)
+        public async Task ConfirmedOrder(List<int> orderIds)
         {
             try
             {
-                var order = await _context.TransactionOrders.Where(x => x.OrderId == orderId).FirstOrDefaultAsync();
+                foreach (var orderId in orderIds)
+                {
+                    var order = await _context.TransactionOrders.Where(x => x.OrderId == orderId).FirstOrDefaultAsync();
 
-                order.Status = OrderStatus.Confirmed;
+                    order.Status = OrderStatus.Confirmed;
+                }
                 await _context.SaveChangesAsync();
             }
             catch

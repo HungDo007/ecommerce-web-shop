@@ -12,7 +12,7 @@ namespace Application.System
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        Task<LoginResponse> Authenticate(LoginRequest request);
+        Task<ServiceResponse> Authenticate(LoginRequest request);
 
 
         /// <summary>
@@ -99,5 +99,11 @@ namespace Application.System
 
         Task<bool> AdminDeleteProduct(int proId, string reason);
         Task<bool> AdminUnDeleteProduct(int proId);
+
+        Task<ServiceResponse> RequestResetPassword(string email);
+
+        Task<ServiceResponse> ResetPassword(ResetPasswordRequest request);
+
+        Task<bool> ChangePassword(string username, ChangePasswordRequest request);
     }
 }

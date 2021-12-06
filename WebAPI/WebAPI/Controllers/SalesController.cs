@@ -78,10 +78,10 @@ namespace WebAPI.Controllers
         public async Task<IActionResult> OrderProduct([FromBody] List<OrderRequest> requests)
         {
             var carts = await _saleService.OrderProduct(User.Identity.Name, requests);
-            if (carts.Count != 0)
-                return Ok();
+            if (carts == null || carts.Count == 0)
+                return BadRequest();
 
-            return BadRequest();
+            return Ok();
         }
 
 
@@ -92,7 +92,7 @@ namespace WebAPI.Controllers
             var client = new PayPalHttpClient(environment);
 
             var carts = await _saleService.OrderProduct(User.Identity.Name, requests);
-            if (carts.Count == 0)
+            if (carts.Count == 0 || carts == null)
                 return BadRequest();
 
             #region Create Paypal Order
@@ -242,9 +242,9 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("ConfirmOrder")]
-        public async Task<IActionResult> ConfirmOrder([FromBody] int orderId)
+        public async Task<IActionResult> ConfirmOrder([FromBody] List<int> orderIds)
         {
-            await _saleService.ConfirmedOrder(orderId);
+            await _saleService.ConfirmedOrder(orderIds);
             return Ok();
         }
     }

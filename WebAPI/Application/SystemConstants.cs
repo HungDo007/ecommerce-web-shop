@@ -13,6 +13,7 @@
         public const string LockAccount = "Lock Account";
         public const string LockProduct = "Lock Product";
         public const string UnlockAccount = "Unlock Account";
+        public const string ResetPassword = "Reset Password";
 
         public const string FolderCategory = "Category";
         public const string FolderProduct = "Product";
