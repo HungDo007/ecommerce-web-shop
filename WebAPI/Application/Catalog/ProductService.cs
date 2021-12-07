@@ -358,6 +358,7 @@ namespace Application.Catalog
         public async Task<bool> UpdateProDetail(int productId, List<ProductDetailRequest> detailVms)
         {
             List<ProductDetailRequest> newRequest = new List<ProductDetailRequest>();
+            var p = await _context.Products.Include(x => x.ProductDetails).Where(x => x.Id == productId).FirstOrDefaultAsync();
             foreach (var item in detailVms)
             {
                 if (item.Id == 0)
@@ -366,9 +367,6 @@ namespace Application.Catalog
                 }
                 else
                 {
-                    var p = await _context.Products.Include(x => x.ProductDetails).Where(x => x.Id == productId).FirstOrDefaultAsync();
-
-
                     foreach (var i in p.ProductDetails)
                     {
                         if (!detailVms.Any(x => x.Id == i.Id))
