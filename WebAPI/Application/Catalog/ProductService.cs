@@ -100,9 +100,13 @@ namespace Application.Catalog
                     {
                         comp = globalDetails.Where(x => x.ComponentId == item.CompId && x.Value == item.Value).FirstOrDefault();
                         if (comp == null)
+                        {
                             comp = new ComponentDetail() { ComponentId = item.CompId, Name = item.Name, Value = item.Value };
+                            globalDetails.Add(comp);
+                        }
                     }
                     details.Add(comp);
+
                 }
 
                 pd.ComponentDetails = details;
