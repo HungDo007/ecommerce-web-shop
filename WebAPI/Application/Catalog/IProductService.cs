@@ -36,7 +36,7 @@ namespace Application.Catalog
 
         Task<bool> Update(ProductRequest request);
 
-        Task<bool> UpdateProDetail(List<ProductDetailRequest> detailVms);
+        Task<bool> UpdateProDetail(int productId, List<ProductDetailRequest> detailVms);
 
         Task<bool> HideProduct(string username, int proId);
         Task<bool> DeleteProduct(string username, int proId);
