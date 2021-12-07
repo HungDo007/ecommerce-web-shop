@@ -359,6 +359,12 @@ namespace Application.Catalog
         {
             List<ProductDetailRequest> newRequest = new List<ProductDetailRequest>();
             var p = await _context.Products.Include(x => x.ProductDetails).Where(x => x.Id == productId).FirstOrDefaultAsync();
+            foreach (var i in p.ProductDetails)
+            {
+                if (!detailVms.Any(x => x.Id == i.Id))
+                    p.ProductDetails.Remove(i);
+            }
+
             foreach (var item in detailVms)
             {
                 if (item.Id == 0)
@@ -367,11 +373,7 @@ namespace Application.Catalog
                 }
                 else
                 {
-                    foreach (var i in p.ProductDetails)
-                    {
-                        if (!detailVms.Any(x => x.Id == i.Id))
-                            p.ProductDetails.Remove(i);
-                    }
+
 
                     var pro = await _context.ProductDetails
                         .Include(x => x.ComponentDetails)
