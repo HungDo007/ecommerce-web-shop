@@ -45,6 +45,11 @@ const Product = () => {
     getProductPaging();
   }, [page, directoryId]);
 
+  const handleChangePage = (event, page) => {
+    setPage(page);
+    setLoading(true);
+  };
+
   return (
     <>
       <div className="product-title">Product</div>
@@ -67,7 +72,7 @@ const Product = () => {
         <Pagination
           count={productPaging?.pageCount}
           defaultPage={1}
-          onChange={(event, page) => setPage(page)}
+          onChange={(event, page) => handleChangePage(event, page)}
           shape="rounded"
           color="primary"
         />

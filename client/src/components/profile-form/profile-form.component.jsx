@@ -152,11 +152,13 @@ const ProfileForm = ({ values, setValues }) => {
       const editUserProfile = async () => {
         try {
           const response = await userApi.editProfile(formData);
-          setNotify({
-            isOpen: true,
-            message: "Edit profile successfully! Please sign in again",
-            type: "success",
-          });
+          if (response.status === 200 && response.statusText === "OK") {
+            setNotify({
+              isOpen: true,
+              message: "Edit profile successfully! Please sign in again",
+              type: "success",
+            });
+          }
           if (emailConfirmed === false) {
             setTimeout(() => signOut(), 3000);
           }

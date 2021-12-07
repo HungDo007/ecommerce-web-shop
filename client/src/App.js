@@ -16,6 +16,8 @@ import CheckoutPage from "./pages/checkout-page/checkout-page.component";
 
 import Footer from "./components/footer/footer.component";
 import Sidebar from "./components/sidebar/sidebar.component";
+import ForgotPassword from "./components/reset-password/forgot-password.component";
+import ResetPassword from "./components/reset-password/reset-password.component";
 
 const App = ({ currentUser }) => {
   return (
@@ -41,6 +43,8 @@ const App = ({ currentUser }) => {
         <Route path="/order" component={OrderPage} />
         <Route path="/store" component={StorePage} />
         <Route path="/user" component={UserPage} />
+        <Route path="/forgotPassword" component={ForgotPassword} />
+        <Route path="/ResetPassword" component={ResetPassword} />
         <Route
           exact
           path="/signin"

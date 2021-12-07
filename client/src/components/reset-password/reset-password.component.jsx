@@ -1,29 +1,54 @@
 import { useState } from "react";
+import { useLocation } from "react-router";
 
+import { withStyles } from "@material-ui/styles";
 import {
   TextField,
   Button,
   IconButton,
   InputAdornment,
 } from "@material-ui/core";
-
 import { Visibility, VisibilityOff } from "@material-ui/icons";
 
 import Notification from "../notification/notification.component";
-import { setCurrentUser } from "../../redux/user/user.actions";
-
 import userApi from "../../api/user-api";
-import { useDispatch } from "react-redux";
-import { useHistory } from "react-router";
-import { Link } from "react-router-dom";
 
-const ChangePassword = () => {
+const background = "./img/background.jpg";
+
+const CssTextField = withStyles({
+  root: {
+    "& label.Mui-focused": {
+      color: "white",
+    },
+    "& label": {
+      color: "white",
+    },
+    "& .MuiInputBase-root": {
+      color: "white",
+    },
+    "& .MuiInput-underline:before": {
+      borderBottomColor: "white",
+    },
+    "& .MuiInput-underline:after": {
+      borderBottomColor: "white",
+    },
+    "& label.Mui-error": {
+      color: "red",
+    },
+    "& .MuiInput-underline.Mui-error:after": {
+      borderBottomColor: "red",
+    },
+  },
+})(TextField);
+
+const ResetPassword = () => {
   const [values, setValues] = useState({
-    oldPassword: "",
     newPassword: "",
     confirmPassword: "",
     showPassword: false,
   });
+
+  const { newPassword, confirmPassword, showPassword } = values;
 
   const [errors, setErrors] = useState({});
 
@@ -33,24 +58,13 @@ const ChangePassword = () => {
     type: "",
   });
 
-  const { oldPassword, newPassword, confirmPassword, showPassword } = values;
-
-  const dispatch = useDispatch();
-  const history = useHistory();
+  const location = useLocation();
+  const query = new URLSearchParams(location.search);
+  const token = query.get("token");
+  const email = query.get("email");
 
   const validate = (fieldValues = values) => {
     let temp = { ...errors };
-    if ("oldPassword" in fieldValues) {
-      temp.oldPassword = fieldValues.oldPassword
-        ? ""
-        : "This field is required";
-
-      if (fieldValues.oldPassword) {
-        temp.oldPassword = /^(?=.*\d).{8,}$/.test(fieldValues.oldPassword)
-          ? ""
-          : "Password has at least 8 character and number";
-      }
-    }
 
     if ("newPassword" in fieldValues) {
       temp.newPassword = fieldValues.newPassword
@@ -84,12 +98,6 @@ const ChangePassword = () => {
       return Object.values(temp).every((x) => x == "");
   };
 
-  const signOut = () => {
-    dispatch(setCurrentUser(null));
-    localStorage.removeItem("jwtToken");
-    history.push("/signin");
-  };
-
   const handleChange = (event) => {
     const { name, value } = event.target;
 
@@ -106,72 +114,48 @@ const ChangePassword = () => {
 
     if (validate()) {
       const payload = {
-        oldPassword,
         newPassword,
+        email,
+        token: token.replace(/\s/g, "+"),
       };
-      const changePassword = async () => {
+
+      const resetPassword = async () => {
         try {
-          const response = await userApi.changePassword(payload);
+          const response = await userApi.resetPassword(payload);
           if (response.status === 200 && response.statusText === "OK") {
             setNotify({
               isOpen: true,
-              message: "Change password successfully! Please sign in again",
+              message: "Reset password successfully!",
               type: "success",
             });
-
-            setTimeout(() => signOut(), 3000);
           }
         } catch (error) {
-          // console.log("Failed to change password: ", error?.response);
-          if (error?.response.status === 400) {
-            setErrors({ oldPassword: "Your password is incorrect" });
-          }
+          console.log(error?.response);
+          setNotify({
+            isOpen: true,
+            message: "Some thing went wrong!",
+            type: "error",
+          });
         }
       };
-      changePassword();
+
+      resetPassword();
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div className="profile-user-info">
-        <div className="profile-field">
-          <div className="profile-info">Old Password</div>
-          <div className="profile-value">
-            <TextField
-              fullWidth
-              name="oldPassword"
-              variant="outlined"
-              value={oldPassword}
-              onChange={handleChange}
-              type={showPassword ? "text" : "password"}
-              {...(errors.oldPassword && {
-                error: true,
-                helperText: errors.oldPassword,
-              })}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={handleShowPassword}
-                      className="sign-button-pass"
-                      aria-label="toggle password visibility"
-                    >
-                      {showPassword ? <Visibility /> : <VisibilityOff />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
-          </div>
-        </div>
-        <div className="profile-field">
-          <div className="profile-info">New Password</div>
-          <div className="profile-value">
-            <TextField
+    <form className="sign-block" onSubmit={handleSubmit}>
+      <div
+        style={{ backgroundImage: `url(${background})` }}
+        className="background-image"
+      >
+        <div className="sign-form">
+          <h2 className="sign-title">Enter your new password</h2>
+          <div className="sign-input">
+            <CssTextField
               fullWidth
               name="newPassword"
-              variant="outlined"
+              label="New Password"
               value={newPassword}
               onChange={handleChange}
               type={showPassword ? "text" : "password"}
@@ -194,14 +178,11 @@ const ChangePassword = () => {
               }}
             />
           </div>
-        </div>
-        <div className="profile-field">
-          <div className="profile-info">Confirm Password</div>
-          <div className="profile-value">
-            <TextField
+          <div className="sign-input">
+            <CssTextField
               fullWidth
+              label="Confirm Password"
               name="confirmPassword"
-              variant="outlined"
               value={confirmPassword}
               onChange={handleChange}
               type={showPassword ? "text" : "password"}
@@ -224,18 +205,16 @@ const ChangePassword = () => {
               }}
             />
           </div>
-        </div>
-        <div className="profile-field">
-          <Link to="/forgotPassword">Forgot Password?</Link>
-        </div>
-        <div className="profile-button">
-          <Button
-            type="submit"
-            className="profile-button-submit"
-            variant="contained"
-          >
-            Confirm
-          </Button>
+          <div>
+            <Button
+              fullWidth
+              type="submit"
+              variant="contained"
+              color="secondary"
+            >
+              Submit
+            </Button>
+          </div>
         </div>
       </div>
       <Notification notify={notify} setNotify={setNotify} />
@@ -243,4 +222,4 @@ const ChangePassword = () => {
   );
 };
 
-export default ChangePassword;
+export default ResetPassword;

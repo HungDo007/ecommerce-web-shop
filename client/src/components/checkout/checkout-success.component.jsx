@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useEffect } from "react";
 import { useLocation } from "react-router";
 
@@ -7,11 +6,9 @@ import CheckCircleOutlineIcon from "@material-ui/icons/CheckCircleOutline";
 import salesApi from "../../api/sales.api";
 
 const CheckoutSuccess = (props) => {
-  // const [isSuccess, setIsSuccess] = useState(false);
   const location = useLocation();
   const query = new URLSearchParams(location.search);
   const token = query.get("token");
-  console.log(token);
 
   useEffect(() => {
     const checkoutStatus = async () => {

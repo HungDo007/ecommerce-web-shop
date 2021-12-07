@@ -66,8 +66,9 @@ const SignUp = ({ setAction, currentUser, tableRef }) => {
 
   const validate = (fieldValues = userInfo) => {
     let temp = { ...errors };
-    if ("username" in fieldValues)
+    if ("username" in fieldValues) {
       temp.username = fieldValues.username ? "" : "This field is required";
+    }
 
     if ("email" in fieldValues) {
       temp.email = fieldValues.email ? "" : "This field is required.";
@@ -157,6 +158,7 @@ const SignUp = ({ setAction, currentUser, tableRef }) => {
                 message: "Sign up successfully!",
                 type: "success",
               });
+              setTimeout(() => setAction(true), 2000);
             }
           } catch (error) {
             console.log(error.response);
