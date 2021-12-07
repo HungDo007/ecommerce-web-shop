@@ -355,30 +355,44 @@ namespace Application.Catalog
             }
         }
 
-        public async Task<bool> UpdateProDetail(List<ProductDetailRequest> detailVms)
+        public async Task<bool> UpdateProDetail(int productId, List<ProductDetailRequest> detailVms)
         {
-
+            List<ProductDetailRequest> newRequest = new List<ProductDetailRequest>();
             foreach (var item in detailVms)
             {
-                var pro = await _context.ProductDetails
-                    .Include(x => x.ComponentDetails)
-                    .Where(x => x.Id == item.Id).FirstOrDefaultAsync();
-
-                pro.Price = item.Price;
-                pro.Stock = item.Stock;
-                pro.ComponentDetails.Clear();
-                foreach (var cmp in item.ComponentDetails)
+                if (item.Id == 0)
                 {
-                    ComponentDetail comp = await _context.ComponentDetails
-                        .Where(x => x.ComponentId == cmp.CompId && x.Value == cmp.Value)
-                        .FirstOrDefaultAsync();
+                    newRequest.Add(item);
+                }
+                else
+                {
 
-                    if (comp == null)
-                        comp = new ComponentDetail() { ComponentId = cmp.CompId, Name = cmp.Name, Value = cmp.Value };
+                    var pro = await _context.ProductDetails
+                        .Include(x => x.ComponentDetails)
+                        .Where(x => x.Id == item.Id).FirstOrDefaultAsync();
 
-                    pro.ComponentDetails.Add(comp);
+                    pro.Price = item.Price;
+                    pro.Stock = item.Stock;
+                    pro.ComponentDetails.Clear();
+                    foreach (var cmp in item.ComponentDetails)
+                    {
+                        ComponentDetail comp = await _context.ComponentDetails
+                            .Where(x => x.ComponentId == cmp.CompId && x.Value == cmp.Value)
+                            .FirstOrDefaultAsync();
+
+                        if (comp == null)
+                            comp = new ComponentDetail() { ComponentId = cmp.CompId, Name = cmp.Name, Value = cmp.Value };
+
+                        pro.ComponentDetails.Add(comp);
+                    }
                 }
             }
+
+            if (newRequest.Count != 0)
+            {
+                await AddProDetail(productId, newRequest);
+            }
+
             try
             {
                 await _context.SaveChangesAsync();

@@ -57,10 +57,10 @@ namespace WebAPI.Controllers
             return BadRequest();
         }
 
-        [HttpPost("updateDetail")]
-        public async Task<IActionResult> UpdateComp([FromBody] List<ProductDetailRequest> requests)
+        [HttpPost("updateDetail/{productId}")]
+        public async Task<IActionResult> UpdateComp(int productId, [FromBody] List<ProductDetailRequest> requests)
         {
-            if (await _productService.UpdateProDetail(requests))
+            if (await _productService.UpdateProDetail(productId, requests))
                 return Ok();
             return BadRequest();
         }
