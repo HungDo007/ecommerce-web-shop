@@ -190,7 +190,7 @@ const StoreProduct = (props) => {
               const productId = await storeApi.addProduct(formData);
               addDetail(productId);
             } catch (error) {
-              console.log("Failed to add product: ", error);
+              console.log("Failed to add product: ", error?.response);
             }
           };
           addProduct();
