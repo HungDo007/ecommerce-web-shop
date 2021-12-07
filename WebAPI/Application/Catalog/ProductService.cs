@@ -379,6 +379,7 @@ namespace Application.Catalog
             p.ProductDetails.Clear();
             p.ProductDetails = pd;
 
+            List<ComponentDetail> globalDetails = new List<ComponentDetail>();
             foreach (var item in detailVms)
             {
                 if (item.Id == 0)
@@ -401,7 +402,14 @@ namespace Application.Catalog
                                 .FirstOrDefaultAsync();
 
                             if (comp == null)
-                                comp = new ComponentDetail() { ComponentId = cmp.CompId, Name = cmp.Name, Value = cmp.Value };
+                            {
+                                comp = globalDetails.Where(x => x.ComponentId == cmp.CompId && x.Value == cmp.Value).FirstOrDefault();
+                                if (comp == null)
+                                {
+                                    comp = new ComponentDetail() { ComponentId = cmp.CompId, Name = cmp.Name, Value = cmp.Value };
+                                    globalDetails.Add(comp);
+                                }
+                            }
 
                             pro.ComponentDetails.Add(comp);
                         }
