@@ -359,11 +359,17 @@ namespace Application.Catalog
         {
             List<ProductDetailRequest> newRequest = new List<ProductDetailRequest>();
             var p = await _context.Products.Include(x => x.ProductDetails).Where(x => x.Id == productId).FirstOrDefaultAsync();
+
+
+            List<ProductDetail> pd = new List<ProductDetail>();
             foreach (var i in p.ProductDetails)
             {
-                if (!detailVms.Any(x => x.Id == i.Id))
-                    p.ProductDetails.Remove(i);
+                if (detailVms.Any(x => x.Id == i.Id))
+                    pd.Add(i);
             }
+
+            p.ProductDetails.Clear();
+            p.ProductDetails = pd;
 
             foreach (var item in detailVms)
             {
