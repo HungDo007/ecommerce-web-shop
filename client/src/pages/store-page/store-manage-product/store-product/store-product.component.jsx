@@ -151,7 +151,10 @@ const StoreProduct = (props) => {
           };
           const editDetail = async () => {
             try {
-              const response = await storeApi.editDetail(productDetails);
+              const response = await storeApi.editDetail(
+                productDetails,
+                props.location.state
+              );
               console.log(response);
               if (response.status === 200 && response.statusText === "OK") {
                 props.history.push("/store/manageProduct");
