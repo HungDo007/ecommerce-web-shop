@@ -81,6 +81,7 @@ namespace Application.Catalog
 
         public async Task<bool> AddProDetail(int proId, List<ProductDetailRequest> detailVms)
         {
+            List<ComponentDetail> globalDetails = new List<ComponentDetail>();
             foreach (var detailVm in detailVms)
             {
                 ProductDetail pd = new ProductDetail();
@@ -97,7 +98,7 @@ namespace Application.Catalog
 
                     if (comp == null)
                     {
-                        comp = details.Where(x => x.ComponentId == item.CompId && x.Value == item.Value).FirstOrDefault();
+                        comp = globalDetails.Where(x => x.ComponentId == item.CompId && x.Value == item.Value).FirstOrDefault();
                         if (comp == null)
                             comp = new ComponentDetail() { ComponentId = item.CompId, Name = item.Name, Value = item.Value };
                     }
