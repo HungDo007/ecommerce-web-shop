@@ -404,7 +404,7 @@ namespace Application.Catalog
 
             if (newRequest.Count != 0)
             {
-                await AddProDetail(productId, newRequest);
+                await EditAddProDetail(productId, newRequest);
                 return true;
             }
 
@@ -418,6 +418,34 @@ namespace Application.Catalog
                 return false;
             }
 
+        }
+
+
+        private async Task EditAddProDetail(int proId, List<ProductDetailRequest> detailVms)
+        {
+            foreach (var detailVm in detailVms)
+            {
+                ProductDetail pd = new ProductDetail();
+                pd.Price = detailVm.Price;
+                pd.Stock = detailVm.Stock;
+                pd.ProductId = proId;
+
+                List<ComponentDetail> details = new List<ComponentDetail>();
+                foreach (var item in detailVm.ComponentDetails)
+                {
+                    ComponentDetail comp = await _context.ComponentDetails
+                        .Where(x => x.ComponentId == item.CompId && x.Value == item.Value)
+                        .FirstOrDefaultAsync();
+
+                    if (comp == null)
+                        comp = new ComponentDetail() { ComponentId = item.CompId, Name = item.Name, Value = item.Value };
+
+                    details.Add(comp);
+                }
+
+                pd.ComponentDetails = details;
+                _context.ProductDetails.Add(pd);
+            }
         }
 
         public async Task<PagedResult<ProductVm>> GetOfUser(string username, ProductPagingRequest request)
