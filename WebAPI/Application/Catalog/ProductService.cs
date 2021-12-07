@@ -381,29 +381,28 @@ namespace Application.Catalog
                 {
                     var pro = p.ProductDetails.Where(x => x.Id == item.Id).FirstOrDefault();
 
-                    if (pro != null)
+                    pro.Price = item.Price;
+                    pro.Stock = item.Stock;
+                    pro.ComponentDetails.Clear();
+                    foreach (var cmp in item.ComponentDetails)
                     {
-                        pro.Price = item.Price;
-                        pro.Stock = item.Stock;
-                        pro.ComponentDetails.Clear();
-                        foreach (var cmp in item.ComponentDetails)
-                        {
-                            ComponentDetail comp = await _context.ComponentDetails
-                                .Where(x => x.ComponentId == cmp.CompId && x.Value == cmp.Value)
-                                .FirstOrDefaultAsync();
+                        ComponentDetail comp = await _context.ComponentDetails
+                            .Where(x => x.ComponentId == cmp.CompId && x.Value == cmp.Value)
+                            .FirstOrDefaultAsync();
 
-                            if (comp == null)
-                                comp = new ComponentDetail() { ComponentId = cmp.CompId, Name = cmp.Name, Value = cmp.Value };
+                        if (comp == null)
+                            comp = new ComponentDetail() { ComponentId = cmp.CompId, Name = cmp.Name, Value = cmp.Value };
 
-                            pro.ComponentDetails.Add(comp);
-                        }
+                        pro.ComponentDetails.Add(comp);
+
                     }
                 }
             }
 
             if (newRequest.Count != 0)
             {
-                await EditAddProDetail(productId, newRequest);
+                await AddProDetail(productId, newRequest);
+                return true;
             }
 
             try
@@ -418,33 +417,6 @@ namespace Application.Catalog
 
         }
 
-
-        private async Task EditAddProDetail(int proId, List<ProductDetailRequest> detailVms)
-        {
-            foreach (var detailVm in detailVms)
-            {
-                ProductDetail pd = new ProductDetail();
-                pd.Price = detailVm.Price;
-                pd.Stock = detailVm.Stock;
-                pd.ProductId = proId;
-
-                List<ComponentDetail> details = new List<ComponentDetail>();
-                foreach (var item in detailVm.ComponentDetails)
-                {
-                    ComponentDetail comp = await _context.ComponentDetails
-                        .Where(x => x.ComponentId == item.CompId && x.Value == item.Value)
-                        .FirstOrDefaultAsync();
-
-                    if (comp == null)
-                        comp = new ComponentDetail() { ComponentId = item.CompId, Name = item.Name, Value = item.Value };
-
-                    details.Add(comp);
-                }
-
-                pd.ComponentDetails = details;
-                _context.ProductDetails.Add(pd);
-            }
-        }
 
         public async Task<PagedResult<ProductVm>> GetOfUser(string username, ProductPagingRequest request)
         {
