@@ -276,8 +276,9 @@ namespace Application.System
             var user = await _userManager.FindByNameAsync(request.UserName);
             if (user != null)
                 errorList.Add("Username already used");
-
-            if (await _userManager.FindByEmailAsync(request.Email) != null)
+            
+            user = await _userManager.FindByEmailAsync(request.Email)
+            if ( user != null)
                 errorList.Add("Email already used");
 
 
