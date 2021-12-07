@@ -379,7 +379,7 @@ namespace Application.Catalog
                 }
                 else
                 {
-                    var pro = await _context.ProductDetails.Where(x => x.Id == item.Id).FirstOrDefaultAsync();
+                    var pro = await _context.ProductDetails.Include(x => x.ComponentDetails).Where(x => x.Id == item.Id).FirstOrDefaultAsync();
 
                     if (pro != null)
                     {
