@@ -405,6 +405,7 @@ namespace Application.Catalog
             if (newRequest.Count != 0)
             {
                 await AddProDetail(productId, newRequest);
+                return true;
             }
 
             try
