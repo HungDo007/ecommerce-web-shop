@@ -276,24 +276,27 @@ namespace Application.System
             var user = await _userManager.FindByNameAsync(request.UserName);
             if (user != null)
                 errorList.Add("Username already used");
-            
+
             user = await _userManager.FindByEmailAsync(request.Email);
-            if ( user != null)
+            if (user != null)
                 errorList.Add("Email already used");
 
+            if (user == null)
+            {
+                user = _mapper.Map<AppUser>(request);
 
-            user = _mapper.Map<AppUser>(request);
+                var result = await _userManager.CreateAsync(user, request.Password);
+                if (result.Succeeded)
+                {
+                    if (IsAdmin)
+                        await _userManager.AddToRoleAsync(user, SystemConstants.RoleAdmin);
+                    else
+                        await _userManager.AddToRoleAsync(user, SystemConstants.RoleUser);
+                    return null;
+                }
+            }
 
-            var result = await _userManager.CreateAsync(user, request.Password);
-            if (IsAdmin)
-                await _userManager.AddToRoleAsync(user, SystemConstants.RoleAdmin);
-            else
-                await _userManager.AddToRoleAsync(user, SystemConstants.RoleUser);
-
-            if (result.Succeeded)
-                return null;
-            else
-                return errorList;
+            return errorList;
         }
 
         public async Task<StoreVm> StoreInfo(string username)
