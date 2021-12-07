@@ -96,8 +96,11 @@ namespace Application.Catalog
                         .FirstOrDefaultAsync();
 
                     if (comp == null)
-                        comp = new ComponentDetail() { ComponentId = item.CompId, Name = item.Name, Value = item.Value };
-
+                    {
+                        comp = details.Where(x => x.ComponentId == item.CompId && x.Value == item.Value).FirstOrDefault();
+                        if (comp == null)
+                            comp = new ComponentDetail() { ComponentId = item.CompId, Name = item.Name, Value = item.Value };
+                    }
                     details.Add(comp);
                 }
 
