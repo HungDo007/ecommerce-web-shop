@@ -366,6 +366,14 @@ namespace Application.Catalog
                 }
                 else
                 {
+                    var p = await _context.Products.Include(x => x.ProductDetails).Where(x => x.Id == productId).FirstOrDefaultAsync();
+
+
+                    foreach (var i in p.ProductDetails)
+                    {
+                        if (!detailVms.Any(x => x.Id == i.Id))
+                            p.ProductDetails.Remove(i);
+                    }
 
                     var pro = await _context.ProductDetails
                         .Include(x => x.ComponentDetails)
