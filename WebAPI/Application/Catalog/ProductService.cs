@@ -379,25 +379,24 @@ namespace Application.Catalog
                 }
                 else
                 {
+                    var pro = p.ProductDetails.Where(x => x.Id == item.Id).FirstOrDefault();
 
-
-                    var pro = await _context.ProductDetails
-                        .Include(x => x.ComponentDetails)
-                        .Where(x => x.Id == item.Id).FirstOrDefaultAsync();
-
-                    pro.Price = item.Price;
-                    pro.Stock = item.Stock;
-                    pro.ComponentDetails.Clear();
-                    foreach (var cmp in item.ComponentDetails)
+                    if (pro != null)
                     {
-                        ComponentDetail comp = await _context.ComponentDetails
-                            .Where(x => x.ComponentId == cmp.CompId && x.Value == cmp.Value)
-                            .FirstOrDefaultAsync();
+                        pro.Price = item.Price;
+                        pro.Stock = item.Stock;
+                        pro.ComponentDetails.Clear();
+                        foreach (var cmp in item.ComponentDetails)
+                        {
+                            ComponentDetail comp = await _context.ComponentDetails
+                                .Where(x => x.ComponentId == cmp.CompId && x.Value == cmp.Value)
+                                .FirstOrDefaultAsync();
 
-                        if (comp == null)
-                            comp = new ComponentDetail() { ComponentId = cmp.CompId, Name = cmp.Name, Value = cmp.Value };
+                            if (comp == null)
+                                comp = new ComponentDetail() { ComponentId = cmp.CompId, Name = cmp.Name, Value = cmp.Value };
 
-                        pro.ComponentDetails.Add(comp);
+                            pro.ComponentDetails.Add(comp);
+                        }
                     }
                 }
             }
