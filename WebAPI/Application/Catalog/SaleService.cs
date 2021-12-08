@@ -182,7 +182,14 @@ namespace Application.Catalog
                 ProductImg = x.pi.Path,
                 Quantity = x.od.Quantity,
                 Price = x.od.Price,
+                ProductDetailId = x.pd.Id
             }).ToListAsync();
+
+
+            foreach (var item in data)
+            {
+                item.Details = GetComponentOfDetail(item.ProductDetailId);
+            }
 
             return data;
         }

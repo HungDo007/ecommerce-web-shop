@@ -5,6 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove=".github\**" />
+    <Content Remove=".github\**" />
+    <EmbeddedResource Remove=".github\**" />
+    <None Remove=".github\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.9" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
@@ -20,10 +27,6 @@
     <Folder Include="wwwroot\Category\" />
     <Folder Include="wwwroot\Avatar\" />
     <Folder Include="wwwroot\Product\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include=".github\workflows\build-and-deploy.yml" />
   </ItemGroup>
 
 </Project>
