@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 import { Button, Tab, Tabs } from "@material-ui/core";
 
+import Notification from "../../../components/notification/notification.component";
 import AdminTable from "./data-table/admin-table";
 import Confirm from "../../../components/confirm/confirm.component";
 import CustomDialog from "../../../components/dialog/dialog.component";
@@ -19,6 +20,13 @@ const ManageAccountPage = () => {
   const [value, setValue] = useState(0);
   const [action, setAction] = useState("");
   const [username, setUsername] = useState("");
+  const [notify, setNotify] = useState({
+    isOpen: false,
+    message: "",
+    type: "",
+  });
+
+  const tableRef = useRef(null);
 
   const modalIsOpen = useSelector((state) => state.modal.isOpen);
   const currentUser = useSelector((state) => state.user.currentUser);
@@ -38,9 +46,16 @@ const ManageAccountPage = () => {
     const unlockAccount = async () => {
       try {
         const response = await adminApi.unlockAccount({ username: username });
-        console.log(response);
+        if (response.status === 200 && response.statusText === "OK") {
+          tableRef.current.onQueryChange();
+        }
       } catch (error) {
-        console.log("Failed to unlock account: ", error.response);
+        console.log("Failed to unlock account: ", error);
+        setNotify({
+          isOpen: true,
+          message: `Fail to unlock account!`,
+          type: "error",
+        });
       }
     };
     unlockAccount();
@@ -74,17 +89,23 @@ const ManageAccountPage = () => {
         </div>
       </div>
       <TabPanel value={value} index={0}>
-        <AdminTable />
+        <AdminTable tableRef={tableRef} />
       </TabPanel>
       <TabPanel value={value} index={1}>
         <UserTable
+          tableRef={tableRef}
           actionLockUser={setAction}
           setUsername={setUsername}
           dispatch={dispatch}
         />
       </TabPanel>
       <TabPanel value={value} index={2}>
-        <LockedUserTable actionLockUser={setAction} setUsername={setUsername} />
+        <LockedUserTable
+          tableRef={tableRef}
+          actionLockUser={setAction}
+          setUsername={setUsername}
+          dispatch={dispatch}
+        />
       </TabPanel>
       {action === "sign-up" && (
         <CustomDialog
@@ -92,7 +113,7 @@ const ManageAccountPage = () => {
           open={modalIsOpen}
           dispatch={dispatch}
         >
-          <SignUp currentUser={currentUser} />
+          <SignUp currentUser={currentUser} tableRef={tableRef} />
         </CustomDialog>
       )}
       {action === "lock-user" && (
@@ -101,7 +122,11 @@ const ManageAccountPage = () => {
           open={modalIsOpen}
           dispatch={dispatch}
         >
-          <Confirm title="Are you sure to lock this account?" data={username} />
+          <Confirm
+            title="Are you sure to lock this account?"
+            data={username}
+            tableRef={tableRef}
+          />
         </CustomDialog>
       )}
       {action === "unlock-user" && (
@@ -117,6 +142,7 @@ const ManageAccountPage = () => {
           />
         </CustomDialog>
       )}
+      <Notification notify={notify} setNotify={setNotify} />
     </div>
   );
 };

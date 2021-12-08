@@ -29,9 +29,11 @@ const Confirm = (props) => {
       const lockAccount = async () => {
         try {
           const response = await adminApi.lockAccount(data);
-          console.log(response);
+          if (response.status === 200 && response.statusText === "OK") {
+            props.tableRef.current.onQueryChange();
+          }
         } catch (error) {
-          console.log("Failed to lock account: ", error.response);
+          console.log("Failed to lock account: ", error);
         }
       };
       lockAccount();

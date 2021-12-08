@@ -18,6 +18,8 @@ import { setCurrentUser } from "../../redux/user/user.actions";
 import userApi from "../../api/user-api";
 
 import "./sign-in.styles.scss";
+import { toggleNotification } from "../../redux/modal/modal.actions";
+import { Link } from "react-router-dom";
 
 const CssTextField = withStyles({
   root: {
@@ -67,8 +69,7 @@ const SignIn = ({ setAction }) => {
 
     setErrors({ ...temp });
 
-    if (fieldValues == userInfo)
-      return Object.values(temp).every((x) => x == "");
+    return Object.values(temp).every((x) => x === "");
   };
 
   const handleChange = (event) => {
@@ -100,8 +101,9 @@ const SignIn = ({ setAction }) => {
           localStorage.setItem("jwtToken", response);
           const user = jwtDecode(response);
           dispatch(setCurrentUser(user));
+          dispatch(toggleNotification());
         } catch (error) {
-          console.log("Fail to authenticate: ", error.response);
+          // console.log("Fail to authenticate: ", error.response);
           if (error.response?.data === "Incorrect Username.") {
             setErrors({
               email: "Your username is incorrect",
@@ -166,7 +168,9 @@ const SignIn = ({ setAction }) => {
             Sign in
           </Button>
         </div>
-        <div className="sign-text">Forgot password?</div>
+        <div className="sign-text">
+          <Link to="/forgotPassword">Forgot password?</Link>
+        </div>
         <div className="sign-text-sign-up">
           <p>Don't have an account?</p>
           <p onClick={handleSignUp} className="sign-link">

@@ -13,7 +13,6 @@ footer .footer-container {
   justify-content: space-between;
   flex-wrap: wrap;
   flex-direction: row;
-  margin: -32px 5px;
 }
 footer .footer-container .content {
   margin-right: 30px;

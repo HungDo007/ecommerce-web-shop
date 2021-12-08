@@ -30,6 +30,21 @@ const userApi = {
     const url = "/Users/verifyEmail";
     return axiosClient.post(url, data);
   },
+
+  changePassword: (data) => {
+    const url = "/Users/ChangePassword";
+    return axiosClient.post(url, data);
+  },
+
+  requestResetPassword: (email) => {
+    const url = "/Users/RequestResetPassword";
+    return axiosClient.post(url, email);
+  },
+
+  resetPassword: (data) => {
+    const url = "/Users/ResetPassword";
+    return axiosClient.post(url, data);
+  },
 };
 
 export default userApi;

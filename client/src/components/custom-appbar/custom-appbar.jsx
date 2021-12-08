@@ -29,7 +29,7 @@ const CustomAppBar = ({ sidebar, setSidebar }) => {
   const menuId = "primary-search-account-menu";
   const cartId = "primary-cart";
 
-  const showSideBar = () => setSidebar(!sidebar);
+  const [productName, setProductName] = useState("");
 
   const [anchorEl, setAnchorEl] = useState(null);
   const isMenuOpen = Boolean(anchorEl);
@@ -39,9 +39,27 @@ const CustomAppBar = ({ sidebar, setSidebar }) => {
 
   const currentUser = useSelector((state) => state.user.currentUser);
 
+  const cartItems = useSelector((state) => state.cart.cartItems);
+
   const dispatch = useDispatch();
 
   const history = useHistory();
+
+  const showSideBar = () => setSidebar(!sidebar);
+
+  const handleChange = (event) => {
+    setProductName(event.target.value);
+  };
+
+  const handleSearch = () => {
+    if (productName.length > 3) {
+      //console.log(productName);
+      history.push({
+        pathname: "/directory/0",
+        state: productName,
+      });
+    }
+  };
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -132,16 +150,22 @@ const CustomAppBar = ({ sidebar, setSidebar }) => {
             <MenuIcon />
           </IconButton>
           <div className={classes.search}>
-            <IconButton color="inherit" aria-label="search">
+            <IconButton
+              color="inherit"
+              aria-label="search"
+              onClick={handleSearch}
+            >
               <SearchIcon />
             </IconButton>
             <InputBase
               placeholder="Search…"
+              inputProps={{ "aria-label": "search" }}
+              value={productName}
+              onChange={handleChange}
               classes={{
                 root: classes.inputRoot,
                 input: classes.inputInput,
               }}
-              inputProps={{ "aria-label": "search" }}
             />
           </div>
           <div className={classes.grow} />
@@ -156,7 +180,6 @@ const CustomAppBar = ({ sidebar, setSidebar }) => {
                 <NotificationsIcon />
               </Badge>
             </IconButton>
-
             {currentUser ? (
               <>
                 <IconButton
@@ -166,7 +189,7 @@ const CustomAppBar = ({ sidebar, setSidebar }) => {
                   aria-haspopup="true"
                   onClick={handleCartOpen}
                 >
-                  <Badge badgeContent={1} color="secondary">
+                  <Badge badgeContent={cartItems.length} color="secondary">
                     <ShoppingCartIcon />
                   </Badge>
                 </IconButton>
@@ -215,7 +238,7 @@ const CustomAppBar = ({ sidebar, setSidebar }) => {
         transformOrigin={{ vertical: "top", horizontal: "center" }}
       >
         <MenuItem>
-          <CartDropDown />
+          <CartDropDown items={cartItems} />
         </MenuItem>
       </Menu>
     </div>

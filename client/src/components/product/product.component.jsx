@@ -11,8 +11,9 @@ import catalogApi from "../../api/catalog-api";
 import "./product.styles.scss";
 import { useParams } from "react-router";
 import { CircularProgress } from "@material-ui/core";
+import { useSelector } from "react-redux";
 
-const Product = () => {
+const Product = ({ search }) => {
   // const collection = Object.values(SHOP_DATA);
   // const productArr = collection.map((i) => i.items);
   // const product = [].concat.apply([], productArr);
@@ -26,10 +27,13 @@ const Product = () => {
   const [page, setPage] = useState(1);
   const [isLoading, setLoading] = useState(true);
 
+  const currentUser = useSelector((state) => state.user.currentUser);
+
   useEffect(() => {
     const getProductPaging = async () => {
       try {
         const params = {
+          keyword: search ? search : "",
           catId: directoryId ? directoryId : 0,
           pageIndex: page,
           pageSize: 6,
@@ -43,7 +47,12 @@ const Product = () => {
       }
     };
     getProductPaging();
-  }, [page, directoryId]);
+  }, [page, directoryId, currentUser, search]);
+
+  const handleChangePage = (event, page) => {
+    setPage(page);
+    setLoading(true);
+  };
 
   return (
     <>
@@ -67,7 +76,7 @@ const Product = () => {
         <Pagination
           count={productPaging?.pageCount}
           defaultPage={1}
-          onChange={(event, page) => setPage(page)}
+          onChange={(event, page) => handleChangePage(event, page)}
           shape="rounded"
           color="primary"
         />

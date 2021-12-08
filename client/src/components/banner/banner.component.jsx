@@ -13,17 +13,17 @@ const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 
 const tutorialSteps = [
   {
-    label: "San Francisco – Oakland Bay Bridge, United States",
+    label: "SmartPhone",
     imgPath:
       "https://uidesign.gbtcdn.com/GB/image/brand/20190305_8144/1200x300-A6.jpg",
   },
   {
-    label: "Bird",
+    label: "Woman Fashion",
     imgPath:
       "https://adamshop.vn/wp-content/uploads/2020/08/banner2-1200x300.jpg",
   },
   {
-    label: "Bali, Indonesia",
+    label: "Sale",
     imgPath:
       "https://i.ezbuy.sg/Fq-il5diHcraQT3zXcIAzKhuxL9Z?imageView2/2/w/2400/h/600/q/90/format/webp",
   },

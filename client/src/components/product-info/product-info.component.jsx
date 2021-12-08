@@ -13,6 +13,8 @@ import catalogApi from "../../api/catalog-api";
 import salesApi from "../../api/sales.api";
 
 import "./product-info.styles.scss";
+import { useDispatch } from "react-redux";
+import { toggleNotification } from "../../redux/modal/modal.actions";
 
 const ProductInfo = ({ productId }) => {
   const [listComponent, setListComponent] = useState([]);
@@ -60,6 +62,9 @@ const ProductInfo = ({ productId }) => {
   });
 
   const currentUser = useSelector((state) => state.user.currentUser);
+
+  const dispatch = useDispatch();
+
   const history = useHistory();
 
   const incrementValue = Number(cartItem.amount) || 1;
@@ -79,7 +84,6 @@ const ProductInfo = ({ productId }) => {
     const getProduct = async () => {
       try {
         const response = await catalogApi.getProductById(productId);
-        console.log(response);
         setProductInfo(response);
         await catalogApi.addViewCount(productId);
       } catch (error) {
@@ -95,11 +99,14 @@ const ProductInfo = ({ productId }) => {
 
     let listCompo = [];
     let num = productDetails[0]?.componentDetails.length;
+    let names = [];
     for (let i = 0; i < num; i++) {
       let a = {
         name: "",
         value: [],
       };
+      names.push(productDetails[0].componentDetails[i].name);
+      a.name = names[i];
       productDetails.forEach((element) => {
         if (
           !a.value.some(
@@ -107,12 +114,15 @@ const ProductInfo = ({ productId }) => {
           )
         ) {
           const value = {
-            id: element.componentDetails[i]?.id,
-            name: element.componentDetails[i]?.value,
+            id: element.componentDetails[
+              element.componentDetails.findIndex((i) => i.name === a.name)
+            ]?.id,
+            name: element.componentDetails[
+              element.componentDetails.findIndex((i) => i.name === a.name)
+            ]?.value,
           };
           a.value.push(value);
         }
-        a.name = element.componentDetails[i]?.name;
       });
       listCompo.push(a);
     }
@@ -151,7 +161,7 @@ const ProductInfo = ({ productId }) => {
       });
 
       let productDetailId = undefined;
-      let price = 100;
+      let price = "unavailable";
       let stock = 0;
 
       a.forEach((element, idx) => {
@@ -231,6 +241,7 @@ const ProductInfo = ({ productId }) => {
                 message: "Add to cart successfully!",
                 type: "success",
               });
+              dispatch(toggleNotification());
             }
           } catch (error) {
             console.log("Failed to add product to cart", error.response);

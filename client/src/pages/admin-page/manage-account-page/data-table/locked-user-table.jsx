@@ -1,5 +1,3 @@
-import { useDispatch } from "react-redux";
-
 import MaterialTable from "material-table";
 import LockOpenIcon from "@material-ui/icons/LockOpen";
 
@@ -7,9 +5,12 @@ import { toggleModal } from "../../../../redux/modal/modal.actions";
 
 import adminApi from "../../../../api/admin-api";
 
-const LockedUserTable = ({ actionLockUser, setUsername }) => {
-  const dispatch = useDispatch();
-
+const LockedUserTable = ({
+  tableRef,
+  actionLockUser,
+  setUsername,
+  dispatch,
+}) => {
   const columns = [
     {
       title: "Username",
@@ -44,11 +45,11 @@ const LockedUserTable = ({ actionLockUser, setUsername }) => {
   return (
     <div>
       <MaterialTable
-        options={{ actionsColumnIndex: -1 }}
         title="User Accounts"
+        tableRef={tableRef}
+        options={{ actionsColumnIndex: -1 }}
         data={(query) =>
           new Promise((resolve, reject) => {
-            console.log(query);
             const params = {
               pageIndex: query.page + 1,
               pageSize: query.pageSize,

@@ -50,7 +50,6 @@ const ActiveEmailForm = () => {
     const sendCode = async () => {
       try {
         const response = await userApi.sendCode(data);
-        console.log(response);
         if (response.status === 200 && response.statusText === "OK") {
           setNotify({
             isOpen: true,
@@ -94,22 +93,13 @@ const ActiveEmailForm = () => {
   };
 
   return (
-    <div style={{ width: 375, textAlign: "center" }}>
+    <div style={{ margin: "0 auto", width: 400, textAlign: "center" }}>
       <div style={{ margin: 15 }}>
         Active email to create store. Check your email after clicking on Send
         Code button and entering the code here.
       </div>
       <div style={{ margin: 15 }}>
-        <Button
-          onClick={handleSendCode}
-          style={{
-            borderRadius: 24,
-            backgroundColor: "rgb(45 42 212)",
-            padding: "10px 26px",
-            fontSize: "14px",
-            color: "white",
-          }}
-        >
+        <Button onClick={handleSendCode} variant="contained" color="primary">
           Send Code
         </Button>
       </div>
@@ -129,16 +119,7 @@ const ActiveEmailForm = () => {
           />
         </div>
         <div style={{ margin: "auto" }}>
-          <Button
-            type="submit"
-            style={{
-              borderRadius: 24,
-              backgroundColor: "rgb(45 42 212)",
-              padding: "10px 26px",
-              fontSize: "14px",
-              color: "white",
-            }}
-          >
+          <Button type="submit" variant="contained" color="primary">
             Submit
           </Button>
         </div>

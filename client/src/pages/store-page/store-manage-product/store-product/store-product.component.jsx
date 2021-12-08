@@ -151,7 +151,10 @@ const StoreProduct = (props) => {
           };
           const editDetail = async () => {
             try {
-              const response = await storeApi.editDetail(productDetails);
+              const response = await storeApi.editDetail(
+                productDetails,
+                props.location.state
+              );
               console.log(response);
               if (response.status === 200 && response.statusText === "OK") {
                 props.history.push("/store/manageProduct");
@@ -187,7 +190,7 @@ const StoreProduct = (props) => {
               const productId = await storeApi.addProduct(formData);
               addDetail(productId);
             } catch (error) {
-              console.log("Failed to add product: ", error);
+              console.log("Failed to add product: ", error?.response);
             }
           };
           addProduct();
@@ -202,12 +205,11 @@ const StoreProduct = (props) => {
     }
   };
 
-  console.log(productInfo);
-
   useEffect(() => {
     const getProduct = async (id) => {
       try {
         const response = await catalogApi.getProductById(id);
+        console.log(response);
         let array = response.images;
         array.forEach((element, index, newArr) => {
           newArr[index] = process.env.REACT_APP_IMAGE_URL + element;

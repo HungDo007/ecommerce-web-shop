@@ -124,6 +124,7 @@ const SaleInformation = ({
     } else {
       setComponentList([]);
     }
+    setActualComponents([]);
   }, [category]);
 
   return (
@@ -233,8 +234,16 @@ const SaleInformation = ({
                         variant="outlined"
                         name={item.name}
                         value={
-                          x.componentDetails[index]?.value
-                            ? x.componentDetails[index].value
+                          x.componentDetails[
+                            x.componentDetails.findIndex(
+                              (i) => i.name === item.name
+                            )
+                          ]?.value
+                            ? x.componentDetails[
+                                x.componentDetails.findIndex(
+                                  (i) => i.name === item.name
+                                )
+                              ].value
                             : ""
                         }
                         onChange={(e) => handleInputChange(e, i)}

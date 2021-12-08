@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 
 import { IconContext } from "react-icons";
 import * as AiIcons from "react-icons/ai";
@@ -8,11 +9,36 @@ import CustomAppBar from "../custom-appbar/custom-appbar";
 
 import { DataArr } from "./sidebarData";
 
+import salesApi from "../../api/sales.api";
+
+import { setCartItems } from "../../redux/cart/cart.actions";
+
 import "./sidebar.styles.css";
+import { useSelector } from "react-redux";
 
 const Sidebar = () => {
   const [sidebar, setSidebar] = useState(false);
   const showSideBar = () => setSidebar(!sidebar);
+
+  const dispatch = useDispatch();
+
+  const status = useSelector((state) => state.modal.notification);
+
+  useEffect(() => {
+    const getCart = async () => {
+      try {
+        const params = {
+          pageIndex: 1,
+          pageSize: 1000,
+        };
+        const response = await salesApi.getCart(params);
+        dispatch(setCartItems(response.items));
+      } catch (error) {
+        console.log("Failed to get cart", error?.response);
+      }
+    };
+    getCart();
+  }, [status]);
 
   return (
     <>

@@ -64,7 +64,6 @@ const StoreManagesProduct = ({ history }) => {
       try {
         const response = await storeApi.removeProduct(productId);
         tableRef.current.onQueryChange();
-        console.log(response);
       } catch (error) {
         console.log("Failed to remove product: ", error.response);
       }

@@ -21,8 +21,8 @@ const storeApi = {
     return axiosClient.post(url, data);
   },
 
-  editDetail: (data) => {
-    const url = "/Stores/updateDetail";
+  editDetail: (data, productId) => {
+    const url = `/Stores/updateDetail/${productId}`;
     return axiosClient.post(url, data);
   },
 

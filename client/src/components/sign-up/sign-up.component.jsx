@@ -43,7 +43,7 @@ const CssTextField = withStyles({
   },
 })(TextField);
 
-const SignUp = ({ setAction, currentUser }) => {
+const SignUp = ({ setAction, currentUser, tableRef }) => {
   const [userInfo, setUserInfo] = useState({
     username: "",
     email: "",
@@ -66,8 +66,9 @@ const SignUp = ({ setAction, currentUser }) => {
 
   const validate = (fieldValues = userInfo) => {
     let temp = { ...errors };
-    if ("username" in fieldValues)
+    if ("username" in fieldValues) {
       temp.username = fieldValues.username ? "" : "This field is required";
+    }
 
     if ("email" in fieldValues) {
       temp.email = fieldValues.email ? "" : "This field is required.";
@@ -77,16 +78,17 @@ const SignUp = ({ setAction, currentUser }) => {
           : "Email is not valid.";
     }
 
-    if ("password" in fieldValues)
+    if ("password" in fieldValues) {
       temp.password = fieldValues.password ? "" : "This field is required";
 
-    if (fieldValues.password)
-      temp.password =
-        /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])[0-9a-zA-Z!@#$%^&*]{8,}$/.test(
-          fieldValues.password
-        )
-          ? ""
-          : "Password has at least 8 character with special character, number and uppercase character";
+      if (fieldValues.password)
+        temp.password =
+          /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])[0-9a-zA-Z!@#$%^&*]{8,}$/.test(
+            fieldValues.password
+          )
+            ? ""
+            : "Password has at least 8 character with special character, number and uppercase character";
+    }
 
     if ("confirmPassword" in fieldValues) {
       temp.confirmPassword = fieldValues.confirmPassword
@@ -131,10 +133,16 @@ const SignUp = ({ setAction, currentUser }) => {
           const addAdmin = async () => {
             try {
               const response = await adminApi.addAmin(data);
-              console.log(response);
+              if (response.status === 200 && response.statusText === "OK") {
+                tableRef.current.onQueryChange();
+              }
               dispatch(toggleModal());
             } catch (error) {
-              console.log(error);
+              setNotify({
+                isOpen: true,
+                message: `Fail to add new admin account!`,
+                type: "error",
+              });
             }
           };
           addAdmin();
@@ -150,6 +158,7 @@ const SignUp = ({ setAction, currentUser }) => {
                 message: "Sign up successfully!",
                 type: "success",
               });
+              setTimeout(() => setAction(true), 2000);
             }
           } catch (error) {
             console.log(error.response);
@@ -160,11 +169,23 @@ const SignUp = ({ setAction, currentUser }) => {
                 type: "error",
               });
             }
-            // setNotify({
-            //   isOpen: true,
-            //   message: `Fail to sign up: ${error?.response.data}`,
-            //   type: "error",
-            // });
+            if (error.response?.data == "Email already used") {
+              setNotify({
+                isOpen: true,
+                message: `Fail to sign up. Email already used!`,
+                type: "error",
+              });
+            }
+            if (
+              error.response?.data[0] == "Username already used" &&
+              error.response?.data[1] === "Email already used"
+            ) {
+              setNotify({
+                isOpen: true,
+                message: `Fail to sign up. Username and email already used!`,
+                type: "error",
+              });
+            }
           }
         };
         signUp();
