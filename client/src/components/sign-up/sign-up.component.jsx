@@ -68,6 +68,10 @@ const SignUp = ({ setAction, currentUser, tableRef }) => {
     let temp = { ...errors };
     if ("username" in fieldValues) {
       temp.username = fieldValues.username ? "" : "This field is required";
+      if (fieldValues.username)
+        temp.username = /^[a-zA-Z0-9]+$/.test(fieldValues.username)
+          ? ""
+          : "Username is not valid";
     }
 
     if ("email" in fieldValues) {
@@ -188,7 +192,8 @@ const SignUp = ({ setAction, currentUser, tableRef }) => {
             }
           }
         };
-        signUp();
+        //signUp();
+        console.log(data);
       }
     }
   };

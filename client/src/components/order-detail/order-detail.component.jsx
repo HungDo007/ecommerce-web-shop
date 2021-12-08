@@ -37,6 +37,7 @@ const OrderDetail = (props) => {
           <div className="checkout-ordered-header">
             <div className="header-block">Image</div>
             <div className="header-block">Name</div>
+            <div className="header-block">Component</div>
             <div className="header-block">Amount</div>
             <div className="header-block">Item Subtotal</div>
           </div>
@@ -50,6 +51,7 @@ const OrderDetail = (props) => {
                 alt="item"
               />
               <div className="header-block">{item.name}</div>
+              <div className="header-block">{item.details}</div>
               <div className="header-block">{item.quantity}</div>
               <div className="header-block">$ {item.price}</div>
             </div>

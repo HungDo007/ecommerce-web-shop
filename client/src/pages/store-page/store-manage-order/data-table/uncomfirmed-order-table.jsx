@@ -77,6 +77,16 @@ const UnconfirmedOrderTable = () => {
           },
         },
       ]}
+      detailPanel={(rowData) => {
+        return (
+          <div
+            style={{ padding: "12px", fontSize: "16px", background: "#f5f5f5" }}
+          >
+            Delivery Address: Name: {rowData.shipName}, Phone Number:{" "}
+            {rowData.shipPhonenumber}, Address: {rowData.shipAddress}
+          </div>
+        );
+      }}
       data={(query) =>
         new Promise((resolve, reject) => {
           const params = {
@@ -92,10 +102,9 @@ const UnconfirmedOrderTable = () => {
                 page: query.page,
                 totalCount: response.totalRecords,
               });
-              // console.log(response);
+              //console.log(response);
             })
             .catch((error) => {
-              console.log(error?.response);
               reject();
             });
         })

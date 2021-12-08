@@ -42,8 +42,8 @@ const ActiveEmailForm = () => {
   };
 
   const data = {
-    username: currentUser.unique_name,
-    email: currentUser.email,
+    username: currentUser?.unique_name,
+    email: currentUser?.email,
   };
 
   const handleSendCode = () => {

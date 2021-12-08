@@ -116,7 +116,7 @@ const ResetPassword = () => {
       const payload = {
         newPassword,
         email,
-        token: token.replace(/\s/g, "+"),
+        token: token ? token.replace(/\s/g, "+") : "",
       };
 
       const resetPassword = async () => {
@@ -130,7 +130,6 @@ const ResetPassword = () => {
             });
           }
         } catch (error) {
-          console.log(error?.response);
           setNotify({
             isOpen: true,
             message: "Some thing went wrong!",

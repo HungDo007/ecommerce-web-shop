@@ -18,11 +18,14 @@ import Footer from "./components/footer/footer.component";
 import Sidebar from "./components/sidebar/sidebar.component";
 import ForgotPassword from "./components/reset-password/forgot-password.component";
 import ResetPassword from "./components/reset-password/reset-password.component";
+import UserRoute from "./components/route/user-route.component";
+import ScrollToTop from "./components/route/scroll-to-top.component";
 
 const App = ({ currentUser }) => {
   return (
     <div>
       <Sidebar />
+      <ScrollToTop />
       <Switch>
         <Route
           exact
@@ -35,15 +38,48 @@ const App = ({ currentUser }) => {
             )
           }
         />
-        <Route path="/admin" component={AdminPage} />
-        <Route path="/cart" component={CartPage} />
-        <Route path="/checkout" component={CheckoutPage} />
+        <Route
+          path="/admin"
+          render={(props) =>
+            currentUser ? (
+              currentUser.role === "Admin" ? (
+                <AdminPage {...props} />
+              ) : (
+                <Redirect to="/" />
+              )
+            ) : (
+              <Redirect to="/signin" />
+            )
+          }
+        />
         <Route path="/directory" component={DirectoryPage} />
         <Route path="/product" component={ProductPage} />
-        <Route path="/order" component={OrderPage} />
-        <Route path="/store" component={StorePage} />
-        <Route path="/user" component={UserPage} />
         <Route path="/forgotPassword" component={ForgotPassword} />
+        <UserRoute
+          path="/cart"
+          currentUser={currentUser}
+          component={CartPage}
+        />
+        <UserRoute
+          path="/checkout"
+          currentUser={currentUser}
+          component={CheckoutPage}
+        />
+        <UserRoute
+          path="/order"
+          currentUser={currentUser}
+          component={OrderPage}
+        />
+        <UserRoute
+          path="/store"
+          currentUser={currentUser}
+          component={StorePage}
+        />
+        <UserRoute
+          path="/user"
+          currentUser={currentUser}
+          component={UserPage}
+        />
         <Route path="/ResetPassword" component={ResetPassword} />
         <Route
           exact

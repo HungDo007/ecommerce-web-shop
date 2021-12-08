@@ -114,22 +114,26 @@ const Checkout = (props) => {
       }
     };
 
-    getUserProfile();
+    if (orderItems.items.length) {
+      getUserProfile();
 
-    let a = [];
-    orderItems.items.forEach((element) => {
-      if (!a.some((item) => item.shopName === element.shopName)) {
-        let obj = {
-          seller: element.seller,
-          shopName: element.shopName ? element.shopName : element.seller,
-          orderItems: orderItems.items.filter(
-            (c) => c.shopName === element.shopName
-          ),
-        };
-        a.push(obj);
-      }
-    });
-    setRequestItem(a);
+      let a = [];
+      orderItems.items.forEach((element) => {
+        if (!a.some((item) => item.shopName === element.shopName)) {
+          let obj = {
+            seller: element.seller,
+            shopName: element.shopName ? element.shopName : element.seller,
+            orderItems: orderItems.items.filter(
+              (c) => c.shopName === element.shopName
+            ),
+          };
+          a.push(obj);
+        }
+      });
+      setRequestItem(a);
+    } else {
+      props.history.replace("/");
+    }
   }, []);
 
   return (
@@ -216,13 +220,19 @@ const Checkout = (props) => {
         </div>
       </div>
       <div className="place-order">
-        <Button variant="contained" color="secondary" onClick={handleOrder}>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={handleOrder}
+          disabled={orderItems.items.length ? false : true}
+        >
           Cash On Delivery
         </Button>
         <Button
           variant="contained"
           color="primary"
           onClick={handlePayWithPaypal}
+          disabled={orderItems.items.length ? false : true}
         >
           Pay with Paypal
         </Button>
