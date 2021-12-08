@@ -144,6 +144,8 @@ namespace WebAPI
 
             app.UseCors(_myAllowSpecificOrigins);
 
+            app.UseHttpsRedirection();
+
             app.UseStaticFiles();
 
             app.UseAuthentication();
