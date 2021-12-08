@@ -402,7 +402,7 @@ namespace Application.Catalog
 
             if (orderStatus != OrderStatus.GetAll)
             {
-                orders.Where(x => x.TransactionOrder.Status == orderStatus).ToList();
+                orders = orders.Where(x => x.TransactionOrder.Status == orderStatus).ToList();
             }
 
             List<OrderVm> odVms = new List<OrderVm>();
