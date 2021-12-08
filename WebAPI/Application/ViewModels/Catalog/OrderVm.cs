@@ -11,6 +11,9 @@ namespace Application.ViewModels.Catalog
         public string Name { get; set; }
         public int Quantity { get; set; }
         public decimal SumPrice { get; set; }
+        public string ShipAddress { set; get; }
+        public string ShipName { set; get; }
+        public string ShipPhonenumber { set; get; }
         public OrderStatus OrderStatus { set; get; }
         public bool Paid { get; set; }
     }

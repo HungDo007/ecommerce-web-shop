@@ -151,7 +151,10 @@ namespace Application.Catalog
                     SumPrice = item.OrderDetails.Sum(x => x.Price),
                     OrderStatus = item.TransactionOrder.Status,
                     Seller = item.Seller,
-                    ShopName = item.ShopName
+                    ShopName = item.ShopName,
+                    ShipAddress = item.ShipAddress,
+                    ShipName = item.ShipName,
+                    ShipPhonenumber = item.ShipPhonenumber
                 };
                 odVms.Add(orderVm);
             }
@@ -408,7 +411,10 @@ namespace Application.Catalog
                     SumPrice = item.OrderDetails.Sum(x => x.Price),
                     OrderStatus = item.TransactionOrder.Status,
                     Seller = item.Seller,
-                    ShopName = item.ShopName
+                    ShopName = item.ShopName,
+                    ShipAddress = item.ShipAddress,
+                    ShipName = item.ShipName,
+                    ShipPhonenumber = item.ShipPhonenumber
                 };
                 odVms.Add(orderVm);
             }
