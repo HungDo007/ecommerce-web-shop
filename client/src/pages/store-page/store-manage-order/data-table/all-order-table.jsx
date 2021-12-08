@@ -1,6 +1,8 @@
 import MaterialTable from "material-table";
+import InfoIcon from "@material-ui/icons/Info";
 
 import salesApi from "../../../../api/sales.api";
+import { useHistory } from "react-router";
 
 const AllOrderTable = () => {
   const columns = [
@@ -35,10 +37,27 @@ const AllOrderTable = () => {
     },
   ];
 
+  const history = useHistory();
+
+  const handleDetail = (event, rowData) => {
+    history.push(`/order/${rowData.id}`);
+    //console.log(rowData);
+  };
+
   return (
     <MaterialTable
       title="All Order"
       columns={columns}
+      options={{ actionsColumnIndex: -1 }}
+      actions={[
+        {
+          icon: InfoIcon,
+          tooltip: "View Detail",
+          onClick: (event, rowData) => {
+            handleDetail(event, rowData);
+          },
+        },
+      ]}
       data={(query) =>
         new Promise((resolve, reject) => {
           const params = {

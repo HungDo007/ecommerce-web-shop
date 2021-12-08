@@ -63,10 +63,13 @@ const Checkout = (props) => {
           const response = await salesApi.order(payload);
           if (response.status === 200 && response.statusText === "OK") {
             dispatch(toggleNotification());
-            props.history.push("/order");
+            props.history.replace("/order");
           }
         } catch (error) {
           console.log("Failed to order: ", error?.response);
+          if (error.response.status === 400) {
+            props.history.replace("/user");
+          }
         }
       };
       order();
@@ -89,8 +92,7 @@ const Checkout = (props) => {
           window.location.href = response;
         } catch (error) {
           console.log("failed to pay: ", error?.response);
-          dispatch(toggleNotification());
-          props.history.push("/order");
+          props.history.replace("/user");
         }
       };
 
@@ -119,7 +121,7 @@ const Checkout = (props) => {
       if (!a.some((item) => item.shopName === element.shopName)) {
         let obj = {
           seller: element.seller,
-          shopName: element.shopName ? element.shopName : "Shop",
+          shopName: element.shopName ? element.shopName : element.seller,
           orderItems: orderItems.items.filter(
             (c) => c.shopName === element.shopName
           ),

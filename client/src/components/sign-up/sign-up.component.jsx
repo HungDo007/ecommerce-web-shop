@@ -169,11 +169,23 @@ const SignUp = ({ setAction, currentUser, tableRef }) => {
                 type: "error",
               });
             }
-            // setNotify({
-            //   isOpen: true,
-            //   message: `Fail to sign up: ${error?.response.data}`,
-            //   type: "error",
-            // });
+            if (error.response?.data == "Email already used") {
+              setNotify({
+                isOpen: true,
+                message: `Fail to sign up. Email already used!`,
+                type: "error",
+              });
+            }
+            if (
+              error.response?.data[0] == "Username already used" &&
+              error.response?.data[1] === "Email already used"
+            ) {
+              setNotify({
+                isOpen: true,
+                message: `Fail to sign up. Username and email already used!`,
+                type: "error",
+              });
+            }
           }
         };
         signUp();

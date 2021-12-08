@@ -1,9 +1,9 @@
 import Product from "../product/product.component";
 
-const DirectoryItems = () => {
+const DirectoryItems = (props) => {
   return (
     <div className="homepage">
-      <Product />
+      <Product search={props.location.state} />
     </div>
   );
 };

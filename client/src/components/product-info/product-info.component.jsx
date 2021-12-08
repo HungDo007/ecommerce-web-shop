@@ -99,11 +99,14 @@ const ProductInfo = ({ productId }) => {
 
     let listCompo = [];
     let num = productDetails[0]?.componentDetails.length;
+    let names = [];
     for (let i = 0; i < num; i++) {
       let a = {
         name: "",
         value: [],
       };
+      names.push(productDetails[0].componentDetails[i].name);
+      a.name = names[i];
       productDetails.forEach((element) => {
         if (
           !a.value.some(
@@ -111,12 +114,15 @@ const ProductInfo = ({ productId }) => {
           )
         ) {
           const value = {
-            id: element.componentDetails[i]?.id,
-            name: element.componentDetails[i]?.value,
+            id: element.componentDetails[
+              element.componentDetails.findIndex((i) => i.name === a.name)
+            ]?.id,
+            name: element.componentDetails[
+              element.componentDetails.findIndex((i) => i.name === a.name)
+            ]?.value,
           };
           a.value.push(value);
         }
-        a.name = element.componentDetails[i]?.name;
       });
       listCompo.push(a);
     }

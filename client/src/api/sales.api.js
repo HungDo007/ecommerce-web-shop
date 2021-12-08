@@ -63,9 +63,9 @@ const salesApi = {
     return axiosClient.get(url, { params });
   },
 
-  confirmOrder: (orderId) => {
+  confirmOrder: (orderIds) => {
     const url = "/Sales/ConfirmOrder";
-    return axiosClient.post(url, orderId);
+    return axiosClient.post(url, orderIds);
   },
 };
 

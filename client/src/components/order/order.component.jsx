@@ -32,6 +32,12 @@ const Order = (props) => {
       field: "quantity",
     },
     {
+      title: "Shop",
+      field: "shopName",
+      render: (rowData) =>
+        rowData.shopName ? rowData.shopName : rowData.seller,
+    },
+    {
       title: "Total",
       field: "sumPrice",
       render: (rowData) => <div>${rowData.sumPrice}</div>,

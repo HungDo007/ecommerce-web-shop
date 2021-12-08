@@ -76,6 +76,7 @@ const CartPage = () => {
     cartPaging.items.forEach((element, index, arr) => {
       if (!a.some((item) => item.shopName === element.shopName)) {
         let obj = {
+          seller: element.seller,
           shopName: element.shopName,
           item: cartPaging.items.filter((c) => c.shopName === element.shopName),
         };
@@ -174,9 +175,9 @@ const CartPage = () => {
   };
 
   return (
-    <div className="cart-page">
+    <div>
       {shopItems.length ? (
-        <div>
+        <div className="cart-page">
           <div className="cart-header">
             <div>
               <Checkbox
@@ -209,7 +210,9 @@ const CartPage = () => {
           </div>
           {shopItems.map((shopItem, idx) => (
             <div className="cart-shop-container" key={idx}>
-              <div>{shopItem.shopName ? shopItem.shopName : "Shop"}</div>
+              <div>
+                {shopItem.shopName ? shopItem.shopName : shopItem.seller}
+              </div>
               {shopItem.item.map((cartItem, index) => (
                 <div key={cartItem.cartId} className="c-item">
                   <div>

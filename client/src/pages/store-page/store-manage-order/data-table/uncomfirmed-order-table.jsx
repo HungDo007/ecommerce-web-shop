@@ -1,11 +1,11 @@
+import { useRef } from "react";
+
 import MaterialTable from "material-table";
 import AssignmentTurnedInIcon from "@material-ui/icons/AssignmentTurnedIn";
 import salesApi from "../../../../api/sales.api";
 
 const UnconfirmedOrderTable = () => {
-  const handleConfirm = (event, rowData) => {
-    console.log(rowData);
-  };
+  const tableRef = useRef(null);
 
   const columns = [
     {
@@ -39,11 +39,31 @@ const UnconfirmedOrderTable = () => {
     },
   ];
 
+  const handleConfirm = (event, rowData) => {
+    let payload = rowData.map((item) => item.id);
+    const confirmOrder = async () => {
+      try {
+        const response = await salesApi.confirmOrder(payload);
+        if (response.status === 200 && response.statusText === "OK") {
+          tableRef.current.onQueryChange();
+        }
+      } catch (error) {
+        console.log(error?.response);
+      }
+    };
+    confirmOrder();
+    //console.log(payload);
+  };
+
   return (
     <MaterialTable
       title="Unconfirmed Order"
+      tableRef={tableRef}
       columns={columns}
       options={{ actionsColumnIndex: -1 }}
+      options={{
+        selection: true,
+      }}
       actions={[
         {
           icon: () => (
