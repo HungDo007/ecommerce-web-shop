@@ -147,6 +147,8 @@ namespace WebAPI
 
             app.UseStaticFiles();
 
+
+
             app.UseAuthentication();
 
             app.UseRouting();
