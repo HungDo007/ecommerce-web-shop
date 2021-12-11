@@ -22,26 +22,27 @@ namespace Application.Catalog
 
         public async Task<bool> Add(ComponentRequest request)
         {
-            var comp = await _context.Components.Where(x => x.Name == request.Name).FirstOrDefaultAsync();
-
-            if (comp != null)
+            try
             {
-                if (comp.Status == true)
+                var comp = await _context.Components.Where(x => x.Name == request.Name).FirstOrDefaultAsync();
+
+                if (comp != null)
                 {
-                    return false;
+                    if (comp.Status == true)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        comp.Status = true;
+                    }
                 }
                 else
                 {
-                    comp.Status = true;
+                    Component component = _mapper.Map<Component>(request);
+                    _context.Components.Add(component);
                 }
-            }
-            else
-            {
-                Component component = _mapper.Map<Component>(request);
-                _context.Components.Add(component);
-            }
-            try
-            {
+
                 await _context.SaveChangesAsync();
                 return true;
             }
@@ -53,9 +54,9 @@ namespace Application.Catalog
 
         public async Task<bool> Delete(int id)
         {
-            var comp = await _context.Components.FindAsync(id);
             try
             {
+                var comp = await _context.Components.FindAsync(id);
                 comp.Status = false;
                 await _context.SaveChangesAsync();
                 return true;
@@ -68,22 +69,28 @@ namespace Application.Catalog
 
         public async Task<List<CompVm>> GetAllComponent()
         {
-            return _mapper.Map<List<CompVm>>(await _context.Components.Where(x => x.Status == true).ToListAsync());
+            try
+            {
+                return _mapper.Map<List<CompVm>>(await _context.Components.Where(x => x.Status == true).ToListAsync());
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public async Task<bool> Update(ComponentRequest request)
         {
-            if (_context.Components.Any(x => x.ID != request.Id && x.Name == request.Name))
-            {
-                return false;
-            }
-
-            var comp = await _context.Components.FindAsync(request.Id);
-
-            comp.Name = request.Name;
-
             try
             {
+                if (_context.Components.Any(x => x.ID != request.Id && x.Name == request.Name))
+                {
+                    return false;
+                }
+
+                var comp = await _context.Components.FindAsync(request.Id);
+
+                comp.Name = request.Name;
                 await _context.SaveChangesAsync();
                 return true;
             }
