@@ -188,7 +188,7 @@ namespace Application.Catalog
             }
             catch (Exception e)
             {
-                e.ToString();
+                return e.ToString();
             }
 
         }
