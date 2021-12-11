@@ -151,8 +151,8 @@ namespace Application.Catalog
             {
             }
         }
-
-        public async Task<PagedResult<ProductVm>> GetAll(string username, ProductPagingRequest request)
+        //public async Task<PagedResult<ProductVm>> GetAll(string username, ProductPagingRequest request)
+        public async Task<string> GetAll(string username, ProductPagingRequest request)
         {
             try
             {
@@ -183,11 +183,12 @@ namespace Application.Catalog
 
                 var pagedResult = PagingService.Paging<ProductVm>(data, request.PageIndex, request.PageSize);
 
-                return pagedResult;
+                //return pagedResult;
+                return "succees";
             }
-            catch
+            catch (Exception e)
             {
-                return null;
+                e.ToString();
             }
 
         }
