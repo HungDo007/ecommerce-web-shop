@@ -36,7 +36,7 @@
 
   @media screen and (max-width: 800px) {
     height: 200px;
-    min-width: 30%;
+    min-width: 32%;
   }
 
   .background-image {
@@ -60,9 +60,9 @@
     position: absolute;
     text-align: center;
 
-    @media screen and (max-width: 800px) {
-      padding: 0 5px;
-      max-width: 145px;
+    @media screen and (max-width: 500px) {
+      padding: 0;
+      max-width: 120px;
       min-height: 60px;
     }
 
