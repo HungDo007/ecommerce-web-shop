@@ -67,15 +67,22 @@ namespace Application.Catalog
 
         public async Task<bool> CancelOrder(int OrderId)
         {
-            var order = await _context.Orders.Include(x => x.OrderDetails).Where(x => x.Id == OrderId).FirstOrDefaultAsync();
+            try
+            {
+                var order = await _context.Orders.Include(x => x.OrderDetails).Where(x => x.Id == OrderId).FirstOrDefaultAsync();
 
-            order.OrderDetails.Clear();
+                order.OrderDetails.Clear();
 
-            TransactionOrder transactionOrder = _context.TransactionOrders.Where(x => x.OrderId == order.Id).FirstOrDefault();
-            _context.TransactionOrders.Remove(transactionOrder);
-            _context.Orders.Remove(order);
-            await _context.SaveChangesAsync();
-            return true;
+                TransactionOrder transactionOrder = _context.TransactionOrders.Where(x => x.OrderId == order.Id).FirstOrDefault();
+                _context.TransactionOrders.Remove(transactionOrder);
+                _context.Orders.Remove(order);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public async Task<PagedResult<CartVm>> GetCart(string username, PagingRequestBase request)
@@ -131,153 +138,174 @@ namespace Application.Catalog
 
         public async Task<PagedResult<OrderVm>> GetOrder(string username, PagingRequestBase request)
         {
-            var user = await _userManager.FindByNameAsync(username);
-            var orders = await _context.Orders
-                .Include(x => x.OrderDetails)
-                .Include(x => x.TransactionOrder)
-                .Where(x => x.UserId == user.Id)
-                .ToListAsync();
-
-            List<OrderVm> odVms = new List<OrderVm>();
-            foreach (var item in orders)
+            try
             {
-                string temp = item.OrderDetails.Count == 1 ? "" : $"+{item.OrderDetails.Count - 1}";
-                OrderVm orderVm = new OrderVm
+                var user = await _userManager.FindByNameAsync(username);
+                var orders = await _context.Orders
+                    .Include(x => x.OrderDetails)
+                    .Include(x => x.TransactionOrder)
+                    .Where(x => x.UserId == user.Id)
+                    .ToListAsync();
+
+                List<OrderVm> odVms = new List<OrderVm>();
+                foreach (var item in orders)
                 {
-                    Id = item.Id,
-                    Name = $"{item.OrderDetails[0].Name}{temp}",
-                    Paid = item.Paid,
-                    Quantity = item.OrderDetails.Count,
-                    SumPrice = item.OrderDetails.Sum(x => x.Price),
-                    OrderStatus = item.TransactionOrder.Status,
-                    Seller = item.Seller,
-                    ShopName = item.ShopName,
-                    ShipAddress = item.ShipAddress,
-                    ShipName = item.ShipName,
-                    ShipPhonenumber = item.ShipPhonenumber
-                };
-                odVms.Add(orderVm);
-            }
+                    string temp = item.OrderDetails.Count == 1 ? "" : $"+{item.OrderDetails.Count - 1}";
+                    OrderVm orderVm = new OrderVm
+                    {
+                        Id = item.Id,
+                        Name = $"{item.OrderDetails[0].Name}{temp}",
+                        Paid = item.Paid,
+                        Quantity = item.OrderDetails.Count,
+                        SumPrice = item.OrderDetails.Sum(x => x.Price),
+                        OrderStatus = item.TransactionOrder.Status,
+                        Seller = item.Seller,
+                        ShopName = item.ShopName,
+                        ShipAddress = item.ShipAddress,
+                        ShipName = item.ShipName,
+                        ShipPhonenumber = item.ShipPhonenumber
+                    };
+                    odVms.Add(orderVm);
+                }
 
-            if (!string.IsNullOrEmpty(request.Keyword))
+                if (!string.IsNullOrEmpty(request.Keyword))
+                {
+                    odVms = odVms.Where(x => x.Name.Contains(request.Keyword)).ToList();
+                }
+
+                return PagingService.Paging<OrderVm>(odVms, request.PageIndex, request.PageSize);
+            }
+            catch
             {
-                odVms = odVms.Where(x => x.Name.Contains(request.Keyword)).ToList();
+                return null;
             }
-
-            return PagingService.Paging<OrderVm>(odVms, request.PageIndex, request.PageSize);
         }
 
         public async Task<List<OrderDetailVm>> GetOrderDetail(int orderId)
         {
-            var a = from od in _context.OrderDetails
-                    join pd in _context.ProductDetails on od.ProductDetailId equals pd.Id
-                    join p in _context.Products on pd.ProductId equals p.Id
-                    join pi in _context.ProductImages on p.Id equals pi.ProductId
-                    where od.OrderId == orderId && pi.IsPoster == true
-                    select new { od, pd, p, pi };
-
-            var data = await a.Select(x => new OrderDetailVm()
+            try
             {
-                Name = x.p.Name,
-                ProductImg = x.pi.Path,
-                Quantity = x.od.Quantity,
-                Price = x.od.Price,
-                ProductDetailId = x.pd.Id
-            }).ToListAsync();
+                var a = from od in _context.OrderDetails
+                        join pd in _context.ProductDetails on od.ProductDetailId equals pd.Id
+                        join p in _context.Products on pd.ProductId equals p.Id
+                        join pi in _context.ProductImages on p.Id equals pi.ProductId
+                        where od.OrderId == orderId && pi.IsPoster == true
+                        select new { od, pd, p, pi };
+
+                var data = await a.Select(x => new OrderDetailVm()
+                {
+                    Name = x.p.Name,
+                    ProductImg = x.pi.Path,
+                    Quantity = x.od.Quantity,
+                    Price = x.od.Price,
+                    ProductDetailId = x.pd.Id
+                }).ToListAsync();
 
 
-            foreach (var item in data)
-            {
-                item.Details = GetComponentOfDetail(item.ProductDetailId);
+                foreach (var item in data)
+                {
+                    item.Details = GetComponentOfDetail(item.ProductDetailId);
+                }
+
+                return data;
             }
-
-            return data;
+            catch
+            {
+                return null;
+            }
         }
 
         public async Task<List<OrderResponse>> OrderProduct(string username, List<OrderRequest> requests)
         {
-            var user = await _userManager.FindByNameAsync(username);
-
-            if (user.EmailConfirmed == false)
-                return null;
-
-            List<OrderResponse> rp = new List<OrderResponse>();
-
-            foreach (var request in requests)
+            try
             {
-                var store = (from s in _context.Stores
-                             join u in _context.Users on s.UserId equals u.Id
-                             where u.UserName == request.Seller
-                             select new { s })
-                             .Select(x => new
-                             {
-                                 ShopName = x.s.Name
-                             }).First();
+                var user = await _userManager.FindByNameAsync(username);
 
-                List<OrderDetail> ods = new List<OrderDetail>();
-                List<CartVm> cartVms = new List<CartVm>();
+                if (user.EmailConfirmed == false)
+                    return null;
 
-                Transaction transaction = await _context.Transactions.FindAsync(999);
+                List<OrderResponse> rp = new List<OrderResponse>();
 
-
-
-                foreach (var item in request.OrderItemId)
+                foreach (var request in requests)
                 {
-                    var c = await _context.Carts.Include(x => x.ProductDetail).Where(x => x.Id == item).FirstOrDefaultAsync();
-                    if (c != null)
+                    var store = (from s in _context.Stores
+                                 join u in _context.Users on s.UserId equals u.Id
+                                 where u.UserName == request.Seller
+                                 select new { s })
+                                 .Select(x => new
+                                 {
+                                     ShopName = x.s.Name
+                                 }).First();
+
+                    List<OrderDetail> ods = new List<OrderDetail>();
+                    List<CartVm> cartVms = new List<CartVm>();
+
+                    Transaction transaction = await _context.Transactions.FindAsync(999);
+
+
+
+                    foreach (var item in request.OrderItemId)
                     {
-                        c.ProductDetail.Stock -= c.Quantity;
-                        OrderDetail od = new OrderDetail()
+                        var c = await _context.Carts.Include(x => x.ProductDetail).Where(x => x.Id == item).FirstOrDefaultAsync();
+                        if (c != null)
                         {
-                            ProductDetailId = c.ProductDetailId,
-                            Price = c.Price,
-                            Quantity = c.Quantity
-                        };
+                            c.ProductDetail.Stock -= c.Quantity;
+                            OrderDetail od = new OrderDetail()
+                            {
+                                ProductDetailId = c.ProductDetailId,
+                                Price = c.Price,
+                                Quantity = c.Quantity
+                            };
 
-                        var cvm = GetCartVm(c.Id);
-                        cartVms.Add(cvm);
+                            var cvm = GetCartVm(c.Id);
+                            cartVms.Add(cvm);
 
-                        od.Name = cvm.ToString();
-                        ods.Add(od);
-                        _context.Carts.Remove(c);
+                            od.Name = cvm.ToString();
+                            ods.Add(od);
+                            _context.Carts.Remove(c);
+                        }
                     }
+
+                    Order order = new Order()
+                    {
+                        Seller = request.Seller,
+                        ShopName = store.ShopName,
+                        ShipAddress = request.ShipAddress,
+                        ShipName = request.ShipName,
+                        ShipPhonenumber = request.ShipPhonenumber,
+                        OrderDetails = ods,
+                        UserId = user.Id,
+
+                    };
+
+                    TransactionOrder transactionOrder = new TransactionOrder()
+                    {
+                        OrderId = order.Id,
+                        TransactionId = 999,
+                        ExpectedDate = DateTime.Now,
+                        Status = OrderStatus.InProgress
+                    };
+
+                    order.TransactionOrder = transactionOrder;
+
+
+                    OrderResponse orderResponse = new OrderResponse()
+                    {
+                        OrderId = await AddOrder(order),
+                        CartVms = cartVms
+                    };
+
+                    rp.Add(orderResponse);
                 }
 
-                Order order = new Order()
-                {
-                    Seller = request.Seller,
-                    ShopName = store.ShopName,
-                    ShipAddress = request.ShipAddress,
-                    ShipName = request.ShipName,
-                    ShipPhonenumber = request.ShipPhonenumber,
-                    OrderDetails = ods,
-                    UserId = user.Id,
 
-                };
-
-                TransactionOrder transactionOrder = new TransactionOrder()
-                {
-                    OrderId = order.Id,
-                    TransactionId = 999,
-                    ExpectedDate = DateTime.Now,
-                    Status = OrderStatus.InProgress
-                };
-
-                order.TransactionOrder = transactionOrder;
-
-
-                OrderResponse orderResponse = new OrderResponse()
-                {
-                    OrderId = await AddOrder(order),
-                    CartVms = cartVms
-                };
-
-                rp.Add(orderResponse);
+                await _context.SaveChangesAsync();
+                return rp;
             }
-
-
-            await _context.SaveChangesAsync();
-            return rp;
+            catch
+            {
+                return null;
+            }
         }
 
 
@@ -290,17 +318,24 @@ namespace Application.Catalog
 
         public async Task<bool> RemoveFromCart(List<int> cartIds)
         {
-            List<Cart> c = new List<Cart>();
-            foreach (var item in cartIds)
+            try
             {
-                var temp = _context.Carts.Where(x => x.Id == item).FirstOrDefault();
-                if (temp != null)
-                    c.Add(temp);
-            }
+                List<Cart> c = new List<Cart>();
+                foreach (var item in cartIds)
+                {
+                    var temp = _context.Carts.Where(x => x.Id == item).FirstOrDefault();
+                    if (temp != null)
+                        c.Add(temp);
+                }
 
-            _context.Carts.RemoveRange(c);
-            await _context.SaveChangesAsync();
-            return true;
+                _context.Carts.RemoveRange(c);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public async Task<bool> UpdateQuantity(UpdateQuantityRequest request)
@@ -363,75 +398,93 @@ namespace Application.Catalog
 
         public async Task SaveToken(string token, int orderId)
         {
-            PaymentOnline po = new PaymentOnline()
+            try
             {
-                Token = token,
-                OrderId = orderId
-            };
+                PaymentOnline po = new PaymentOnline()
+                {
+                    Token = token,
+                    OrderId = orderId
+                };
 
-            _context.PaymentOnlines.Add(po);
-            await _context.SaveChangesAsync();
+                _context.PaymentOnlines.Add(po);
+                await _context.SaveChangesAsync();
+            }
+            catch { }
         }
 
         public async Task Checkout(CheckoutStatusRequest request)
         {
-            if (!request.IsSuccess)
-                return;
-
-            var po = await _context.PaymentOnlines.Where(x => x.Token == request.Token).ToListAsync();
-
-            if (po == null)
-                return;
-
-            foreach (var item in po)
+            try
             {
-                var order = await _context.Orders.Where(x => x.Id == item.OrderId).FirstOrDefaultAsync();
-                order.Paid = request.IsSuccess;
+                if (!request.IsSuccess)
+                    return;
+
+                var po = await _context.PaymentOnlines.Where(x => x.Token == request.Token).ToListAsync();
+
+                if (po == null)
+                    return;
+
+                foreach (var item in po)
+                {
+                    var order = await _context.Orders.Where(x => x.Id == item.OrderId).FirstOrDefaultAsync();
+                    order.Paid = request.IsSuccess;
+                }
+                await _context.SaveChangesAsync();
             }
-            await _context.SaveChangesAsync();
+            catch
+            {
+
+            }
         }
 
         public async Task<PagedResult<OrderVm>> GetOrderOfSeller(string username, PagingRequestBase request, OrderStatus orderStatus)
         {
-            var orders = await _context.Orders
-                .Include(x => x.OrderDetails)
-                .Include(x => x.TransactionOrder)
-                .Where(x => x.Seller == username)
-                .ToListAsync();
-
-
-            if (orderStatus != OrderStatus.GetAll)
+            try
             {
-                orders = orders.Where(x => x.TransactionOrder.Status == orderStatus).ToList();
-            }
+                var orders = await _context.Orders
+                    .Include(x => x.OrderDetails)
+                    .Include(x => x.TransactionOrder)
+                    .Where(x => x.Seller == username)
+                    .ToListAsync();
 
-            List<OrderVm> odVms = new List<OrderVm>();
-            foreach (var item in orders)
-            {
-                string temp = item.OrderDetails.Count == 1 ? "" : $"+{item.OrderDetails.Count - 1}";
-                OrderVm orderVm = new OrderVm
+
+                if (orderStatus != OrderStatus.GetAll)
                 {
-                    Id = item.Id,
-                    Name = $"{item.OrderDetails[0].Name}{temp}",
-                    Paid = item.Paid,
-                    Quantity = item.OrderDetails.Count,
-                    SumPrice = item.OrderDetails.Sum(x => x.Price),
-                    OrderStatus = item.TransactionOrder.Status,
-                    Seller = item.Seller,
-                    ShopName = item.ShopName,
-                    ShipAddress = item.ShipAddress,
-                    ShipName = item.ShipName,
-                    ShipPhonenumber = item.ShipPhonenumber
-                };
-                odVms.Add(orderVm);
-            }
+                    orders = orders.Where(x => x.TransactionOrder.Status == orderStatus).ToList();
+                }
 
-            if (!string.IsNullOrEmpty(request.Keyword))
+                List<OrderVm> odVms = new List<OrderVm>();
+                foreach (var item in orders)
+                {
+                    string temp = item.OrderDetails.Count == 1 ? "" : $"+{item.OrderDetails.Count - 1}";
+                    OrderVm orderVm = new OrderVm
+                    {
+                        Id = item.Id,
+                        Name = $"{item.OrderDetails[0].Name}{temp}",
+                        Paid = item.Paid,
+                        Quantity = item.OrderDetails.Count,
+                        SumPrice = item.OrderDetails.Sum(x => x.Price),
+                        OrderStatus = item.TransactionOrder.Status,
+                        Seller = item.Seller,
+                        ShopName = item.ShopName,
+                        ShipAddress = item.ShipAddress,
+                        ShipName = item.ShipName,
+                        ShipPhonenumber = item.ShipPhonenumber
+                    };
+                    odVms.Add(orderVm);
+                }
+
+                if (!string.IsNullOrEmpty(request.Keyword))
+                {
+                    odVms = odVms.Where(x => x.Name.Contains(request.Keyword)).ToList();
+                }
+
+                return PagingService.Paging<OrderVm>(odVms, request.PageIndex, request.PageSize);
+            }
+            catch
             {
-                odVms = odVms.Where(x => x.Name.Contains(request.Keyword)).ToList();
+                return null;
             }
-
-            return PagingService.Paging<OrderVm>(odVms, request.PageIndex, request.PageSize);
         }
 
         public async Task ConfirmedOrder(List<int> orderIds)

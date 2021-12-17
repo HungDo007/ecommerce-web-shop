@@ -51,95 +51,109 @@ namespace Application.System
 
         public async Task ActiveMail(string email)
         {
-            string code = GenerateCode();
-
-            SendMailRequest mailRequest = new SendMailRequest();
-            mailRequest.Subject = SystemConstants.ActiveMail;
-            mailRequest.ToEmail = email;
-            mailRequest.Body = $"Mã xác thực của bạn là:\n {code}";
-
-            await _mailService.SendMail(mailRequest);
-
-            UserActiveEmail uae = await _context.UserActiveEmails.FindAsync(email);
-            if (uae == null)
+            try
             {
-                uae = new UserActiveEmail()
+                string code = GenerateCode();
+
+                SendMailRequest mailRequest = new SendMailRequest();
+                mailRequest.Subject = SystemConstants.ActiveMail;
+                mailRequest.ToEmail = email;
+                mailRequest.Body = $"Mã xác thực của bạn là:\n {code}";
+
+                await _mailService.SendMail(mailRequest);
+
+                UserActiveEmail uae = await _context.UserActiveEmails.FindAsync(email);
+                if (uae == null)
                 {
-                    Code = code,
-                    Email = email
-                };
-                _context.UserActiveEmails.Add(uae);
-            }
-            else
-            {
-                uae.Code = code;
-            }
+                    uae = new UserActiveEmail()
+                    {
+                        Code = code,
+                        Email = email
+                    };
+                    _context.UserActiveEmails.Add(uae);
+                }
+                else
+                {
+                    uae.Code = code;
+                }
 
-            await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                return;
+            }
         }
 
         public async Task<ServiceResponse> Authenticate(LoginRequest request)
         {
-            ServiceResponse response = new ServiceResponse();
-            var user = await _userManager.FindByNameAsync(request.Username);
-            if (user == null)
+            try
             {
-                user = await _userManager.FindByEmailAsync(request.Username) != null ? await _userManager.FindByEmailAsync(request.Username) : null;
-            }
+                ServiceResponse response = new ServiceResponse();
+                var user = await _userManager.FindByNameAsync(request.Username);
+                if (user == null)
+                {
+                    user = await _userManager.FindByEmailAsync(request.Username) != null ? await _userManager.FindByEmailAsync(request.Username) : null;
+                }
 
-            if (user == null)
-            {
-                response.Status = false;
-                response.Response = "Incorrect Username.";
+                if (user == null)
+                {
+                    response.Status = false;
+                    response.Response = "Incorrect Username.";
+                    return response;
+                }
+
+                if (user.Status == false)
+                {
+                    response.Status = false;
+                    response.Response = "Account is locked.";
+                    return response;
+                }
+
+                var result = await _signInManager.PasswordSignInAsync(user, request.Password, request.Remember, true);
+                if (!result.Succeeded)
+                {
+                    response.Status = false;
+                    response.Response = "Incorrect Password.";
+                    return response;
+                }
+
+
+                //get Claim
+                var roles = await _userManager.GetRolesAsync(user);
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Email,user.Email),
+                    new Claim(ClaimTypes.Name,user.UserName)
+                };
+                foreach (var i in roles)
+                {
+                    claims.Add(new Claim(ClaimTypes.Role, i));
+                }
+
+
+                //create token
+                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Tokens:Key"]));
+                var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+                var tokenDescriptor = new SecurityTokenDescriptor
+                {
+                    Subject = new ClaimsIdentity(claims),
+                    Expires = DateTime.Now.AddMonths(2),
+                    SigningCredentials = creds,
+                };
+
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var token = tokenHandler.CreateToken(tokenDescriptor);
+
+                response.Status = true;
+                response.Response = tokenHandler.WriteToken(token);
                 return response;
             }
-
-            if (user.Status == false)
+            catch
             {
-                response.Status = false;
-                response.Response = "Account is locked.";
-                return response;
+                return null;
             }
-
-            var result = await _signInManager.PasswordSignInAsync(user, request.Password, request.Remember, true);
-            if (!result.Succeeded)
-            {
-                response.Status = false;
-                response.Response = "Incorrect Password.";
-                return response;
-            }
-
-
-            //get Claim
-            var roles = await _userManager.GetRolesAsync(user);
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Email,user.Email),
-                new Claim(ClaimTypes.Name,user.UserName)
-            };
-            foreach (var i in roles)
-            {
-                claims.Add(new Claim(ClaimTypes.Role, i));
-            }
-
-
-            //create token
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Tokens:Key"]));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.Now.AddMonths(2),
-                SigningCredentials = creds,
-            };
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-
-            response.Status = true;
-            response.Response = tokenHandler.WriteToken(token);
-            return response;
         }
 
         public async Task<bool> ChangeEmail(string username, string email)

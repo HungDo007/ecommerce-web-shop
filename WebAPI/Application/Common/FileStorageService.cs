@@ -24,8 +24,6 @@ namespace Application.Common
             var fileName = $"{Guid.NewGuid()}{Path.GetExtension(originalFileName)}";
             await SaveFileAsync(folderType, file.OpenReadStream(), fileName);
 
-
-
             return "/" + folderType + "/" + fileName;
         }
 
@@ -39,16 +37,6 @@ namespace Application.Common
 
         public async Task DeleteFileAsync(string fileName)
         {
-            //string filePath = "";
-            //fileName = fileName.Replace("/","\\")
-            //if (categoryImg)
-            //{
-            //    filePath = Path.Combine(Path.Combine(_folder, SystemConstants.FolderCategory), fileName);
-            //}
-            //else
-            //{
-            //    filePath = Path.Combine(Path.Combine(_folder, SystemConstants.FolderProduct), fileName);
-            //}
             fileName = fileName.Replace("/", "\\");
             string filePath = _folder + fileName;
 
