@@ -52,6 +52,9 @@ const useStyles = makeStyles((theme) => ({
     overflow: "hidden",
     width: "100%",
     objectFit: "cover",
+    [theme.breakpoints.down("sm")]: {
+      height: "unset",
+    },
   },
 }));
 

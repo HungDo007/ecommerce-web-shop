@@ -1,19 +1,19 @@
 // import { useState } from "react";
 // import { Tab, Tabs } from "@material-ui/core";
-import MaterialTable from "material-table";
+import { useState, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
+import MaterialTable from "material-table";
 import CancelIcon from "@material-ui/icons/Cancel";
 import InfoIcon from "@material-ui/icons/Info";
 
+import Confirm from "../confirm/confirm.component";
 import CustomDialog from "../../components/dialog/dialog.component";
+import Notification from "../notification/notification.component";
 
 import salesApi from "../../api/sales.api";
-import { useSelector } from "react-redux";
-import { useDispatch } from "react-redux";
-import Confirm from "../confirm/confirm.component";
+
 import { toggleModal } from "../../redux/modal/modal.actions";
-import { useState } from "react";
-import { useRef } from "react";
 
 const Order = (props) => {
   //   const [value, setValue] = useState(0);
@@ -62,6 +62,12 @@ const Order = (props) => {
 
   const [orderId, setOrderId] = useState(0);
 
+  const [notify, setNotify] = useState({
+    isOpen: false,
+    message: "",
+    type: "",
+  });
+
   const modalIsOpen = useSelector((state) => state.modal.isOpen);
 
   const tableRef = useRef(null);
@@ -85,7 +91,11 @@ const Order = (props) => {
           tableRef.current.onQueryChange();
         }
       } catch (error) {
-        console.log("Failed to cancel order: ", error?.response);
+        setNotify({
+          isOpen: true,
+          message: `Something went wrong! Fail to cancel oder!`,
+          type: "error",
+        });
       }
     };
     cancelOrder();
@@ -181,6 +191,7 @@ const Order = (props) => {
           onSubmit={handleCancel}
         />
       </CustomDialog>
+      <Notification notify={notify} setNotify={setNotify} />
     </div>
   );
 };

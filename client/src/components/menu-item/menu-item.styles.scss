@@ -34,6 +34,11 @@
     margin-left: 7.5px;
   }
 
+  @media screen and (max-width: 800px) {
+    height: 200px;
+    min-width: 30%;
+  }
+
   .background-image {
     width: 100%;
     height: 100%;
@@ -55,16 +60,22 @@
     position: absolute;
     text-align: center;
 
+    @media screen and (max-width: 800px) {
+      padding: 0 5px;
+      max-width: 145px;
+      min-height: 60px;
+    }
+
     .title {
       font-weight: bold;
       margin-bottom: 6px;
       font-size: 22px;
       color: #4a4a4a;
-    }
 
-    .subtitle {
-      font-weight: lighter;
-      font-size: 16px;
+      @media screen and (max-width: 500px) {
+        font-size: 14px;
+        margin: 0;
+      }
     }
   }
 }

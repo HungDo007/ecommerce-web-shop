@@ -49,6 +49,18 @@ const ProfileForm = ({ values, setValues }) => {
       temp.firstName = fieldValues.firstName ? "" : "This field is required";
     if ("lastName" in fieldValues)
       temp.lastName = fieldValues.lastName ? "" : "This field is required";
+    if ("dob" in fieldValues) {
+      temp.dob = fieldValues.dob ? "" : "This field is required";
+      if (fieldValues.dob) {
+        temp.dob =
+          /^(0[1-9]|1[0-2])\/(0[1-9]|1\d|2\d|3[01])\/(19|20)\d{2}$/.test(
+            formatDate(new Date(fieldValues.dob))
+          )
+            ? ""
+            : "Invalid Date Format";
+      }
+    }
+
     if ("email" in fieldValues) {
       temp.email = fieldValues.email ? "" : "This field is required.";
       if (fieldValues.email)
@@ -66,7 +78,8 @@ const ProfileForm = ({ values, setValues }) => {
 
     setErrors({ ...temp });
 
-    if (fieldValues == values) return Object.values(temp).every((x) => x == "");
+    if (fieldValues === values)
+      return Object.values(temp).every((x) => x === "");
   };
 
   const handleInputChange = (event) => {
@@ -92,6 +105,7 @@ const ProfileForm = ({ values, setValues }) => {
 
   const handleDateChange = (date) => {
     setValues({ ...values, dob: date });
+    validate({ dob: date });
   };
 
   function isFileImage(file) {
@@ -112,7 +126,7 @@ const ProfileForm = ({ values, setValues }) => {
         setNotify({
           isOpen: true,
           message: "Please select image file",
-          type: "error",
+          type: "warning",
         });
         return;
       } else {
@@ -175,14 +189,17 @@ const ProfileForm = ({ values, setValues }) => {
               message: "Edit profile fail!",
               type: "error",
             });
-            // let reason = "";
-            // error.response ? error.response : error
-            console.log("Failed to edit profile: ", error?.response);
           }
         }
       };
 
       editUserProfile();
+    } else {
+      setNotify({
+        isOpen: true,
+        message: "Invalid information! Please check the form",
+        type: "warning",
+      });
     }
   };
 
@@ -262,6 +279,7 @@ const ProfileForm = ({ values, setValues }) => {
               <KeyboardDatePicker
                 disableFuture
                 fullWidth
+                placeholder="dd/MM/yyyy"
                 name="dob"
                 openTo="year"
                 format="dd/MM/yyyy"
@@ -269,6 +287,10 @@ const ProfileForm = ({ values, setValues }) => {
                 views={["year", "month", "date"]}
                 value={dob}
                 onChange={(date) => handleDateChange(date)}
+                {...(errors.dob && {
+                  error: true,
+                  helperText: errors.dob,
+                })}
               />
             </MuiPickersUtilsProvider>
           </div>

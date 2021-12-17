@@ -47,12 +47,9 @@ const UnconfirmedOrderTable = () => {
         if (response.status === 200 && response.statusText === "OK") {
           tableRef.current.onQueryChange();
         }
-      } catch (error) {
-        console.log(error?.response);
-      }
+      } catch (error) {}
     };
     confirmOrder();
-    //console.log(payload);
   };
 
   return (
@@ -60,10 +57,7 @@ const UnconfirmedOrderTable = () => {
       title="Unconfirmed Order"
       tableRef={tableRef}
       columns={columns}
-      options={{ actionsColumnIndex: -1 }}
-      options={{
-        selection: true,
-      }}
+      options={{ actionsColumnIndex: -1, selection: true }}
       actions={[
         {
           icon: () => (
@@ -102,7 +96,6 @@ const UnconfirmedOrderTable = () => {
                 page: query.page,
                 totalCount: response.totalRecords,
               });
-              //console.log(response);
             })
             .catch((error) => {
               reject();

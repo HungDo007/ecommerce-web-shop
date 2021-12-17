@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Button } from "@material-ui/core";
+import { Button, CircularProgress } from "@material-ui/core";
 
 import BasicInformation from "./basic-information/basic-info.component";
 import Notification from "../../../../components/notification/notification.component";
@@ -27,6 +27,7 @@ const StoreProduct = (props) => {
   });
   const [errors, setErrors] = useState({});
   const [actualComponents, setActualComponents] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [notify, setNotify] = useState({
     isOpen: false,
     message: "",
@@ -120,7 +121,7 @@ const StoreProduct = (props) => {
       if (thumbnailFile === null) {
         setNotify({
           isOpen: true,
-          message: "Please choose thumbnail!",
+          message: "Please choose thumbnail and image!",
           type: "error",
         });
       } else {
@@ -143,10 +144,13 @@ const StoreProduct = (props) => {
           const editProduct = async () => {
             try {
               formData.append("id", productInfo.id);
-              const response = await storeApi.editProduct(formData);
-              console.log(response);
+              await storeApi.editProduct(formData);
             } catch (error) {
-              console.log("Failed to edit product: ", error.response);
+              setNotify({
+                isOpen: true,
+                message: "Sorry, Something went wrong",
+                type: "error",
+              });
             }
           };
           const editDetail = async () => {
@@ -155,18 +159,17 @@ const StoreProduct = (props) => {
                 productDetails,
                 props.location.state
               );
-              console.log(response);
               if (response.status === 200 && response.statusText === "OK") {
                 props.history.push("/store/manageProduct");
               }
             } catch (error) {
-              console.log("Failed to edit detail: ", error.response);
+              setNotify({
+                isOpen: true,
+                message: "Sorry, Something went wrong",
+                type: "error",
+              });
             }
           };
-          // console.log(productInfo);
-          // for (let value of formData.entries()) {
-          //   console.log(value[0] + ", " + value[1]);
-          // }
           editProduct();
           editDetail();
         } else {
@@ -181,7 +184,11 @@ const StoreProduct = (props) => {
                 props.history.push("/store/manageProduct");
               }
             } catch (error) {
-              console.log("Failed to add detail: ", error.response);
+              setNotify({
+                isOpen: true,
+                message: "Sorry, Something went wrong",
+                type: "error",
+              });
             }
           };
 
@@ -190,7 +197,11 @@ const StoreProduct = (props) => {
               const productId = await storeApi.addProduct(formData);
               addDetail(productId);
             } catch (error) {
-              console.log("Failed to add product: ", error?.response);
+              setNotify({
+                isOpen: true,
+                message: "Sorry, Something went wrong",
+                type: "error",
+              });
             }
           };
           addProduct();
@@ -199,7 +210,7 @@ const StoreProduct = (props) => {
     } else {
       setNotify({
         isOpen: true,
-        message: "Please complete the form!",
+        message: "Invalid information! Please check the form",
         type: "error",
       });
     }
@@ -209,7 +220,6 @@ const StoreProduct = (props) => {
     const getProduct = async (id) => {
       try {
         const response = await catalogApi.getProductById(id);
-        console.log(response);
         let array = response.images;
         array.forEach((element, index, newArr) => {
           newArr[index] = process.env.REACT_APP_IMAGE_URL + element;
@@ -225,43 +235,56 @@ const StoreProduct = (props) => {
           listImageFiles: [],
         });
       } catch (error) {
-        console.log("Failed to get product: ", error);
+        setNotify({
+          isOpen: true,
+          message: "Sorry, Something went wrong",
+          type: "error",
+        });
       }
     };
 
     if (props.location.state) {
       getProduct(props.location.state);
     }
+    setIsLoading(false);
   }, [props.location.state]);
 
   return (
-    <form onSubmit={handleSubmit} className="store-product-container">
-      <h2 className="store-product-main-title"> Manage product </h2>
-      <BasicInformation
-        errors={errors}
-        onChange={handleInputChange}
-        productInfo={productInfo}
-        setBasicInformation={setProductInfo}
-      />
-      <SaleInformation
-        errors={errors}
-        productInfo={productInfo}
-        onChange={handleInputChange}
-        actualComponents={actualComponents}
-        setActualComponents={setActualComponents}
-        setBasicInformation={setProductInfo}
-      />
-      <div className="store-product-button">
-        <Button
-          className="store-product-button-submit"
-          variant="contained"
-          type="submit"
-        >
-          Submit
-        </Button>
-      </div>
-      <Notification notify={notify} setNotify={setNotify} />
-    </form>
+    <>
+      {isLoading ? (
+        <div className="loading">
+          <CircularProgress style={{ height: "80px", width: "80px" }} />
+        </div>
+      ) : (
+        <form onSubmit={handleSubmit} className="store-product-container">
+          <h2 className="store-product-main-title"> Manage product </h2>
+          <BasicInformation
+            errors={errors}
+            onChange={handleInputChange}
+            productInfo={productInfo}
+            setBasicInformation={setProductInfo}
+          />
+          <SaleInformation
+            errors={errors}
+            productInfo={productInfo}
+            onChange={handleInputChange}
+            actualComponents={actualComponents}
+            setActualComponents={setActualComponents}
+            setBasicInformation={setProductInfo}
+          />
+          <div className="store-product-button">
+            <Button
+              className="store-product-button-submit"
+              variant="contained"
+              type="submit"
+            >
+              Submit
+            </Button>
+          </div>
+          <Notification notify={notify} setNotify={setNotify} />
+        </form>
+      )}
+    </>
   );
 };
 

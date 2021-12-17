@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import { Tabs, Tab } from "@material-ui/core";
-import UnconfirmedOrderTable from "./data-table/uncomfirmed-order-table";
+import UnconfirmedOrderTable from "./data-table/unconfirmed-order-table";
 import AllOrderTable from "./data-table/all-order-table";
 
 const StoreManagesOrder = () => {

@@ -103,7 +103,6 @@ const SignIn = ({ setAction }) => {
           dispatch(setCurrentUser(user));
           dispatch(toggleNotification());
         } catch (error) {
-          // console.log("Fail to authenticate: ", error.response);
           if (error.response?.data === "Incorrect Username.") {
             setErrors({
               email: "Your username is incorrect",

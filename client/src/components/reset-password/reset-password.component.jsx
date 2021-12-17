@@ -95,7 +95,7 @@ const ResetPassword = () => {
     setErrors({ ...temp });
 
     if (fieldValues === values)
-      return Object.values(temp).every((x) => x == "");
+      return Object.values(temp).every((x) => x === "");
   };
 
   const handleChange = (event) => {

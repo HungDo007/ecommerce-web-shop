@@ -32,9 +32,7 @@ const Confirm = (props) => {
           if (response.status === 200 && response.statusText === "OK") {
             props.tableRef.current.onQueryChange();
           }
-        } catch (error) {
-          console.log("Failed to lock account: ", error);
-        }
+        } catch (error) {}
       };
       lockAccount();
       dispatch(toggleModal());
@@ -46,13 +44,12 @@ const Confirm = (props) => {
       const lockProduct = async () => {
         try {
           const response = await adminApi.lockProduct(data);
-          console.log(response);
-        } catch (error) {
-          console.log("Failed to lock account: ", error.response);
-        }
+          if (response.status === 200 && response.statusText === "OK") {
+            props.tableRef.current.onQueryChange();
+          }
+        } catch (error) {}
       };
       lockProduct();
-      //console.log(data);
       dispatch(toggleModal());
     } else {
       props.onSubmit();

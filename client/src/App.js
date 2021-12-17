@@ -20,6 +20,7 @@ import ForgotPassword from "./components/reset-password/forgot-password.componen
 import ResetPassword from "./components/reset-password/reset-password.component";
 import UserRoute from "./components/route/user-route.component";
 import ScrollToTop from "./components/route/scroll-to-top.component";
+import NotFoundPage from "./pages/not-found-page/not-found.component";
 
 const App = ({ currentUser }) => {
   return (
@@ -96,6 +97,7 @@ const App = ({ currentUser }) => {
             )
           }
         />
+        <Route path="*" component={NotFoundPage} />
       </Switch>
       <Footer />
     </div>

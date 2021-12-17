@@ -3,14 +3,13 @@ import { useSelector } from "react-redux";
 
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import Box from "@material-ui/core/Box";
+import { Box, CircularProgress, Tabs, Tab } from "@material-ui/core";
 
-import userApi from "../../api/user-api";
 import ProfileForm from "../profile-form/profile-form.component";
 import ActiveEmailForm from "../active-email/active-email.component";
 import ChangePassword from "../change-password/change-password.component";
+
+import userApi from "../../api/user-api";
 
 const defaultImg = "/img/default-img.png";
 
@@ -84,6 +83,7 @@ const Profile = () => {
     role: "",
   };
   const [values, setValues] = useState(initialValues);
+  const [loading, setLoading] = useState(true);
 
   const currentUser = useSelector((state) => state.user.currentUser);
 
@@ -109,41 +109,50 @@ const Profile = () => {
           emailConfirmed: response.emailConfirmed,
           role: response.role,
         });
-      } catch (error) {
-        console.log("Failed to get user profile: ", error);
-      }
+        setLoading(false);
+      } catch (error) {}
     };
 
     getUserProfile();
-  }, []);
+  }, [currentUser.unique_name]);
 
   return (
-    <div className={classes.root}>
-      <Tabs
-        orientation="vertical"
-        variant="scrollable"
-        value={value}
-        onChange={handleChange}
-        aria-label="Vertical tabs example"
-        className={classes.tabs}
-        TabIndicatorProps={{ style: { backgroundColor: "#3f51b5", left: 0 } }}
-      >
-        <Tab label="User Information" {...a11yProps(0)} />
-        <Tab label="Change Password" {...a11yProps(1)} />
-        {values.emailConfirmed || values.role === "Admin" ? null : (
-          <Tab label="Active Email" {...a11yProps(2)} />
-        )}
-      </Tabs>
-      <TabPanel value={value} index={0} className={classes.tabPanel}>
-        <ProfileForm values={values} setValues={setValues} />
-      </TabPanel>
-      <TabPanel value={value} index={1} className={classes.tabPanel}>
-        <ChangePassword />
-      </TabPanel>
-      <TabPanel value={value} index={2} className={classes.tabPanel}>
-        <ActiveEmailForm />
-      </TabPanel>
-    </div>
+    <>
+      {loading ? (
+        <div className="loading">
+          <CircularProgress style={{ height: "80px", width: "80px" }} />
+        </div>
+      ) : (
+        <div className={classes.root}>
+          <Tabs
+            orientation="vertical"
+            variant="scrollable"
+            value={value}
+            onChange={handleChange}
+            aria-label="Vertical tabs example"
+            className={classes.tabs}
+            TabIndicatorProps={{
+              style: { backgroundColor: "#3f51b5", left: 0 },
+            }}
+          >
+            <Tab label="User Information" {...a11yProps(0)} />
+            <Tab label="Change Password" {...a11yProps(1)} />
+            {values.emailConfirmed || values.role === "Admin" ? null : (
+              <Tab label="Active Email" {...a11yProps(2)} />
+            )}
+          </Tabs>
+          <TabPanel value={value} index={0} className={classes.tabPanel}>
+            <ProfileForm values={values} setValues={setValues} />
+          </TabPanel>
+          <TabPanel value={value} index={1} className={classes.tabPanel}>
+            <ChangePassword />
+          </TabPanel>
+          <TabPanel value={value} index={2} className={classes.tabPanel}>
+            <ActiveEmailForm />
+          </TabPanel>
+        </div>
+      )}
+    </>
   );
 };
 

@@ -58,7 +58,11 @@ const ActiveEmailForm = () => {
           });
         }
       } catch (error) {
-        console.log("Failed to send code: ", error.response);
+        setNotify({
+          isOpen: true,
+          message: "Something went wrong!",
+          type: "error",
+        });
       }
     };
 
@@ -73,7 +77,6 @@ const ActiveEmailForm = () => {
         try {
           const payload = { ...data, code: state.code };
           const response = await userApi.verifyEmail(payload);
-          console.log(response);
           if (response.status === 200 && response.statusText === "OK") {
             setNotify({
               isOpen: true,
@@ -82,7 +85,6 @@ const ActiveEmailForm = () => {
             });
           }
         } catch (error) {
-          console.log("Failed to verify email: ", error.response);
           if (error.response?.data === "Incorrect code")
             setErrors({ code: "Code is incorrect" });
         }

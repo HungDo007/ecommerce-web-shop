@@ -82,7 +82,6 @@ const SellerProductTable = ({
               });
             })
             .catch((error) => {
-              console.log(error);
               reject();
             });
         })

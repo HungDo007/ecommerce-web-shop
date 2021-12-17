@@ -26,9 +26,7 @@ const ManageComponentPage = () => {
     try {
       const response = await adminApi.getAllComponent();
       setComponentList(response);
-    } catch (error) {
-      console.log("Failed to fetch component list: ", error);
-    }
+    } catch (error) {}
   };
 
   useEffect(() => {
@@ -52,15 +50,14 @@ const ManageComponentPage = () => {
                 .addComponent(payload)
                 .then((response) => {
                   fetchComponentList();
-                  resolve(response);
+                  resolve();
                 })
                 .catch((error) => {
-                  console.log(error.response);
                   reject();
                 });
             }),
           onRowUpdate: (newData) =>
-            new Promise((resolve) => {
+            new Promise((resolve, reject) => {
               adminApi
                 .editComponent({
                   id: newData.id,
@@ -68,11 +65,11 @@ const ManageComponentPage = () => {
                 })
                 .then((response) => {
                   fetchComponentList();
-                  resolve(response);
+                  resolve();
                 })
-                .catch((error) => console.log(error.response));
-
-              resolve();
+                .catch((error) => {
+                  reject();
+                });
             }),
           onRowDelete: (oldData) =>
             new Promise((resolve, reject) => {
@@ -80,11 +77,11 @@ const ManageComponentPage = () => {
                 .removeComponent(oldData.id)
                 .then((response) => {
                   fetchComponentList();
-                  resolve(response);
+                  resolve();
                 })
-                .catch((error) => console.log(error.response));
-
-              resolve();
+                .catch((error) => {
+                  reject();
+                });
             }),
         }}
       />

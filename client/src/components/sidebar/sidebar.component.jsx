@@ -33,12 +33,12 @@ const Sidebar = () => {
         };
         const response = await salesApi.getCart(params);
         dispatch(setCartItems(response.items));
-      } catch (error) {
-        console.log("Failed to get cart", error?.response);
-      }
+      } catch (error) {}
     };
-    getCart();
-  }, [status]);
+    if (localStorage.getItem("jwtToken") !== null) {
+      getCart();
+    }
+  }, [status, dispatch]);
 
   return (
     <>

@@ -1,3 +1,4 @@
+import { useSelector } from "react-redux";
 import {
   FormControl,
   FormHelperText,
@@ -5,8 +6,6 @@ import {
   Select,
   TextField,
 } from "@material-ui/core";
-import { useState } from "react";
-import { useSelector } from "react-redux";
 import "./basic-info.styles.scss";
 
 const defaultImg = "/img/default-img.png";
@@ -26,15 +25,8 @@ const BasicInformation = ({
     }
   }
 
-  const {
-    category,
-    name,
-    description,
-    poster,
-    thumbnailFile,
-    images,
-    listImageFiles,
-  } = productInfo;
+  const { category, name, description, poster, images, listImageFiles } =
+    productInfo;
 
   const directoryList = useSelector((state) => state.directories.directoryList);
   const initialDirectories = [{ id: 0, name: "Select..." }, ...directoryList];

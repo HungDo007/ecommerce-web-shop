@@ -41,7 +41,6 @@ const AllOrderTable = () => {
 
   const handleDetail = (event, rowData) => {
     history.push(`/order/${rowData.id}`);
-    //console.log(rowData);
   };
 
   return (
@@ -83,10 +82,8 @@ const AllOrderTable = () => {
                 page: query.page,
                 totalCount: response.totalRecords,
               });
-              console.log(response);
             })
             .catch((error) => {
-              // console.log(error?.response);
               reject();
             });
         })

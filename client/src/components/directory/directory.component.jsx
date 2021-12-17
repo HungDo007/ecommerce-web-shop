@@ -1,14 +1,13 @@
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
-
-import catalogApi from "../../api/catalog-api";
-
-import MenuItem from "../menu-item/menu-item.component";
+import { useDispatch, useSelector } from "react-redux";
 
 import { setDirectoryList } from "../../redux/directory/directory.actions";
 
+import MenuItem from "../menu-item/menu-item.component";
+
+import catalogApi from "../../api/catalog-api";
+
 import "./directory.styles.scss";
-import { useSelector } from "react-redux";
 
 const Directory = () => {
   const directoryList = useSelector((state) => state.directories.directoryList);
@@ -17,11 +16,8 @@ const Directory = () => {
     const fetchDirectoryList = async () => {
       try {
         const response = await catalogApi.getAllDirectory();
-
         dispatch(setDirectoryList(response));
-      } catch (error) {
-        console.log("Failed to fetch directory list: ", error);
-      }
+      } catch (error) {}
     };
 
     fetchDirectoryList();

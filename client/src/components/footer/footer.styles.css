@@ -175,3 +175,17 @@ footer .footer-container .content.about p {
   outline: 0;
   padding: 8px 4px;
 }
+
+@media (max-width: 800px) {
+  footer {
+    padding: 10px 15px;
+  }
+
+  footer .footer-container .content {
+    margin-right: 5px;
+  }
+
+  .contact {
+    width: unset;
+  }
+}

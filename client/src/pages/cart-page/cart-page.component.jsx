@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import { useHistory } from "react-router";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { Button, Checkbox, IconButton, Tooltip } from "@material-ui/core";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
 import ClearIcon from "@material-ui/icons/Clear";
-import { Pagination } from "@material-ui/lab";
+
+import Notification from "../../components/notification/notification.component";
 
 import { setOrderItems } from "../../redux/order/order.actions";
 
@@ -22,15 +23,7 @@ const CartPage = () => {
 
   const [total, setTotal] = useState(0);
 
-  const [page, setPage] = useState(1);
-
-  const [cartPaging, setCartPaging] = useState({
-    items: [],
-    pageIndex: page,
-    pageSize: 5,
-    pageCount: 0,
-    totalRecord: 0,
-  });
+  const cartItems = useSelector((state) => state.cart.cartItems);
 
   const [items, setItems] = useState([]);
 
@@ -38,59 +31,51 @@ const CartPage = () => {
 
   const [shopItems, setShopItems] = useState([]);
 
+  const [notify, setNotify] = useState({
+    isOpen: false,
+    message: "",
+    type: "",
+  });
+
   const history = useHistory();
 
   const dispatch = useDispatch();
-
-  const getCart = async () => {
-    try {
-      const params = {
-        pageIndex: page,
-        pageSize: 5,
-      };
-      const response = await salesApi.getCart(params);
-      setCartPaging(response);
-    } catch (error) {
-      console.log("Failed to get cart: ", error?.response);
-    }
-  };
 
   const removeItem = async () => {
     try {
       const response = await salesApi.removeItemFromCart(removeItems);
       if (response.status === 200 && response.statusText === "OK") {
-        getCart();
         dispatch(toggleNotification());
       }
     } catch (error) {
-      console.log("Failed to remove cart item: ", error?.response);
+      setNotify({
+        isOpen: true,
+        message: "Sorry, something went wrong",
+        type: "error",
+      });
     }
   };
 
   useEffect(() => {
-    getCart();
-  }, []);
-
-  useEffect(() => {
     let a = [];
-    cartPaging.items.forEach((element, index, arr) => {
+    cartItems.forEach((element, index, arr) => {
       if (!a.some((item) => item.shopName === element.shopName)) {
         let obj = {
           seller: element.seller,
           shopName: element.shopName,
-          item: cartPaging.items.filter((c) => c.shopName === element.shopName),
+          item: cartItems.filter((c) => c.shopName === element.shopName),
         };
         a.push(obj);
       }
     });
     setShopItems(a);
-  }, [cartPaging]);
+  }, [cartItems]);
 
   useEffect(() => {
-    if (items.length === cartPaging.items.length && items.length !== 0) {
+    if (items.length === cartItems.length && items.length !== 0) {
       setChecked(true);
     }
-    if (items.length < cartPaging.items.length) {
+    if (items.length < cartItems.length) {
       setChecked(false);
     }
 
@@ -111,7 +96,7 @@ const CartPage = () => {
     if (position === -1) {
       setChecked(event.target.checked);
       if (event.target.checked === true) {
-        setItems(cartPaging.items);
+        setItems(cartItems);
       } else {
         setItems([]);
       }
@@ -144,11 +129,15 @@ const CartPage = () => {
       try {
         const response = await salesApi.editAmount(payload);
         if (response.status === 200 && response.statusText === "OK") {
-          getCart();
           setItems([]);
+          dispatch(toggleNotification());
         }
       } catch (error) {
-        console.log("Failed to edit amount: ", error?.response);
+        setNotify({
+          isOpen: true,
+          message: "Sorry, something went wrong",
+          type: "error",
+        });
       }
     };
     editAmount();
@@ -157,7 +146,7 @@ const CartPage = () => {
   const handleRemove = (cartId) => {
     if (cartId === -1) {
       let items = [];
-      items = cartPaging.items.map((item) => item.cartId);
+      items = cartItems.map((item) => item.cartId);
       setRemoveItems(items);
     } else {
       setRemoveItems([cartId]);
@@ -176,7 +165,7 @@ const CartPage = () => {
 
   return (
     <div>
-      {shopItems.length ? (
+      {cartItems.length ? (
         <div className="cart-page">
           <div className="cart-header">
             <div>
@@ -289,15 +278,6 @@ const CartPage = () => {
 
           <div className="total">TOTAL: ${total}</div>
           <div>
-            <Pagination
-              defaultPage={1}
-              shape="rounded"
-              color="primary"
-              count={cartPaging.pageCount}
-              onChange={(event, page) => setPage(page)}
-            />
-          </div>
-          <div>
             <Button
               className="cart-page-checkout"
               variant="contained"
@@ -308,6 +288,7 @@ const CartPage = () => {
               Checkout
             </Button>
           </div>
+          <Notification notify={notify} setNotify={setNotify} />
         </div>
       ) : (
         <div className="cart-empty-block">

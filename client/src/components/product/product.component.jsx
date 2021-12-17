@@ -1,23 +1,18 @@
-// import SHOP_DATA from "./data";
-
 import { useState, useEffect } from "react";
+import { useParams } from "react-router";
+import { useSelector } from "react-redux";
 
 import { Pagination } from "@material-ui/lab";
+import { CircularProgress } from "@material-ui/core";
 
 import ProductItem from "../product-item/product-item.component";
+import NotFoundPage from "../../pages/not-found-page/not-found.component";
 
 import catalogApi from "../../api/catalog-api";
 
 import "./product.styles.scss";
-import { useParams } from "react-router";
-import { CircularProgress } from "@material-ui/core";
-import { useSelector } from "react-redux";
 
 const Product = ({ search }) => {
-  // const collection = Object.values(SHOP_DATA);
-  // const productArr = collection.map((i) => i.items);
-  // const product = [].concat.apply([], productArr);
-
   const { directoryId } = useParams();
 
   const [productPaging, setProductPaging] = useState({
@@ -25,7 +20,7 @@ const Product = ({ search }) => {
     pageCount: 0,
   });
   const [page, setPage] = useState(1);
-  const [isLoading, setLoading] = useState(true);
+  const [status, setStatus] = useState("loading");
 
   const currentUser = useSelector((state) => state.user.currentUser);
 
@@ -36,14 +31,18 @@ const Product = ({ search }) => {
           keyword: search ? search : "",
           catId: directoryId ? directoryId : 0,
           pageIndex: page,
-          pageSize: 6,
+          pageSize: 30,
         };
         await catalogApi.getAllProduct(params).then((response) => {
+          if (response.items.length !== 0) {
+            setStatus("found");
+          } else {
+            setStatus("not-found");
+          }
           setProductPaging(response);
         });
-        setLoading(false);
       } catch (error) {
-        console.log("Failed to get products: ", error.response);
+        setStatus("not-found");
       }
     };
     getProductPaging();
@@ -51,36 +50,38 @@ const Product = ({ search }) => {
 
   const handleChangePage = (event, page) => {
     setPage(page);
-    setLoading(true);
+    setStatus("loading");
   };
 
   return (
     <>
-      <div className="product-title">Product</div>
-      <div className="product">
-        {isLoading ? (
-          <div>
-            <CircularProgress />
-          </div>
-        ) : (
-          <div className="items">
-            {productPaging.items
-              // .filter((item, index) => index < 4)
-              .map((item) => (
+      {status === "found" ? (
+        <>
+          <div className="product-title">Product</div>
+          <div className="product">
+            <div className="items">
+              {productPaging.items.map((item) => (
                 <ProductItem key={item.id} item={item} />
               ))}
+            </div>
           </div>
-        )}
-      </div>
-      <div className="more-button">
-        <Pagination
-          count={productPaging?.pageCount}
-          defaultPage={1}
-          onChange={(event, page) => handleChangePage(event, page)}
-          shape="rounded"
-          color="primary"
-        />
-      </div>
+          <div className="more-button">
+            <Pagination
+              count={productPaging?.pageCount}
+              defaultPage={1}
+              onChange={(event, page) => handleChangePage(event, page)}
+              shape="rounded"
+              color="primary"
+            />
+          </div>
+        </>
+      ) : status === "loading" ? (
+        <div className="loading">
+          <CircularProgress style={{ height: "80px", width: "80px" }} />
+        </div>
+      ) : (
+        <NotFoundPage />
+      )}
     </>
   );
 };

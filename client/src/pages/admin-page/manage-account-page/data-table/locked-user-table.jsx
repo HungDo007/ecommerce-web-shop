@@ -65,7 +65,6 @@ const LockedUserTable = ({
                 });
               })
               .catch((error) => {
-                console.log(error);
                 reject();
               });
           })

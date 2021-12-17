@@ -60,7 +60,6 @@ const UserTable = ({ tableRef, actionLockUser, setUsername, dispatch }) => {
                 });
               })
               .catch((error) => {
-                console.log(error?.response);
                 reject();
               });
           })

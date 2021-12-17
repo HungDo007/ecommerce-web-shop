@@ -92,7 +92,6 @@ const SaleInformation = ({
             name: compo ? compo.name : "",
           };
         });
-
         setActualComponents(array);
       }
     }
@@ -114,9 +113,7 @@ const SaleInformation = ({
       try {
         const response = await storeApi.getComponentOfDirectory(id);
         setComponentList(response);
-      } catch (error) {
-        console.log("Failed to fetch components of directory: ", error);
-      }
+      } catch (error) {}
     };
 
     if (category !== 0) {
@@ -124,7 +121,10 @@ const SaleInformation = ({
     } else {
       setComponentList([]);
     }
-    setActualComponents([]);
+
+    if (componentList.length && category !== 0) {
+      setActualComponents([]);
+    }
   }, [category]);
 
   return (
@@ -292,9 +292,6 @@ const SaleInformation = ({
                   </div>
                 </div>
               ))}
-              {/* <div style={{ marginTop: 20 }}>
-                {JSON.stringify(productDetails)}
-              </div> */}
             </div>
           </div>
         )}

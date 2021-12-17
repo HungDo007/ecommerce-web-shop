@@ -9,7 +9,6 @@ const CheckoutFailed = (props) => {
   const location = useLocation();
   const query = new URLSearchParams(location.search);
   const token = query.get("token");
-  console.log(token);
 
   useEffect(() => {
     const checkoutStatus = async () => {
@@ -22,13 +21,11 @@ const CheckoutFailed = (props) => {
         if (response.status === 200 && response.statusText === "OK") {
           props.history.replace("/order");
         }
-      } catch (error) {
-        console.log(error?.response);
-      }
+      } catch (error) {}
     };
 
     setTimeout(() => checkoutStatus(), 3000);
-  }, []);
+  }, [props.history, token]);
 
   return (
     <div className="cart-page">

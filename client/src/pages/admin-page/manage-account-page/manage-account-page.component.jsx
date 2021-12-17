@@ -50,7 +50,6 @@ const ManageAccountPage = () => {
           tableRef.current.onQueryChange();
         }
       } catch (error) {
-        console.log("Failed to unlock account: ", error);
         setNotify({
           isOpen: true,
           message: `Fail to unlock account!`,

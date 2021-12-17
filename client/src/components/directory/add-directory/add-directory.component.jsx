@@ -67,29 +67,22 @@ const AddDirectory = ({ item }) => {
     if (item.id === undefined) {
       const addDirectory = async () => {
         try {
-          const response = await adminApi.addDirectory(formData);
-          console.log(response);
-        } catch (error) {
-          console.log("Failed to add directory: ", error);
-        }
+          await adminApi.addDirectory(formData);
+        } catch (error) {}
       };
 
       addDirectory();
     } else {
       const editDirectory = async () => {
         try {
-          const response = await adminApi.editDirectory(formData);
-          console.log(response);
-        } catch (error) {
-          console.log("Failed to edit directory: ", error.response);
-        }
+          await adminApi.editDirectory(formData);
+        } catch (error) {}
       };
       editDirectory();
     }
     dispatch(toggleModal());
   };
 
-  console.log("add-directory has re rendered");
   return (
     <form onSubmit={handleSubmit}>
       Directory

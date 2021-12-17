@@ -7,7 +7,12 @@ import adminApi from "../../../../api/admin-api";
 
 const defaultImg = "/img/default-img.png";
 
-const LockedProductTable = ({ actionLockProduct, setProductId, dispatch }) => {
+const LockedProductTable = ({
+  tableRef,
+  actionLockProduct,
+  setProductId,
+  dispatch,
+}) => {
   const columns = [
     {
       title: "Name",
@@ -55,12 +60,12 @@ const LockedProductTable = ({ actionLockProduct, setProductId, dispatch }) => {
     actionLockProduct("unlock-product");
     setProductId(rowData.id);
     dispatch(toggleModal());
-    //console.log(rowData);
   };
 
   return (
     <MaterialTable
       title="Locked Product"
+      tableRef={tableRef}
       options={{ actionsColumnIndex: -1 }}
       data={(query) =>
         new Promise((resolve, reject) => {
@@ -79,7 +84,6 @@ const LockedProductTable = ({ actionLockProduct, setProductId, dispatch }) => {
               });
             })
             .catch((error) => {
-              console.log(error);
               reject();
             });
         })

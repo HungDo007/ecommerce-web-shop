@@ -16,9 +16,7 @@ const AddComponentToDirectory = ({ directoryId, dispatch, setNotify }) => {
       try {
         const response = await adminApi.getComponentOfDirectory(directoryId);
         setCompoOfDirect(response);
-      } catch (error) {
-        console.log("Failed to fetch component of directory: ", error);
-      }
+      } catch (error) {}
     };
 
     fetchComponentOfDirectory();
@@ -41,12 +39,9 @@ const AddComponentToDirectory = ({ directoryId, dispatch, setNotify }) => {
       comps: listCompoId,
     };
 
-    console.log(data);
-
     const addComponentToDirectory = async () => {
       try {
         const response = await adminApi.addComponentToDirectory(data);
-        console.log(response);
         if (response.statusText === "OK" && response.status === 200) {
           setNotify({
             isOpen: true,
@@ -54,9 +49,7 @@ const AddComponentToDirectory = ({ directoryId, dispatch, setNotify }) => {
             type: "success",
           });
         }
-      } catch (error) {
-        console.log("Failed to add component to directory: ", error);
-      }
+      } catch (error) {}
     };
 
     addComponentToDirectory();

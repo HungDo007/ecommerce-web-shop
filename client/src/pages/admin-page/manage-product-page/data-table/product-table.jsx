@@ -7,7 +7,12 @@ import adminApi from "../../../../api/admin-api";
 
 const defaultImg = "/img/default-img.png";
 
-const ProductTable = ({ actionLockProduct, setProductId, dispatch }) => {
+const ProductTable = ({
+  tableRef,
+  actionLockProduct,
+  setProductId,
+  dispatch,
+}) => {
   const columns = [
     {
       title: "Name",
@@ -60,6 +65,7 @@ const ProductTable = ({ actionLockProduct, setProductId, dispatch }) => {
   return (
     <MaterialTable
       title="Product"
+      tableRef={tableRef}
       options={{ actionsColumnIndex: -1 }}
       data={(query) =>
         new Promise((resolve, reject) => {
@@ -78,7 +84,6 @@ const ProductTable = ({ actionLockProduct, setProductId, dispatch }) => {
               });
             })
             .catch((error) => {
-              console.log(error);
               reject();
             });
         })

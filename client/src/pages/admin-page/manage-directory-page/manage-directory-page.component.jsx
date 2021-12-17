@@ -45,10 +45,17 @@ const ManageDirectoryPage = () => {
     {
       title: "Name",
       field: "name",
-      validate: (rowData) =>
-        rowData.name === undefined || rowData.name === ""
-          ? "Name is required"
-          : true,
+      validate: (rowData) => {
+        if (rowData.name === undefined || rowData.name === "") {
+          return "Name is required";
+        } else if (rowData.name) {
+          let name = rowData.name.replace(/\s\s+/g, " ");
+          if (!/^(?=.*).{5,}$/.test(name)) return "5 character required";
+          else {
+            return true;
+          }
+        }
+      },
     },
     {
       title: "Image",
@@ -67,7 +74,7 @@ const ManageDirectoryPage = () => {
               style={{ objectFit: "cover", cursor: "pointer" }}
               height="100"
               width="150"
-              src={imageSrc}
+              src={imageSrc ? imageSrc : defaultImg}
               alt="directory"
             />
           </label>
@@ -101,17 +108,36 @@ const ManageDirectoryPage = () => {
     dispatch(toggleModal());
   };
 
+  function isFileImage(file) {
+    const acceptedImageTypes = [
+      "image/gif",
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+    ];
+
+    return file && acceptedImageTypes.includes(file["type"]);
+  }
+
   const handleReview = (event) => {
     if (event.target.files && event.target.files[0]) {
       let imageFile = event.target.files[0];
-      const reader = new FileReader();
-      reader.onload = (x) => {
-        setValues({
-          imageFile: imageFile,
-          imageSrc: x.target.result,
+      if (isFileImage(imageFile)) {
+        const reader = new FileReader();
+        reader.onload = (x) => {
+          setValues({
+            imageFile: imageFile,
+            imageSrc: x.target.result,
+          });
+        };
+        reader.readAsDataURL(imageFile);
+      } else {
+        setNotify({
+          isOpen: true,
+          message: "Please select image file!",
+          type: "warning",
         });
-      };
-      reader.readAsDataURL(imageFile);
+      }
     } else {
       setValues({
         imageFile: null,
@@ -125,7 +151,11 @@ const ManageDirectoryPage = () => {
       const response = await catalogApi.getAllDirectory();
       setDirectoryList(response);
     } catch (error) {
-      console.log("Failed to fetch component list: ", error);
+      setNotify({
+        isOpen: true,
+        message: "Something went wrong",
+        type: "error",
+      });
     }
   };
 
@@ -153,7 +183,11 @@ const ManageDirectoryPage = () => {
           onRowAdd: (newData) =>
             new Promise((resolve, reject) => {
               if (imageFile === undefined || imageFile === null) {
-                alert("Choose image");
+                setNotify({
+                  isOpen: true,
+                  message: "Please select image!",
+                  type: "warning",
+                });
                 reject();
               } else {
                 const formData = new FormData();
@@ -167,7 +201,9 @@ const ManageDirectoryPage = () => {
                     setValues({ ...values, imageSrc: defaultImg });
                     resolve(response);
                   })
-                  .catch((error) => console.log(error.response));
+                  .catch((error) => {
+                    reject();
+                  });
               }
             }),
           onRowAddCancelled: () => {
@@ -179,33 +215,20 @@ const ManageDirectoryPage = () => {
           onRowUpdate: (newData) =>
             new Promise((resolve, reject) => {
               const formData = new FormData();
-              if (imageFile === undefined || imageFile === null) {
-                formData.append("id", newData.id);
-                formData.append("name", newData.name);
-
-                adminApi
-                  .editDirectory(formData)
-                  .then((response) => {
-                    fetchDirectoryList();
-                    resolve(response);
-                  })
-                  .catch((error) => {
-                    console.log(error.response);
-                    reject();
-                  });
-              } else {
-                formData.append("id", newData.id);
-                formData.append("name", newData.name);
+              formData.append("id", newData.id);
+              formData.append("name", newData.name.replace(/\s\s+/g, " "));
+              if (imageFile) {
                 formData.append("image", imageFile);
-
-                adminApi
-                  .editDirectory(formData)
-                  .then((response) => {
-                    fetchDirectoryList();
-                    resolve(response);
-                  })
-                  .catch((error) => console.log(error.response));
               }
+              adminApi
+                .editDirectory(formData)
+                .then((response) => {
+                  fetchDirectoryList();
+                  resolve(response);
+                })
+                .catch((error) => {
+                  reject();
+                });
             }),
           onRowUpdateCancelled: () => {
             setValues({
@@ -219,9 +242,11 @@ const ManageDirectoryPage = () => {
                 .removeDirectory(oldData.id)
                 .then((response) => {
                   fetchDirectoryList();
-                  resolve(response);
+                  resolve();
                 })
-                .catch((error) => console.log(error.response));
+                .catch((error) => {
+                  reject();
+                });
             }),
         }}
       />

@@ -102,8 +102,8 @@ const SignUp = ({ setAction, currentUser, tableRef }) => {
 
     setErrors({ ...temp });
 
-    if (fieldValues == userInfo)
-      return Object.values(temp).every((x) => x == "");
+    if (fieldValues === userInfo)
+      return Object.values(temp).every((x) => x === "");
   };
 
   const handleChange = (event) => {
@@ -155,7 +155,6 @@ const SignUp = ({ setAction, currentUser, tableRef }) => {
         const signUp = async () => {
           try {
             const response = await userApi.signUp(data);
-            console.log(response);
             if (response.statusText === "OK" && response.status === 200) {
               setNotify({
                 isOpen: true,
@@ -165,15 +164,14 @@ const SignUp = ({ setAction, currentUser, tableRef }) => {
               setTimeout(() => setAction(true), 2000);
             }
           } catch (error) {
-            console.log(error.response);
-            if (error.response?.data == "Username already used") {
+            if (error.response?.data[0] === "Username already used") {
               setNotify({
                 isOpen: true,
                 message: `Fail to sign up. Username already used!`,
                 type: "error",
               });
             }
-            if (error.response?.data == "Email already used") {
+            if (error.response?.data[0] === "Email already used") {
               setNotify({
                 isOpen: true,
                 message: `Fail to sign up. Email already used!`,
@@ -181,7 +179,7 @@ const SignUp = ({ setAction, currentUser, tableRef }) => {
               });
             }
             if (
-              error.response?.data[0] == "Username already used" &&
+              error.response?.data[0] === "Username already used" &&
               error.response?.data[1] === "Email already used"
             ) {
               setNotify({
@@ -192,8 +190,7 @@ const SignUp = ({ setAction, currentUser, tableRef }) => {
             }
           }
         };
-        //signUp();
-        console.log(data);
+        signUp();
       }
     }
   };

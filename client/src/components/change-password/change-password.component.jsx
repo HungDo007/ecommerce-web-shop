@@ -46,9 +46,9 @@ const ChangePassword = () => {
         : "This field is required";
 
       if (fieldValues.oldPassword) {
-        temp.oldPassword = /^(?=.*\d).{8,}$/.test(fieldValues.oldPassword)
+        temp.oldPassword = /^(?=.*).{8,}$/.test(fieldValues.oldPassword)
           ? ""
-          : "Password has at least 8 character and number";
+          : "Password has at least 8 character";
       }
     }
 
@@ -81,7 +81,7 @@ const ChangePassword = () => {
     setErrors({ ...temp });
 
     if (fieldValues === values)
-      return Object.values(temp).every((x) => x == "");
+      return Object.values(temp).every((x) => x === "");
   };
 
   const signOut = () => {
@@ -122,13 +122,18 @@ const ChangePassword = () => {
             setTimeout(() => signOut(), 3000);
           }
         } catch (error) {
-          // console.log("Failed to change password: ", error?.response);
           if (error?.response.status === 400) {
             setErrors({ oldPassword: "Your password is incorrect" });
           }
         }
       };
       changePassword();
+    } else {
+      setNotify({
+        isOpen: true,
+        message: "Invalid information! Please check the form",
+        type: "warning",
+      });
     }
   };
 

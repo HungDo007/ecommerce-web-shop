@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { Tab, Tabs } from "@material-ui/core";
@@ -7,6 +7,7 @@ import CustomDialog from "../../../components/dialog/dialog.component";
 import Confirm from "../../../components/confirm/confirm.component";
 import ProductTable from "./data-table/product-table";
 import LockedProductTable from "./data-table/locked-product-table";
+import Notification from "../../../components/notification/notification.component";
 
 import { toggleModal } from "../../../redux/modal/modal.actions";
 
@@ -16,6 +17,13 @@ const ManageProductPage = () => {
   const [value, setValue] = useState(0);
   const [action, setAction] = useState("");
   const [productId, setProductId] = useState(0);
+  const [notify, setNotify] = useState({
+    isOpen: false,
+    message: "",
+    type: "",
+  });
+
+  const tableRef = useRef(null);
 
   const modalIsOpen = useSelector((state) => state.modal.isOpen);
 
@@ -29,9 +37,15 @@ const ManageProductPage = () => {
     const unlockProduct = async () => {
       try {
         const response = await adminApi.unlockProduct(productId);
-        console.log(response);
+        if (response.status === 200 && response.statusText === "OK") {
+          tableRef.current.onQueryChange();
+        }
       } catch (error) {
-        console.log("Failed to unlock account: ", error.response);
+        setNotify({
+          isOpen: true,
+          message: `Fail to unlock product!`,
+          type: "error",
+        });
       }
     };
     unlockProduct();
@@ -50,6 +64,7 @@ const ManageProductPage = () => {
       </div>
       <TabPanel value={value} index={0}>
         <ProductTable
+          tableRef={tableRef}
           actionLockProduct={setAction}
           setProductId={setProductId}
           dispatch={dispatch}
@@ -57,6 +72,7 @@ const ManageProductPage = () => {
       </TabPanel>
       <TabPanel value={value} index={1}>
         <LockedProductTable
+          tableRef={tableRef}
           actionLockProduct={setAction}
           setProductId={setProductId}
           dispatch={dispatch}
@@ -71,6 +87,7 @@ const ManageProductPage = () => {
           <Confirm
             title="Are you sure to lock this product?"
             data={productId}
+            tableRef={tableRef}
           />
         </CustomDialog>
       )}
@@ -87,6 +104,7 @@ const ManageProductPage = () => {
           />
         </CustomDialog>
       )}
+      <Notification notify={notify} setNotify={setNotify} />
     </div>
   );
 };

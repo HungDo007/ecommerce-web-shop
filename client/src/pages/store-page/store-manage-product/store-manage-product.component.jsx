@@ -35,11 +35,10 @@ const StoreManagesProduct = ({ history }) => {
     const hideProduct = async () => {
       try {
         const response = await storeApi.hideProduct(productId);
-        tableRef.current.onQueryChange();
-        console.log(response);
-      } catch (error) {
-        console.log("Failed to hide product: ", error.response);
-      }
+        if (response.status === 200 && response.statusText === "OK") {
+          tableRef.current.onQueryChange();
+        }
+      } catch (error) {}
     };
     hideProduct();
     dispatch(toggleModal());
@@ -49,11 +48,10 @@ const StoreManagesProduct = ({ history }) => {
     const showProduct = async () => {
       try {
         const response = await storeApi.showProduct(productId);
-        tableRef.current.onQueryChange();
-        console.log(response);
-      } catch (error) {
-        console.log("Failed to show product: ", error.response);
-      }
+        if (response.status === 200 && response.statusText === "OK") {
+          tableRef.current.onQueryChange();
+        }
+      } catch (error) {}
     };
     showProduct();
     dispatch(toggleModal());
@@ -63,10 +61,10 @@ const StoreManagesProduct = ({ history }) => {
     const removeProduct = async () => {
       try {
         const response = await storeApi.removeProduct(productId);
-        tableRef.current.onQueryChange();
-      } catch (error) {
-        console.log("Failed to remove product: ", error.response);
-      }
+        if (response.status === 200 && response.statusText === "OK") {
+          tableRef.current.onQueryChange();
+        }
+      } catch (error) {}
     };
     removeProduct();
     dispatch(toggleModal());

@@ -14,12 +14,10 @@ const OrderDetail = (props) => {
       try {
         const response = await salesApi.getOrderDetail(orderId);
         setOrders(response);
-      } catch (error) {
-        console.log("Failed to get order detail: ", error?.response);
-      }
+      } catch (error) {}
     };
     getOrderDetail();
-  }, []);
+  }, [orderId]);
 
   useEffect(() => {
     const total = orders.reduce(

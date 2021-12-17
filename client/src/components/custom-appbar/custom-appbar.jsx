@@ -5,8 +5,6 @@ import { Link } from "react-router-dom";
 
 import MenuIcon from "@material-ui/icons/Menu";
 import SearchIcon from "@material-ui/icons/Search";
-import MailIcon from "@material-ui/icons/Mail";
-import NotificationsIcon from "@material-ui/icons/Notifications";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 
@@ -53,7 +51,6 @@ const CustomAppBar = ({ sidebar, setSidebar }) => {
 
   const handleSearch = () => {
     if (productName.length > 3) {
-      //console.log(productName);
       history.push({
         pathname: "/directory/0",
         state: productName,
@@ -89,7 +86,7 @@ const CustomAppBar = ({ sidebar, setSidebar }) => {
       flexGrow: 1,
     },
     option: {
-      marginRight: theme.spacing(4),
+      marginRight: theme.spacing(2),
       display: "flex",
       alignItems: "center",
     },
@@ -149,50 +146,46 @@ const CustomAppBar = ({ sidebar, setSidebar }) => {
           >
             <MenuIcon />
           </IconButton>
-          <div className={classes.search}>
-            <IconButton
-              color="inherit"
-              aria-label="search"
-              onClick={handleSearch}
-            >
-              <SearchIcon />
-            </IconButton>
-            <InputBase
-              placeholder="Search…"
-              inputProps={{ "aria-label": "search" }}
-              value={productName}
-              onChange={handleChange}
-              classes={{
-                root: classes.inputRoot,
-                input: classes.inputInput,
-              }}
-            />
-          </div>
+          {currentUser?.role === "User" || currentUser === null ? (
+            <div className={classes.search}>
+              <IconButton
+                color="inherit"
+                aria-label="search"
+                onClick={handleSearch}
+              >
+                <SearchIcon />
+              </IconButton>
+              <InputBase
+                placeholder="Search…"
+                inputProps={{ "aria-label": "search" }}
+                value={productName}
+                onChange={handleChange}
+                classes={{
+                  root: classes.inputRoot,
+                  input: classes.inputInput,
+                }}
+              />
+            </div>
+          ) : null}
+
           <div className={classes.grow} />
           <div className={classes.option}>
-            <IconButton aria-label="show 4 new mails" color="inherit">
-              <Badge badgeContent={4} color="secondary">
-                <MailIcon />
-              </Badge>
-            </IconButton>
-            <IconButton aria-label="show 10 new notifications" color="inherit">
-              <Badge badgeContent={10} color="secondary">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
             {currentUser ? (
               <>
-                <IconButton
-                  aria-label="cart"
-                  color="inherit"
-                  aria-controls={cartId}
-                  aria-haspopup="true"
-                  onClick={handleCartOpen}
-                >
-                  <Badge badgeContent={cartItems.length} color="secondary">
-                    <ShoppingCartIcon />
-                  </Badge>
-                </IconButton>
+                {currentUser.role === "User" ? (
+                  <IconButton
+                    aria-label="cart"
+                    color="inherit"
+                    aria-controls={cartId}
+                    aria-haspopup="true"
+                    onClick={handleCartOpen}
+                  >
+                    <Badge badgeContent={cartItems.length} color="secondary">
+                      <ShoppingCartIcon />
+                    </Badge>
+                  </IconButton>
+                ) : null}
+
                 <IconButton
                   edge="end"
                   aria-label="account of current user"

@@ -21,13 +21,11 @@ const CheckoutSuccess = (props) => {
         if (response.status === 200 && response.statusText === "OK") {
           props.history.replace("/order");
         }
-      } catch (error) {
-        console.log(error?.response);
-      }
+      } catch (error) {}
     };
 
     setTimeout(() => checkoutStatus(), 3000);
-  }, []);
+  }, [props.history, token]);
 
   return (
     <div className="cart-page">
