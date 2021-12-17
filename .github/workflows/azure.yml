@@ -1,0 +1,36 @@
+name: Build and deploy Node js application to Web App studentshop
+on:
+  push:
+    branches:
+      - master
+
+env:
+  AZURE_WEBAPP_NAME: studentshop
+  AZURE_WEBAPP_PACKAGE_PATH: client\publish
+  NODE_VERSION: 14.x
+  WORKING_DIRECTORY: client
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ env.NODE_VERSION }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+    - name: npm install, build, and test
+      run: |
+        # Build and test the project, then
+        # deploy to Azure Web App.
+        npm install
+        npm run build --if-present
+        npm run test --if-present
+    - name: 'Deploy to Azure WebApp'
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: ${{ env.AZURE_WEBAPP_NAME }}
+        publish-profile: ${{ secrets.STUDENTSHOP_CLIENT }}
+        package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
