@@ -25,9 +25,9 @@ function TabPanel(props) {
       {...other}
     >
       {value === index && (
-        <Box p={3}>
+        <div p={3}>
           <div>{children}</div>
-        </Box>
+        </div>
       )}
     </div>
   );
@@ -48,20 +48,34 @@ function a11yProps(index) {
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    flexGrow: 1,
     backgroundColor: theme.palette.background.paper,
-    display: "flex",
     margin: "2rem auto",
-    width: "77%",
+    width: "80%",
+    display: "flex",
+    flexWrap: "wrap",
     boxShadow:
       "0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%)",
+    "@media (max-width: 800px)": {
+      display: "block",
+    },
   },
   tabs: {
     borderRight: `1px solid ${theme.palette.divider}`,
-    minWidth: 220,
+    flex: "0 0 25%",
+    maxWidth: "25%",
+    "@media (max-width: 800px)": {
+      flex: "0 0 100%",
+      maxWidth: "100%",
+    },
   },
   tabPanel: {
-    width: "100%",
+    // width: "100%",
+    flex: "0 0 75%",
+    maxWidth: "75%",
+    "@media (max-width: 800px)": {
+      flex: "0 0 100%",
+      maxWidth: "100%",
+    },
   },
 }));
 

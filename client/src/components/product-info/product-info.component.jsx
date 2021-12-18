@@ -12,10 +12,10 @@ import Notification from "../notification/notification.component";
 import catalogApi from "../../api/catalog-api";
 import salesApi from "../../api/sales.api";
 
-import "./product-info.styles.scss";
 import { useDispatch } from "react-redux";
 import { toggleNotification } from "../../redux/modal/modal.actions";
 import NotFoundPage from "../../pages/not-found-page/not-found.component";
+import "./product-info.styles.scss";
 
 const ProductInfo = ({ productId }) => {
   const [listComponent, setListComponent] = useState([]);

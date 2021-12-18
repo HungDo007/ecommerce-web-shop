@@ -1,7 +1,15 @@
 .profile-user-info {
-  max-width: 900px;
+  max-width: 1200px;
   width: 100%;
   padding: 20px;
+
+  @media screen and (max-width: 800px) {
+    padding: 0;
+  }
+
+  .profile-title {
+    margin-left: 2rem;
+  }
 
   .profile-user-avatar {
     width: 225px;
@@ -27,6 +35,10 @@
 
     .profile-value {
       width: 600px;
+
+      @media screen and (max-width: 400px) {
+        width: 450px;
+      }
     }
   }
 

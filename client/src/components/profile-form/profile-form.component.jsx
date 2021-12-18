@@ -206,7 +206,7 @@ const ProfileForm = ({ values, setValues }) => {
   return (
     <form onSubmit={handleSubmit}>
       <div className="profile-user-info">
-        <h2>User Profile</h2>
+        <h2 className="profile-title">User Profile</h2>
         <div className="profile-user-avatar">
           <div>
             <img

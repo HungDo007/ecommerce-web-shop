@@ -6,6 +6,10 @@
   border-radius: 10px;
   box-sizing: border-box;
 
+  @media (max-width: 500px) {
+    padding: 10px;
+  }
+
   .sign-title {
     color: white;
     text-align: center;
