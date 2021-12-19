@@ -32,7 +32,7 @@ jobs:
       working-directory: client
       env:
         CI: false 
-        
+    
     - name: Upload artifact for deployment job
       uses: actions/upload-artifact@v2
       with:
@@ -55,7 +55,7 @@ jobs:
     - name: add process.json
       run: |
         echo '{ script: "serve", env: { PM2_SERVE_SPA: "true", PM2_SERVE_HOMEPAGE: "/index.html" } }' >> client/build/process.json
-
+    
     - name: 'Deploy to Azure WebApp'
       id: deploy-to-webapp 
       uses: azure/webapps-deploy@v2
