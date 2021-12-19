@@ -60,7 +60,7 @@ namespace Application.System
                 mailRequest.ToEmail = email;
                 mailRequest.Body = $"Mã xác thực của bạn là:\n {code}";
 
-                await _mailService.SendMail(mailRequest);
+                var send = await _mailService.SendMail(mailRequest);
 
                 UserActiveEmail uae = await _context.UserActiveEmails.FindAsync(email);
                 if (uae == null)
@@ -79,7 +79,7 @@ namespace Application.System
 
                 await _context.SaveChangesAsync();
             }
-            catch
+            catch (Exception e)
             {
                 return;
             }
@@ -481,9 +481,15 @@ namespace Application.System
             mailRequest.ToEmail = user.Email;
             mailRequest.Body = $"Click vào <a href=\"{callbaclUrl}\">đây</a> để đặt lại mật khẩu của bạn.";
 
-            await _mailService.SendMail(mailRequest);
-
-            return new ServiceResponse { Status = true, Response = "" };
+            var send = await _mailService.SendMail(mailRequest);
+            if (send == null)
+            {
+                return new ServiceResponse { Status = true, Response = "" };
+            }
+            else
+            {
+                return new ServiceResponse { Status = false, Response = send };
+            }
         }
 
         public async Task<ServiceResponse> ResetPassword(ResetPasswordRequest request)

@@ -10,6 +10,6 @@ namespace Application.Common
         /// </summary>
         /// <param name="mailRequest"></param>
         /// <returns></returns>
-        Task SendMail(SendMailRequest mailRequest);
+        Task<string> SendMail(SendMailRequest mailRequest);
     }
 }
