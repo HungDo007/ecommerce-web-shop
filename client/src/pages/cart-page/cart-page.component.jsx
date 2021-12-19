@@ -84,7 +84,7 @@ const CartPage = () => {
       0
     );
     setTotal(total);
-  }, [items]);
+  }, [items, cartItems.length]);
 
   useEffect(() => {
     removeItem();

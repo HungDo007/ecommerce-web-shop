@@ -171,14 +171,14 @@ const StoreProfile = ({ match, history }) => {
         });
         setIsLoading(false);
       } catch (error) {
-        if (error?.response.status === 400) {
+        if (error.response?.status === 400) {
           history.replace("/user");
         }
       }
     };
 
     getStoreProfile();
-  }, []);
+  }, [currentUser.unique_name, history]);
 
   return (
     <>

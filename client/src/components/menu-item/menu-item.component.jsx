@@ -17,7 +17,7 @@ const MenuItem = ({ id, name, image }) => {
         }}
       />
       <div className="content">
-        <h1 className="title">{name.toUpperCase()}</h1>
+        <h1 className="title">{name}</h1>
       </div>
     </div>
   );

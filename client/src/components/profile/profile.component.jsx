@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
-import { Box, CircularProgress, Tabs, Tab } from "@material-ui/core";
+import { CircularProgress, Tabs, Tab } from "@material-ui/core";
 
 import ProfileForm from "../profile-form/profile-form.component";
 import ActiveEmailForm from "../active-email/active-email.component";
