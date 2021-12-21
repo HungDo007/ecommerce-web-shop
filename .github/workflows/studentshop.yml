@@ -32,6 +32,10 @@ jobs:
       working-directory: client
       env:
         CI: false 
+            
+    - name: add process.json
+      run: |
+        echo '{ script: "serve", env: { PM2_SERVE_SPA: "true", PM2_SERVE_HOMEPAGE: "/index.html" } }' >> client/build/process.json      
     
     - name: Upload artifact for deployment job
       uses: actions/upload-artifact@v2
@@ -52,10 +56,6 @@ jobs:
       uses: actions/download-artifact@v2
       with:
         name: node-app
-    
-    - name: add process.json
-      run: |
-        echo '{ script: "serve", env: { PM2_SERVE_SPA: "true", PM2_SERVE_HOMEPAGE: "/index.html" } }' >> client/build/process.json  
     
     - name: 'Deploy to Azure WebApp'
       id: deploy-to-webapp 
