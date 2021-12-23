@@ -38,7 +38,7 @@ namespace WebAPI
                 options.AddPolicy(name: _myAllowSpecificOrigins,
                     builder =>
                     {
-                        builder.WithOrigins("http://localhost:5000", "http://localhost:3000")
+                        builder.WithOrigins("http://localhost:5000", "http://localhost:3000", "https://studentshop.azurewebsites.net")
                             .AllowAnyOrigin()
                             .AllowAnyMethod()
                             .AllowAnyHeader()
