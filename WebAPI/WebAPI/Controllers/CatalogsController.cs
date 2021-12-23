@@ -18,6 +18,13 @@ namespace WebAPI.Controllers
             _categoryService = categoryService;
         }
 
+
+        [HttpGet]
+        public IActionResult Get()
+        {
+            return Ok(_productService.getIp());
+        }
+
         [HttpGet("product")]
         public async Task<IActionResult> GetAll([FromQuery] ProductPagingRequest request)
         {

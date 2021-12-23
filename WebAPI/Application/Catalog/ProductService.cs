@@ -575,5 +575,18 @@ namespace Application.Catalog
                 return false;
             }
         }
+
+        public Task<string> getIp()
+        {
+            try
+            {
+                var product = _context.Products.ToList();
+                return null;
+            }
+            catch (Exception e)
+            {
+                return e.ToString();
+            }
+        }
     }
 }
