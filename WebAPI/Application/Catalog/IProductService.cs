@@ -13,7 +13,7 @@ namespace Application.Catalog
         /// <returns></returns>
         Task<PagedResult<ProductVm>> GetAll(string username, ProductPagingRequest request);
 
-        Task<string> getIp();
+        string getIp();
         Task<PagedResult<ProductVm>> GetAdminAll(ProductPagingRequest request);
 
         /// <summary>

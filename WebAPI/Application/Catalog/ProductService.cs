@@ -576,7 +576,7 @@ namespace Application.Catalog
             }
         }
 
-        public Task<string> getIp()
+        public string getIp()
         {
             try
             {
