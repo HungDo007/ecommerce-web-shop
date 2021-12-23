@@ -1,11 +1,13 @@
 import { Card, CardContent } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import { Link } from "react-router-dom";
+import { formatMoney } from "../../utils/format-money";
+import { cut } from "../../utils/cut-string";
+
 import "./product-item.styles.scss";
 
 const ProductItem = ({ item }) => {
   const { id, name, price, poster, viewCount } = item;
-  //const [clicked, setClicked] = useState(false)
 
   const useStyles = makeStyles({
     root: {
@@ -14,6 +16,7 @@ const ProductItem = ({ item }) => {
   });
 
   const classes = useStyles();
+
   return (
     <div>
       <Link to={"/product/" + id}>
@@ -29,10 +32,10 @@ const ProductItem = ({ item }) => {
                 }}
               />
               <div className="product-footer">
-                <div className="name">{name}</div>
+                <div className="name">{cut(name, 24)}</div>
                 <div className="product-info">
-                  <span>{`$${price}`}</span>
-                  <span>View Count {viewCount}</span>
+                  <span>{`$${formatMoney(price)}`}</span>
+                  <span>{`View Count ${viewCount}`}</span>
                 </div>
               </div>
             </div>

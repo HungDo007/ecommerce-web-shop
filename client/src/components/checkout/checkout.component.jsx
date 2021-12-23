@@ -2,9 +2,13 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { Button, CircularProgress, TextField } from "@material-ui/core";
-import salesApi from "../../api/sales.api";
-import userApi from "../../api/user-api";
+import { formatMoney } from "../../utils/format-money";
+import { cut } from "../../utils/cut-string";
 import { toggleNotification } from "../../redux/modal/modal.actions";
+
+import userApi from "../../api/user-api";
+import salesApi from "../../api/sales.api";
+
 import "./checkout.styles.scss";
 
 const Checkout = (props) => {
@@ -90,7 +94,9 @@ const Checkout = (props) => {
           const response = await salesApi.payWithPaypal(payload);
           window.location.href = response;
         } catch (error) {
-          props.history.replace("/user");
+          if (error.response?.status === 400 && error.response?.data) {
+            window.location.href = error.response.data;
+          }
         }
       };
 
@@ -209,17 +215,17 @@ const Checkout = (props) => {
                       src={process.env.REACT_APP_IMAGE_URL + i.productImg}
                       alt="item"
                     />
-                    <div className="header-block">{i.name}</div>
+                    <div className="header-block">{cut(i.name, 34)}</div>
                     <div className="header-block">{i.details}</div>
                     <div className="header-block">{i.quantity}</div>
-                    <div className="header-block">$ {i.price}</div>
+                    <div className="header-block">$ {formatMoney(i.price)}</div>
                   </div>
                 ))}
               </div>
             ))}
 
             <div className="products-ordered-total">
-              Merchandise Total: ${orderItems.total}
+              Merchandise Total: ${formatMoney(orderItems.total)}
             </div>
           </div>
           <div className="place-order">

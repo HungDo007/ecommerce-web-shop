@@ -1,14 +1,17 @@
+import { useHistory } from "react-router";
+
 import MaterialTable from "material-table";
 import InfoIcon from "@material-ui/icons/Info";
-
+import { formatMoney } from "../../../../utils/format-money";
+import { cut } from "../../../../utils/cut-string";
 import salesApi from "../../../../api/sales.api";
-import { useHistory } from "react-router";
 
 const AllOrderTable = () => {
   const columns = [
     {
       title: "Name",
       field: "name",
+      render: (rowData) => <div>{cut(rowData.name, 44)}</div>,
     },
     {
       title: "Quantity",
@@ -17,7 +20,7 @@ const AllOrderTable = () => {
     {
       title: "Total",
       field: "sumPrice",
-      render: (rowData) => <div>${rowData.sumPrice}</div>,
+      render: (rowData) => <div>${formatMoney(rowData.sumPrice)}</div>,
     },
     {
       title: "Payment",

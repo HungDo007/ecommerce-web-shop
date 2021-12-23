@@ -10,6 +10,8 @@ import InfoIcon from "@material-ui/icons/Info";
 import Confirm from "../confirm/confirm.component";
 import CustomDialog from "../../components/dialog/dialog.component";
 import Notification from "../notification/notification.component";
+import { formatMoney } from "../../utils/format-money";
+import { cut } from "../../utils/cut-string";
 
 import salesApi from "../../api/sales.api";
 
@@ -26,6 +28,7 @@ const Order = (props) => {
     {
       title: "Name",
       field: "name",
+      render: (rowData) => <div>{cut(rowData.name, 36)}</div>,
     },
     {
       title: "Quantity",
@@ -40,7 +43,7 @@ const Order = (props) => {
     {
       title: "Total",
       field: "sumPrice",
-      render: (rowData) => <div>${rowData.sumPrice}</div>,
+      render: (rowData) => <div>${formatMoney(rowData.sumPrice)}</div>,
     },
     {
       title: "Payment",

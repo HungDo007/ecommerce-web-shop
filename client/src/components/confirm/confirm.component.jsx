@@ -1,19 +1,39 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 
-import { Button } from "@material-ui/core";
+import { Button, TextField } from "@material-ui/core";
 
 import adminApi from "../../api/admin-api";
 
 import { toggleModal } from "../../redux/modal/modal.actions";
 
-import FormInput from "../form-input/form-input.component";
-
 const Confirm = (props) => {
-  const [reason, setReason] = useState("");
+  const [state, setState] = useState({
+    reason: "",
+  });
+
+  const [errors, setErrors] = useState({});
+
+  const validate = (fieldValues = state) => {
+    let temp = { ...errors };
+    if ("reason" in fieldValues) {
+      temp.reason = fieldValues.reason ? "" : "This field is required";
+      if (fieldValues.reason) {
+        temp.reason = /^(?=.*).{5,}$/.test(fieldValues.reason)
+          ? ""
+          : "5 character required";
+      }
+    }
+
+    setErrors({ ...temp });
+
+    return Object.values(temp).every((x) => x === "");
+  };
 
   const handleChange = (event) => {
-    setReason(event.target.value);
+    const { name, value } = event.target;
+    setState({ ...state, [name]: value });
+    validate({ [name]: value });
   };
 
   const dispatch = useDispatch();
@@ -24,7 +44,7 @@ const Confirm = (props) => {
     if (props.title === "Are you sure to lock this account?") {
       const data = {
         username: props.data,
-        reason: reason,
+        reason: state.reason,
       };
       const lockAccount = async () => {
         try {
@@ -34,12 +54,14 @@ const Confirm = (props) => {
           }
         } catch (error) {}
       };
-      lockAccount();
-      dispatch(toggleModal());
+      if (validate()) {
+        lockAccount();
+        dispatch(toggleModal());
+      }
     } else if (props.title === "Are you sure to lock this product?") {
       const data = {
         proId: props.data,
-        reason: reason,
+        reason: state.reason,
       };
       const lockProduct = async () => {
         try {
@@ -49,8 +71,10 @@ const Confirm = (props) => {
           }
         } catch (error) {}
       };
-      lockProduct();
-      dispatch(toggleModal());
+      if (validate()) {
+        lockProduct();
+        dispatch(toggleModal());
+      }
     } else {
       props.onSubmit();
     }
@@ -61,26 +85,23 @@ const Confirm = (props) => {
       <div style={{ margin: "20px 0" }}>{props.title}</div>
       {props.title === "Are you sure to lock this account?" ||
       props.title === "Are you sure to lock this product?" ? (
-        <FormInput
+        <TextField
+          fullWidth
           name="reason"
-          handleChange={handleChange}
-          value={reason}
           label="Reason"
-          required
+          type="text"
+          onChange={handleChange}
+          value={state.reason}
+          {...(errors.reason && {
+            error: true,
+            helperText: errors.reason,
+          })}
         />
       ) : null}
-      <div style={{ display: "flex", justifyContent: "center" }}>
-        <Button
-          variant="contained"
-          onClick={handleSubmit}
-          style={{
-            borderRadius: 24,
-            backgroundColor: "rgb(45 42 212)",
-            padding: "10px 26px",
-            fontSize: "14px",
-            color: "white",
-          }}
-        >
+      <div
+        style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}
+      >
+        <Button variant="contained" type="submit" color="primary">
           Submit
         </Button>
       </div>

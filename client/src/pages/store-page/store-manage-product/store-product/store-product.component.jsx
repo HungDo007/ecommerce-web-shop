@@ -260,9 +260,10 @@ const StoreProduct = (props) => {
           <h2 className="store-product-main-title"> Manage product </h2>
           <BasicInformation
             errors={errors}
-            onChange={handleInputChange}
             productInfo={productInfo}
+            onChange={handleInputChange}
             setBasicInformation={setProductInfo}
+            setNotify={setNotify}
           />
           <SaleInformation
             errors={errors}

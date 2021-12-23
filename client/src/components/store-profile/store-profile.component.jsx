@@ -275,11 +275,7 @@ const StoreProfile = ({ match, history }) => {
             </div>
           </div>
           <div className="store-button">
-            <Button
-              type="submit"
-              variant="contained"
-              className="store-button-submit"
-            >
+            <Button type="submit" variant="contained" color="primary">
               Save Change
             </Button>
           </div>

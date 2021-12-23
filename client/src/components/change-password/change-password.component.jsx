@@ -234,11 +234,7 @@ const ChangePassword = () => {
           <Link to="/forgotPassword">Forgot Password?</Link>
         </div>
         <div className="profile-button">
-          <Button
-            type="submit"
-            className="profile-button-submit"
-            variant="contained"
-          >
+          <Button type="submit" color="primary" variant="contained">
             Confirm
           </Button>
         </div>

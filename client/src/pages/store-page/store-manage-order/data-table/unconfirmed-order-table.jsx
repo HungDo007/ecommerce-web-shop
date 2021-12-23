@@ -2,6 +2,9 @@ import { useRef } from "react";
 
 import MaterialTable from "material-table";
 import AssignmentTurnedInIcon from "@material-ui/icons/AssignmentTurnedIn";
+
+import { formatMoney } from "../../../../utils/format-money";
+import { cut } from "../../../../utils/cut-string";
 import salesApi from "../../../../api/sales.api";
 
 const UnconfirmedOrderTable = () => {
@@ -11,6 +14,7 @@ const UnconfirmedOrderTable = () => {
     {
       title: "Name",
       field: "name",
+      render: (rowData) => <div>{cut(rowData.name, 44)}</div>,
     },
     {
       title: "Quantity",
@@ -19,7 +23,7 @@ const UnconfirmedOrderTable = () => {
     {
       title: "Total",
       field: "sumPrice",
-      render: (rowData) => <div>${rowData.sumPrice}</div>,
+      render: (rowData) => <div>${formatMoney(rowData.sumPrice)}</div>,
     },
     {
       title: "Payment",

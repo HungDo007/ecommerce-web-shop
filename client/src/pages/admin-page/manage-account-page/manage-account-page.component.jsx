@@ -72,17 +72,7 @@ const ManageAccountPage = () => {
           </Tabs>
         </div>
         <div>
-          <Button
-            variant="contained"
-            onClick={handleDialog}
-            style={{
-              borderRadius: 24,
-              backgroundColor: "rgb(45 42 212)",
-              padding: "10px 26px",
-              fontSize: "14px",
-              color: "white",
-            }}
-          >
+          <Button variant="contained" color="primary" onClick={handleDialog}>
             Add new admin
           </Button>
         </div>

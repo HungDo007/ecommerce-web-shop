@@ -3,9 +3,17 @@ import { useState, useEffect } from "react";
 import MaterialTable from "material-table";
 
 import adminApi from "../../../api/admin-api";
+import Notification from "../../../components/notification/notification.component";
 
 const ManageComponentPage = () => {
   const [componentList, setComponentList] = useState([]);
+
+  const [notify, setNotify] = useState({
+    isOpen: false,
+    message: "",
+    type: "",
+  });
+
   const columns = [
     {
       title: "Id",
@@ -53,6 +61,13 @@ const ManageComponentPage = () => {
                   resolve();
                 })
                 .catch((error) => {
+                  if (error.response?.data === "Component is exists.") {
+                    setNotify({
+                      isOpen: true,
+                      message: "The component has already existed",
+                      type: "error",
+                    });
+                  }
                   reject();
                 });
             }),
@@ -68,6 +83,13 @@ const ManageComponentPage = () => {
                   resolve();
                 })
                 .catch((error) => {
+                  if (error.response?.data === "Component is exists.") {
+                    setNotify({
+                      isOpen: true,
+                      message: "The component has already existed",
+                      type: "error",
+                    });
+                  }
                   reject();
                 });
             }),
@@ -85,6 +107,7 @@ const ManageComponentPage = () => {
             }),
         }}
       />
+      <Notification notify={notify} setNotify={setNotify} />
     </div>
   );
 };

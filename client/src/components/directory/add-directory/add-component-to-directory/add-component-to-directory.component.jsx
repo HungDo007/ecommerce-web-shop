@@ -87,17 +87,7 @@ const AddComponentToDirectory = ({ directoryId, dispatch, setNotify }) => {
         ))}
       </div>
       <div className="add-component-to-directory-button">
-        <Button
-          type="submit"
-          variant="contained"
-          style={{
-            borderRadius: 24,
-            backgroundColor: "rgb(45 42 212)",
-            padding: "10px 26px",
-            fontSize: "14px",
-            color: "white",
-          }}
-        >
+        <Button type="submit" variant="contained" color="primary">
           Submit
         </Button>
       </div>

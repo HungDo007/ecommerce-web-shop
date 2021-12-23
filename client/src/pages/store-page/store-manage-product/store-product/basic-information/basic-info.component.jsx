@@ -6,15 +6,19 @@ import {
   Select,
   TextField,
 } from "@material-ui/core";
+
+import { isFileImage } from "../../../../../utils/check-image";
+
 import "./basic-info.styles.scss";
 
 const defaultImg = "/img/default-img.png";
 
 const BasicInformation = ({
   productInfo,
-  setBasicInformation,
   errors,
   onChange,
+  setBasicInformation,
+  setNotify,
 }) => {
   if (productInfo.id) {
     const length = productInfo.images.length;
@@ -33,22 +37,29 @@ const BasicInformation = ({
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    // setBasicInformation({ ...productInfo, [name]: value });
     onChange(name, value);
   };
 
   const handleThumbnail = (event) => {
     if (event.target.files && event.target.files[0]) {
       let imageFile = event.target.files[0];
-      const reader = new FileReader();
-      reader.onload = (x) => {
-        setBasicInformation({
-          ...productInfo,
-          thumbnailFile: imageFile,
-          poster: x.target.result,
+      if (!isFileImage(imageFile)) {
+        setNotify({
+          isOpen: true,
+          message: "Please select image file",
+          type: "warning",
         });
-      };
-      reader.readAsDataURL(imageFile);
+      } else {
+        const reader = new FileReader();
+        reader.onload = (x) => {
+          setBasicInformation({
+            ...productInfo,
+            thumbnailFile: imageFile,
+            poster: x.target.result,
+          });
+        };
+        reader.readAsDataURL(imageFile);
+      }
     } else {
       setBasicInformation({
         ...productInfo,
@@ -61,17 +72,25 @@ const BasicInformation = ({
   const handleImages = (selectorFiles, position) => {
     if (selectorFiles && selectorFiles[0]) {
       let imageFile = selectorFiles[0];
-      const reader = new FileReader();
-      reader.onload = (x) => {
-        images[position] = x.target.result;
-        listImageFiles[position] = imageFile;
-        setBasicInformation({
-          ...productInfo,
-          listImageFiles,
-          images,
+      if (!isFileImage(imageFile)) {
+        setNotify({
+          isOpen: true,
+          message: "Please select image file",
+          type: "warning",
         });
-      };
-      reader.readAsDataURL(imageFile);
+      } else {
+        const reader = new FileReader();
+        reader.onload = (x) => {
+          images[position] = x.target.result;
+          listImageFiles[position] = imageFile;
+          setBasicInformation({
+            ...productInfo,
+            listImageFiles,
+            images,
+          });
+        };
+        reader.readAsDataURL(imageFile);
+      }
     } else {
       images[position] = defaultImg;
       listImageFiles[position] = null;

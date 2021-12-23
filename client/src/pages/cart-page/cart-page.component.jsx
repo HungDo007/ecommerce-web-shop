@@ -8,13 +8,15 @@ import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
 import ClearIcon from "@material-ui/icons/Clear";
 
 import Notification from "../../components/notification/notification.component";
-
+import { formatMoney } from "../../utils/format-money";
+import { cut } from "../../utils/cut-string";
 import { setOrderItems } from "../../redux/order/order.actions";
 
 import salesApi from "../../api/sales.api";
 
 import { toggleNotification } from "../../redux/modal/modal.actions";
 import "./cart-page.styles.scss";
+import { Link } from "react-router-dom";
 
 const emptyCart = "/img/empty-cart.jpg";
 
@@ -206,6 +208,12 @@ const CartPage = () => {
                 <div key={cartItem.cartId} className="c-item">
                   <div>
                     <Checkbox
+                      // disabled={
+                      //   cartItem.quantity < 1 ||
+                      //   cartItem.quantity > cartItem.stockOfDetail
+                      //     ? true
+                      //     : false
+                      // }
                       value={cartItem.cartId}
                       checked={items
                         .map((item) => item.cartId)
@@ -221,13 +229,16 @@ const CartPage = () => {
                       alt="item"
                     />
                   </div>
-                  <span className="name">{cartItem.name}</span>
+                  <Link to={"/product/" + cartItem.productId} className="name">
+                    {cut(cartItem.name, 50)}
+                  </Link>
                   <span className="name">{cartItem.details}</span>
                   <div className="quantity">
                     <div>
                       <Tooltip title="Decrease item by 1">
                         <IconButton
-                          value="Decrease"
+                          aria-label="decrease item"
+                          // disabled={Boolean(cartItem.quantity === 1)}
                           onClick={() =>
                             handleUpdateAmount(
                               "decrease",
@@ -236,7 +247,6 @@ const CartPage = () => {
                               cartItem.stockOfDetail
                             )
                           }
-                          aria-label="decrease item"
                         >
                           <ArrowBackIosIcon />
                         </IconButton>
@@ -244,6 +254,10 @@ const CartPage = () => {
                       <span className="value">{cartItem.quantity}</span>
                       <Tooltip title="Increase item by 1">
                         <IconButton
+                          aria-label="increase item"
+                          // disabled={Boolean(
+                          //   cartItem.quantity === cartItem.stockOfDetail
+                          // )}
                           onClick={() =>
                             handleUpdateAmount(
                               "increase",
@@ -252,7 +266,6 @@ const CartPage = () => {
                               cartItem.stockOfDetail
                             )
                           }
-                          aria-label="increase item"
                         >
                           <ArrowForwardIosIcon />
                         </IconButton>
@@ -262,7 +275,7 @@ const CartPage = () => {
                       {cartItem.stockOfDetail} available
                     </div>
                   </div>
-                  <span className="price">${cartItem.price}</span>
+                  <span className="price">${formatMoney(cartItem.price)}</span>
                   <Tooltip title="Remove item">
                     <IconButton
                       aria-label="remove item"

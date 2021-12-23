@@ -15,6 +15,7 @@ import salesApi from "../../api/sales.api";
 import { useDispatch } from "react-redux";
 import { toggleNotification } from "../../redux/modal/modal.actions";
 import NotFoundPage from "../../pages/not-found-page/not-found.component";
+import { formatMoney } from "../../utils/format-money";
 import "./product-info.styles.scss";
 
 const ProductInfo = ({ productId }) => {
@@ -248,6 +249,7 @@ const ProductInfo = ({ productId }) => {
         const addToCart = async () => {
           try {
             const response = await salesApi.addToCart(payload);
+
             if (response.status === 200 && response.statusText === "OK") {
               setNotify({
                 isOpen: true,
@@ -302,7 +304,9 @@ const ProductInfo = ({ productId }) => {
                 <div className="product-info-view-count">
                   {viewCount} View Count
                 </div>
-                <div className="product-price">${availableItem.price}</div>
+                <div className="product-price">
+                  ${formatMoney(availableItem.price)}
+                </div>
               </div>
               <div className="component-container">
                 {listComponent.map((item, index) => (

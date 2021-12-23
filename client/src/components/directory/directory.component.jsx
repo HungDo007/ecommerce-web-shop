@@ -16,7 +16,9 @@ const Directory = () => {
     const fetchDirectoryList = async () => {
       try {
         const response = await catalogApi.getAllDirectory();
-        dispatch(setDirectoryList(response));
+        if (response?.status !== 204) {
+          dispatch(setDirectoryList(response));
+        }
       } catch (error) {}
     };
 

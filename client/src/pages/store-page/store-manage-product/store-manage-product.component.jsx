@@ -73,17 +73,7 @@ const StoreManagesProduct = ({ history }) => {
   return (
     <div className="manage-account-block">
       <div className="manage-account-header">
-        <Button
-          variant="contained"
-          onClick={handleAddProduct}
-          style={{
-            borderRadius: 24,
-            backgroundColor: "rgb(45 42 212)",
-            padding: "10px 26px",
-            fontSize: "14px",
-            color: "white",
-          }}
-        >
+        <Button variant="contained" onClick={handleAddProduct} color="primary">
           Add new product
         </Button>
         <div>

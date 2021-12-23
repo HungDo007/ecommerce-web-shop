@@ -128,7 +128,6 @@ const ProfileForm = ({ values, setValues }) => {
           message: "Please select image file",
           type: "warning",
         });
-        return;
       } else {
         const reader = new FileReader();
         reader.onload = (x) => {
@@ -224,11 +223,7 @@ const ProfileForm = ({ values, setValues }) => {
               onChange={handleReview}
             />
             <label className="profile-button" htmlFor="raised-button-file">
-              <Button
-                className="profile-button-submit"
-                variant="contained"
-                component="span"
-              >
+              <Button color="primary" variant="contained" component="span">
                 Upload
               </Button>
             </label>
