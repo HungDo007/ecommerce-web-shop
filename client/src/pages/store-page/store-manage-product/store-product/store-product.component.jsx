@@ -274,11 +274,7 @@ const StoreProduct = (props) => {
             setBasicInformation={setProductInfo}
           />
           <div className="store-product-button">
-            <Button
-              className="store-product-button-submit"
-              variant="contained"
-              type="submit"
-            >
+            <Button color="primary" variant="contained" type="submit">
               Submit
             </Button>
           </div>

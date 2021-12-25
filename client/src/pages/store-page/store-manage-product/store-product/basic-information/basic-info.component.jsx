@@ -172,30 +172,34 @@ const BasicInformation = ({
         </div>
         <div className="store-product-group">
           <span className="store-product-info">Thumbnail</span>
-          <label className="store-product-thumbnail" onChange={handleThumbnail}>
-            <input hidden type="file" accept="image/*" />
-            <img
-              className="background-thumbnail"
-              src={poster ? poster : defaultImg}
-              alt="store"
-            />
-          </label>
-        </div>
-        <div className="store-product-group">
-          <span className="store-product-info">Images</span>
-          {images.map((item, index) => (
-            <label
-              key={index}
-              onChange={(e) => handleImages(e.target.files, index)}
-            >
+          <div className="store-product-thumbnail">
+            <label onChange={handleThumbnail}>
               <input hidden type="file" accept="image/*" />
               <img
-                className="background-image"
-                src={item ? item : defaultImg}
+                className="background-thumbnail"
+                src={poster ? poster : defaultImg}
                 alt="store"
               />
             </label>
-          ))}
+          </div>
+        </div>
+        <div className="store-product-group">
+          <span className="store-product-info">Images</span>
+          <div className="store-product-input">
+            {images.map((item, index) => (
+              <label
+                key={index}
+                onChange={(e) => handleImages(e.target.files, index)}
+              >
+                <input hidden type="file" accept="image/*" />
+                <img
+                  className="background-image"
+                  src={item ? item : defaultImg}
+                  alt="store"
+                />
+              </label>
+            ))}
+          </div>
         </div>
       </div>
     </div>

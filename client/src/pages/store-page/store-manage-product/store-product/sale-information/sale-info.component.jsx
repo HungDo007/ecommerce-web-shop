@@ -184,7 +184,7 @@ const SaleInformation = ({
             <div className="store-product-component-header">
               {componentList.map((item, index) => (
                 <Button
-                  className="store-product-button"
+                  color="primary"
                   variant="contained"
                   key={item.id}
                   type="button"

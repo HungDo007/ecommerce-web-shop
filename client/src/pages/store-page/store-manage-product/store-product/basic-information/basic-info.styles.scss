@@ -10,11 +10,21 @@
 .store-product-basic-info {
   padding: 0px 60px;
 
+  @media screen and (max-width: 600px) {
+    padding: 0 10px;
+  }
+
   .store-product-group {
     display: flex;
     justify-content: space-around;
     padding: 10px;
     align-items: center;
+
+    @media screen and (max-width: 500px) {
+      //display: block;
+      flex-direction: column;
+      align-items: flex-start;
+    }
 
     .store-product-info {
       width: 200px;
@@ -26,10 +36,19 @@
       cursor: pointer;
       border: 1px solid black;
       object-fit: cover;
+
+      // @media screen and (max-width: 500px) {
+      //   width: 80px;
+      //   height: 80px;
+      // }
     }
 
     .store-product-thumbnail {
       width: 680px;
+
+      @media screen and (max-width: 500px) {
+        width: 150px;
+      }
 
       .background-thumbnail {
         width: 225px;
@@ -37,6 +56,11 @@
         object-fit: cover;
         cursor: pointer;
         border: 1px solid black;
+
+        @media screen and (max-width: 500px) {
+          width: 150px;
+          height: 150px;
+        }
       }
     }
 
@@ -44,15 +68,26 @@
       width: 680px;
       padding: 12px 0px;
       font-size: 15px;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+
+      @media screen and (max-width: 500px) {
+        width: 100%;
+      }
     }
   }
 
   .store-product-component {
-    min-width: 680px;
+    width: 680px;
     padding: 12px 0px;
     font-size: 15px;
     border: 1px solid #e6e6e6;
     border-radius: 4px;
+
+    @media screen and (max-width: 500px) {
+      width: 100%;
+    }
 
     .store-product-component-header {
       display: flex;

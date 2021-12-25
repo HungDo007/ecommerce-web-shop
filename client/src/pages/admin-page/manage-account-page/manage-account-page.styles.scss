@@ -3,9 +3,17 @@
   font-size: 20px;
   background: #f5f5f5;
 
+  @media (max-width: 700px) {
+    margin: 1rem;
+  }
+
   .manage-account-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+
+    @media (max-width: 700px) {
+      display: block;
+    }
   }
 }
