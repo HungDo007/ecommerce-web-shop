@@ -7,11 +7,9 @@ using Data.Entities;
 using Data.Enum;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Org.BouncyCastle.Math.EC.Rfc7748;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Application.Catalog
@@ -36,12 +34,14 @@ namespace Application.Catalog
                 var user = await _userManager.FindByNameAsync(username);
                 var proDetail = await _context.ProductDetails.FindAsync(request.ProductDetailId);
 
+                if (request.Quantity > proDetail.Stock || request.Quantity < 0)
+                    return false;
 
                 Cart cart = await _context.Carts.Where(x => x.UserId == user.Id && x.ProductDetailId == proDetail.Id).FirstOrDefaultAsync();
 
                 if (cart != null)
                 {
-                    cart.Quantity++;
+                    cart.Quantity += request.Quantity;
                     await _context.SaveChangesAsync();
                     return true;
                 }
@@ -348,13 +348,27 @@ namespace Application.Catalog
                             select new { c, pd }).FirstOrDefault();
                 if (request.IsIncrease)
                 {
-                    proD.c.Quantity++;
-                    proD.c.Price += proD.pd.Price;
+                    if (proD.c.Quantity < proD.pd.Stock)
+                    {
+                        proD.c.Quantity++;
+                        proD.c.Price += proD.pd.Price;
+                    }
+                    else
+                    {
+                        return false;
+                    }
                 }
                 else
                 {
-                    proD.c.Quantity--;
-                    proD.c.Price -= proD.pd.Price;
+                    if (proD.c.Quantity > 1)
+                    {
+                        proD.c.Quantity--;
+                        proD.c.Price -= proD.pd.Price;
+                    }
+                    else
+                    {
+                        return false;
+                    }
                 }
 
                 await _context.SaveChangesAsync();

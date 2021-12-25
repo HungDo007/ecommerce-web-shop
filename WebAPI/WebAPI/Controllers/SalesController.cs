@@ -107,15 +107,18 @@ namespace WebAPI.Controllers
                 total += cart.CartVms.Sum(p => p.Price);
                 foreach (var item in cart.CartVms)
                 {
-                    itemList.Items.Add(new Item()
+                    for (int i = 0; i < item.Quantity; i++)
                     {
-                        Name = item.ToString(),
-                        Currency = "USD",
-                        Price = item.Price.ToString(),
-                        Quantity = item.Quantity.ToString(),
-                        Sku = "sku",
-                        Tax = "0"
-                    });
+                        itemList.Items.Add(new Item()
+                        {
+                            Name = item.ToString(),
+                            Currency = "USD",
+                            Price = item.Price.ToString(),
+                            Quantity = "1",
+                            Sku = "sku",
+                            Tax = "0"
+                        });
+                    }
                 }
             }
             #endregion
