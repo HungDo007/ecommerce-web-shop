@@ -107,20 +107,37 @@ namespace WebAPI.Controllers
                 total += cart.CartVms.Sum(p => p.Price);
                 foreach (var item in cart.CartVms)
                 {
-                    for (int i = 0; i < item.Quantity; i++)
+                    itemList.Items.Add(new Item()
                     {
-                        itemList.Items.Add(new Item()
-                        {
-                            Name = item.ToString(),
-                            Currency = "USD",
-                            Price = item.Price.ToString(),
-                            Quantity = "1",
-                            Sku = "sku",
-                            Tax = "0"
-                        });
-                    }
+                        Name = item.ToString(),
+                        Currency = "USD",
+                        Price = item.Price.ToString(),
+                        Quantity = item.Quantity.ToString(),
+                        Sku = "sku",
+                        Tax = "0"
+                    });
+
                 }
             }
+            //foreach (var cart in carts)
+            //{
+            //    total += cart.CartVms.Sum(p => p.Price);
+            //    foreach (var item in cart.CartVms)
+            //    {
+            //        for (int i = 0; i < item.Quantity; i++)
+            //        {
+            //            itemList.Items.Add(new Item()
+            //            {
+            //                Name = item.ToString(),
+            //                Currency = "USD",
+            //                Price = item.Price.ToString(),
+            //                Quantity = "1",
+            //                Sku = "sku",
+            //                Tax = "0"
+            //            });
+            //        }
+            //    }
+            //}
             #endregion
 
             var paypalOrderId = DateTime.Now.Ticks;
@@ -209,20 +226,53 @@ namespace WebAPI.Controllers
             return BadRequest();
         }
 
-        [HttpPost("CheckoutStatus")]
 
+        [HttpPost("CheckoutStatus")]
         public async Task<IActionResult> CheckoutStatus([FromBody] CheckoutStatusRequest request)
         {
             await _saleService.Checkout(request);
             return Ok();
         }
 
-        [HttpGet("Order")]
-        public async Task<IActionResult> GetOrder([FromQuery] PagingRequestBase request)
+        [HttpGet("User/Order/{orderStatus}")]
+        public async Task<IActionResult> GetOrderOfUser([FromQuery] PagingRequestBase request, int orderStatus)
         {
-            return Ok(await _saleService.GetOrder(User.Identity.Name, request));
+            if (orderStatus < 0 || orderStatus > 4)
+                return BadRequest("Error type of status order");
+            OrderStatus status = (OrderStatus)orderStatus;
+            return Ok(await _saleService.GetOrder(User.Identity.Name, request, status));
         }
+        #region ff
+        //[HttpGet("OrderInprocess")]
+        //public async Task<IActionResult> GetOrder([FromQuery] PagingRequestBase request)
+        //{
+        //    return Ok(await _saleService.GetOrder(User.Identity.Name, request, OrderStatus.InProgress));
+        //}
 
+        //[HttpGet("OrderCofirmed")]
+        //public async Task<IActionResult> OrderCofirmed([FromQuery] PagingRequestBase request)
+        //{
+        //    return Ok(await _saleService.GetOrder(User.Identity.Name, request, OrderStatus.Confirmed));
+        //}
+
+        //[HttpGet("OrderShipping")]
+        //public async Task<IActionResult> OrderShipping([FromQuery] PagingRequestBase request)
+        //{
+        //    return Ok(await _saleService.GetOrder(User.Identity.Name, request, OrderStatus.Shipping));
+        //}
+
+        //[HttpGet("OrderSuccessed")]
+        //public async Task<IActionResult> OrderSuccessed([FromQuery] PagingRequestBase request)
+        //{
+        //    return Ok(await _saleService.GetOrder(User.Identity.Name, request, OrderStatus.Success));
+        //}
+
+        //[HttpGet("OrderCanceled")]
+        //public async Task<IActionResult> OrderCanceled([FromQuery] PagingRequestBase request)
+        //{
+        //    return Ok(await _saleService.GetOrder(User.Identity.Name, request, OrderStatus.Canceled));
+        //}
+        #endregion
 
         [HttpGet("Order/{orderId}")]
         public async Task<IActionResult> GetOrderDetails(int orderId)
@@ -231,10 +281,13 @@ namespace WebAPI.Controllers
         }
 
 
-        [HttpGet("OrderInProcess")]
-        public async Task<IActionResult> GetOrderInProcess([FromQuery] PagingRequestBase request)
+        [HttpGet("Seller/Order/{orderStatus}")]
+        public async Task<IActionResult> GetOrderInProcess([FromQuery] PagingRequestBase request, int orderStatus)
         {
-            return Ok(await _saleService.GetOrderOfSeller(User.Identity.Name, request, OrderStatus.InProgress));
+            if (orderStatus < 0 || orderStatus > 4)
+                return BadRequest("Error type of status order");
+            OrderStatus status = (OrderStatus)orderStatus;
+            return Ok(await _saleService.GetOrderOfSeller(User.Identity.Name, request, status));
         }
 
 
@@ -244,11 +297,31 @@ namespace WebAPI.Controllers
             return Ok(await _saleService.GetOrderOfSeller(User.Identity.Name, request, OrderStatus.GetAll));
         }
 
-        [HttpPost("ConfirmOrder")]
+        [HttpPost("Seller/ConfirmOrder")]
         public async Task<IActionResult> ConfirmOrder([FromBody] List<int> orderIds)
         {
-            await _saleService.ConfirmedOrder(orderIds);
-            return Ok();
+            var res = await _saleService.OrderStateChange(orderIds, OrderStatus.InProgress);
+            if (res.Status)
+                return Ok();
+            return BadRequest(res.Message);
+        }
+
+        [HttpPost("Seller/ShippingOrder")]
+        public async Task<IActionResult> ShippingOrder([FromBody] List<int> orderIds)
+        {
+            var res = await _saleService.OrderStateChange(orderIds, OrderStatus.Confirmed);
+            if (res.Status)
+                return Ok();
+            return BadRequest(res.Message);
+        }
+
+        [HttpPost("Seller/SuccessOrder")]
+        public async Task<IActionResult> SuccessOrder([FromBody] List<int> orderIds)
+        {
+            var res = await _saleService.OrderStateChange(orderIds, OrderStatus.Shipping);
+            if (res.Status)
+                return Ok();
+            return BadRequest(res.Message);
         }
     }
 }

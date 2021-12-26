@@ -69,13 +69,8 @@ namespace Application.Catalog
         {
             try
             {
-                var order = await _context.Orders.Include(x => x.OrderDetails).Where(x => x.Id == OrderId).FirstOrDefaultAsync();
-
-                order.OrderDetails.Clear();
-
-                TransactionOrder transactionOrder = _context.TransactionOrders.Where(x => x.OrderId == order.Id).FirstOrDefault();
-                _context.TransactionOrders.Remove(transactionOrder);
-                _context.Orders.Remove(order);
+                var order = await _context.TransactionOrders.Where(x => x.OrderId == OrderId).FirstOrDefaultAsync();
+                order.Status = OrderStatus.Canceled;
                 await _context.SaveChangesAsync();
                 return true;
             }
@@ -136,7 +131,7 @@ namespace Application.Catalog
             }
         }
 
-        public async Task<PagedResult<OrderVm>> GetOrder(string username, PagingRequestBase request)
+        public async Task<PagedResult<OrderVm>> GetOrder(string username, PagingRequestBase request, OrderStatus orderStatus)
         {
             try
             {
@@ -144,7 +139,7 @@ namespace Application.Catalog
                 var orders = await _context.Orders
                     .Include(x => x.OrderDetails)
                     .Include(x => x.TransactionOrder)
-                    .Where(x => x.UserId == user.Id)
+                    .Where(x => x.UserId == user.Id && x.TransactionOrder.Status == orderStatus)
                     .ToListAsync();
 
                 List<OrderVm> odVms = new List<OrderVm>();
@@ -302,7 +297,7 @@ namespace Application.Catalog
                 await _context.SaveChangesAsync();
                 return rp;
             }
-            catch
+            catch (Exception e)
             {
                 return null;
             }
@@ -487,7 +482,7 @@ namespace Application.Catalog
                     };
                     odVms.Add(orderVm);
                 }
-
+                int a = 1;
                 if (!string.IsNullOrEmpty(request.Keyword))
                 {
                     odVms = odVms.Where(x => x.Name.Contains(request.Keyword)).ToList();
@@ -501,20 +496,34 @@ namespace Application.Catalog
             }
         }
 
-        public async Task ConfirmedOrder(List<int> orderIds)
+
+        public async Task<Response> OrderStateChange(List<int> orderIds, OrderStatus oldStatus)
         {
+            Response response = new Response();
+            int oldStatusToInt = (int)oldStatus;
+            int newState = oldStatusToInt + 1;
             try
             {
                 foreach (var orderId in orderIds)
                 {
                     var order = await _context.TransactionOrders.Where(x => x.OrderId == orderId).FirstOrDefaultAsync();
-
-                    order.Status = OrderStatus.Confirmed;
+                    if (order.Status != oldStatus)
+                    {
+                        response.Status = false;
+                        response.Message = "Has order current status different from request";
+                        return response;
+                    }
+                    order.Status = (OrderStatus)newState;
                 }
                 await _context.SaveChangesAsync();
+
+                return response;
             }
-            catch
+            catch (Exception e)
             {
+                response.Status = false;
+                response.Message = e.ToString();
+                return response;
             }
         }
     }

@@ -19,14 +19,29 @@ namespace Application.Catalog
         Task<bool> CancelOrder(int OrderId);
         Task SaveToken(string token, int orderId);
 
-        Task<PagedResult<OrderVm>> GetOrder(string username, PagingRequestBase request);
+        /// <summary>
+        /// Get order of user
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        Task<PagedResult<OrderVm>> GetOrder(string username, PagingRequestBase request, OrderStatus orderStatus);
 
         Task<List<OrderDetailVm>> GetOrderDetail(int orderId);
 
         Task Checkout(CheckoutStatusRequest request);
 
+
+        /// <summary>
+        /// Get order of seller
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="request"></param>
+        /// <param name="orderStatus"></param>
+        /// <returns></returns>
         Task<PagedResult<OrderVm>> GetOrderOfSeller(string username, PagingRequestBase request, OrderStatus orderStatus);
 
-        Task ConfirmedOrder(List<int> orderIds);
+
+        Task<Response> OrderStateChange(List<int> orderIds, OrderStatus oldStatus);
     }
 }
