@@ -234,7 +234,7 @@ namespace WebAPI.Controllers
             return Ok();
         }
 
-        [HttpGet("OrderAllOfSeller")]
+        [HttpGet("OrderAllOfUser")]
         public async Task<IActionResult> GetAllOrderOfUser([FromQuery] PagingRequestBase request)
         {
             //OrderStatus status = (OrderStatus)orderStatus;
