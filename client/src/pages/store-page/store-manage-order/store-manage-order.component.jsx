@@ -1,8 +1,10 @@
 import { useState } from "react";
 
 import { Tabs, Tab } from "@material-ui/core";
-import UnconfirmedOrderTable from "./data-table/unconfirmed-order-table";
 import AllOrderTable from "./data-table/all-order-table";
+import UnconfirmedOrderTable from "./data-table/unconfirmed-order-table";
+import ConfirmedOrderTable from "./data-table/confirmed-order-table";
+import CancelledOrderTable from "./data-table/cancelled-table";
 
 const StoreManagesOrder = () => {
   const [value, setValue] = useState(0);
@@ -17,6 +19,8 @@ const StoreManagesOrder = () => {
         <Tabs value={value} onChange={handleChange}>
           <Tab label="All" />
           <Tab label="Unconfirmed" />
+          <Tab label="Confirmed" />
+          <Tab label="Cancelled" />
         </Tabs>
       </div>
       <TabPanel value={value} index={0}>
@@ -24,6 +28,12 @@ const StoreManagesOrder = () => {
       </TabPanel>
       <TabPanel value={value} index={1}>
         <UnconfirmedOrderTable />
+      </TabPanel>
+      <TabPanel value={value} index={2}>
+        <ConfirmedOrderTable />
+      </TabPanel>
+      <TabPanel value={value} index={3}>
+        <CancelledOrderTable />
       </TabPanel>
     </div>
   );

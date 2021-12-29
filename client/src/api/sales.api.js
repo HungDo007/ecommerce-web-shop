@@ -23,8 +23,8 @@ const salesApi = {
   },
 
   //order
-  getOrder: (params) => {
-    const url = "/Sales/Order";
+  getUserOrder: (params, orderStatus) => {
+    const url = `/Sales/User/Order/${orderStatus}`;
     return axiosClient.get(url, { params });
   },
 
@@ -53,8 +53,8 @@ const salesApi = {
     return axiosClient.delete(url);
   },
 
-  getUnconfirmedOrder: (params) => {
-    const url = "/Sales/OrderInProcess";
+  getSellerOrder: (params, orderStatus) => {
+    const url = `/Sales/Seller/Order/${orderStatus}`;
     return axiosClient.get(url, { params });
   },
 
@@ -64,7 +64,7 @@ const salesApi = {
   },
 
   confirmOrder: (orderIds) => {
-    const url = "/Sales/ConfirmOrder";
+    const url = "/Sales/Seller/ConfirmOrder";
     return axiosClient.post(url, orderIds);
   },
 };

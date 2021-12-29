@@ -1,15 +1,13 @@
-import { useRef } from "react";
+import { useHistory } from "react-router";
 
 import MaterialTable from "material-table";
-import AssignmentTurnedInIcon from "@material-ui/icons/AssignmentTurnedIn";
+import InfoIcon from "@material-ui/icons/Info";
 
-import { formatMoney } from "../../../../utils/format-money";
-import { cut } from "../../../../utils/cut-string";
-import salesApi from "../../../../api/sales.api";
+import { formatMoney } from "../../../utils/format-money";
+import { cut } from "../../../utils/cut-string";
+import salesApi from "../../../api/sales.api";
 
-const UnconfirmedOrderTable = () => {
-  const tableRef = useRef(null);
-
+const UserConfirmedOrderTable = () => {
   const columns = [
     {
       title: "Name",
@@ -43,35 +41,23 @@ const UnconfirmedOrderTable = () => {
     },
   ];
 
-  const handleConfirm = (event, rowData) => {
-    let payload = rowData.map((item) => item.id);
-    const confirmOrder = async () => {
-      try {
-        const response = await salesApi.confirmOrder(payload);
-        if (response.status === 200 && response.statusText === "OK") {
-          tableRef.current.onQueryChange();
-        }
-      } catch (error) {}
-    };
-    confirmOrder();
+  const history = useHistory();
+
+  const handleDetail = (event, rowData) => {
+    history.push(`/order/${rowData.id}`);
   };
 
   return (
     <MaterialTable
-      title="Unconfirmed Order"
-      tableRef={tableRef}
+      title="All Order"
       columns={columns}
-      options={{ actionsColumnIndex: -1, selection: true }}
+      options={{ actionsColumnIndex: -1 }}
       actions={[
         {
-          icon: () => (
-            <AssignmentTurnedInIcon
-              style={{ fontSize: 25, color: "rgb(76, 175, 80)" }}
-            />
-          ),
-          tooltip: "Confirm order",
+          icon: InfoIcon,
+          tooltip: "View Detail",
           onClick: (event, rowData) => {
-            handleConfirm(event, rowData);
+            handleDetail(event, rowData);
           },
         },
       ]}
@@ -93,7 +79,7 @@ const UnconfirmedOrderTable = () => {
             keyword: query.search,
           };
           salesApi
-            .getSellerOrder(params, 0)
+            .getUserOrder(params, 1)
             .then((response) => {
               resolve({
                 data: response.items,
@@ -110,4 +96,4 @@ const UnconfirmedOrderTable = () => {
   );
 };
 
-export default UnconfirmedOrderTable;
+export default UserConfirmedOrderTable;
