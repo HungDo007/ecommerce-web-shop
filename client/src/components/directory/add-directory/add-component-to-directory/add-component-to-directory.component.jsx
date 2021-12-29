@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 
-import { Button, Checkbox, FormControlLabel } from "@material-ui/core";
+import {
+  Button,
+  Checkbox,
+  CircularProgress,
+  FormControlLabel,
+} from "@material-ui/core";
 
 import { toggleModal } from "../../../../redux/modal/modal.actions";
 
@@ -10,12 +15,14 @@ import "./add-component-to-directory.styles.scss";
 
 const AddComponentToDirectory = ({ directoryId, dispatch, setNotify }) => {
   const [compoOfDirect, setCompoOfDirect] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchComponentOfDirectory = async () => {
       try {
         const response = await adminApi.getComponentOfDirectory(directoryId);
         setCompoOfDirect(response);
+        setIsLoading(false);
       } catch (error) {}
     };
 
@@ -67,31 +74,39 @@ const AddComponentToDirectory = ({ directoryId, dispatch, setNotify }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div className="add-component-to-directory-container">
-        {compoOfDirect.map((item, index) => (
-          <FormControlLabel
-            key={item.id}
-            value="end"
-            control={
-              <Checkbox
-                color="primary"
-                size="medium"
-                onChange={() => handleOnChange(index)}
-                checked={item.isExists}
+    <>
+      {isLoading ? (
+        <div className="loading">
+          <CircularProgress style={{ height: "80px", width: "80px" }} />
+        </div>
+      ) : (
+        <form onSubmit={handleSubmit}>
+          <div className="add-component-to-directory-container">
+            {compoOfDirect.map((item, index) => (
+              <FormControlLabel
+                key={item.id}
+                value="end"
+                control={
+                  <Checkbox
+                    color="primary"
+                    size="medium"
+                    onChange={() => handleOnChange(index)}
+                    checked={item.isExists}
+                  />
+                }
+                label={item.name}
+                labelPlacement="end"
               />
-            }
-            label={item.name}
-            labelPlacement="end"
-          />
-        ))}
-      </div>
-      <div className="add-component-to-directory-button">
-        <Button type="submit" variant="contained" color="primary">
-          Submit
-        </Button>
-      </div>
-    </form>
+            ))}
+          </div>
+          <div className="add-component-to-directory-button">
+            <Button type="submit" variant="contained" color="primary">
+              Submit
+            </Button>
+          </div>
+        </form>
+      )}
+    </>
   );
 };
 

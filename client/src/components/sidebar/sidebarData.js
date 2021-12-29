@@ -13,7 +13,7 @@ export const DataArr = () => {
 
   const guestSidebar = [
     {
-      title: "Dashboard",
+      title: "Home",
       path: "/",
       icon: <AiIcons.AiFillHome />,
       cName: "nav-text",
@@ -22,7 +22,7 @@ export const DataArr = () => {
 
   const userSidebar = [
     {
-      title: "Dashboard",
+      title: "Home",
       path: "/",
       icon: <AiIcons.AiFillHome />,
       cName: "nav-text",
@@ -49,7 +49,7 @@ export const DataArr = () => {
 
   const adminSidebar = [
     {
-      title: "Dashboard",
+      title: "Profile",
       path: "/admin",
       icon: <AiIcons.AiFillHome />,
       cName: "nav-text",

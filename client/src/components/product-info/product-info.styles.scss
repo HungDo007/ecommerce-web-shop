@@ -29,7 +29,7 @@
           height: 100%;
           max-height: 400px;
           display: block;
-          object-fit: cover;
+          object-fit: contain;
         }
 
         .thumb {
@@ -220,6 +220,7 @@
 
 .loading {
   height: 50vh;
+  width: 300px;
   display: flex;
   justify-content: center;
   align-items: center;
