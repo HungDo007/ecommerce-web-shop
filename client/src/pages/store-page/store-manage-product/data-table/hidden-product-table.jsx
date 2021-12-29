@@ -4,6 +4,8 @@ import VisibilityIcon from "@material-ui/icons/Visibility";
 
 import { toggleModal } from "../../../../redux/modal/modal.actions";
 
+import { cut } from "../../../../utils/cut-string";
+
 import storeApi from "../../../../api/store-api";
 
 const HiddenProductTable = ({
@@ -17,6 +19,7 @@ const HiddenProductTable = ({
     {
       title: "Name",
       field: "name",
+      render: (rowData) => <div>{cut(rowData.name, 56)}</div>,
     },
     {
       title: "Image",

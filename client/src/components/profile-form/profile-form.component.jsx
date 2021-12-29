@@ -342,6 +342,7 @@ const ProfileForm = ({ values, setValues }) => {
         </div>
         <div className="profile-button">
           <Button
+            color="primary"
             type="submit"
             className="profile-button-submit"
             variant="contained"

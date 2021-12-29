@@ -238,7 +238,7 @@ const CartPage = () => {
                       <Tooltip title="Decrease item by 1">
                         <IconButton
                           aria-label="decrease item"
-                          // disabled={Boolean(cartItem.quantity === 1)}
+                          disabled={Boolean(cartItem.quantity === 1)}
                           onClick={() =>
                             handleUpdateAmount(
                               "decrease",
@@ -255,9 +255,9 @@ const CartPage = () => {
                       <Tooltip title="Increase item by 1">
                         <IconButton
                           aria-label="increase item"
-                          // disabled={Boolean(
-                          //   cartItem.quantity === cartItem.stockOfDetail
-                          // )}
+                          disabled={Boolean(
+                            cartItem.quantity === cartItem.stockOfDetail
+                          )}
                           onClick={() =>
                             handleUpdateAmount(
                               "increase",

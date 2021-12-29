@@ -8,6 +8,8 @@ import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 
 import { toggleModal } from "../../../../redux/modal/modal.actions";
 
+import { cut } from "../../../../utils/cut-string";
+
 import catalogApi from "../../../../api/catalog-api";
 
 const SellerProductTable = ({
@@ -23,6 +25,7 @@ const SellerProductTable = ({
     {
       title: "Name",
       field: "name",
+      render: (rowData) => <div>{cut(rowData.name, 56)}</div>,
     },
     {
       title: "Image",
