@@ -139,8 +139,14 @@ namespace Application.Catalog
                 var orders = await _context.Orders
                     .Include(x => x.OrderDetails)
                     .Include(x => x.TransactionOrder)
-                    .Where(x => x.UserId == user.Id && x.TransactionOrder.Status == orderStatus)
+                    .Where(x => x.UserId == user.Id)
                     .ToListAsync();
+
+                if (orderStatus != OrderStatus.GetAll)
+                {
+                    orders = orders.Where(x => x.TransactionOrder.Status == orderStatus).ToList();
+                }
+
 
                 List<OrderVm> odVms = new List<OrderVm>();
                 foreach (var item in orders)
