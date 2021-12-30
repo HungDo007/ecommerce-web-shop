@@ -42,6 +42,7 @@ namespace Application.Catalog
                 if (cart != null)
                 {
                     cart.Quantity += request.Quantity;
+                    cart.Price += request.Quantity * proDetail.Price;
                     await _context.SaveChangesAsync();
                     return true;
                 }
