@@ -19,7 +19,7 @@ const HiddenProductTable = ({
     {
       title: "Name",
       field: "name",
-      render: (rowData) => <div>{cut(rowData.name, 56)}</div>,
+      render: (rowData) => <div>{cut(rowData.name, 50)}</div>,
     },
     {
       title: "Image",

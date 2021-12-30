@@ -12,11 +12,17 @@ const UserCancelledOrderTable = () => {
     {
       title: "Name",
       field: "name",
-      render: (rowData) => <div>{cut(rowData.name, 44)}</div>,
+      render: (rowData) => <div>{cut(rowData.name, 36)}</div>,
     },
     {
       title: "Quantity",
       field: "quantity",
+    },
+    {
+      title: "Shop",
+      field: "shopName",
+      render: (rowData) =>
+        rowData.shopName ? rowData.shopName : rowData.seller,
     },
     {
       title: "Total",
