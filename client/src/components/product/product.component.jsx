@@ -31,7 +31,7 @@ const Product = ({ search }) => {
           keyword: search ? search : "",
           catId: directoryId ? directoryId : 0,
           pageIndex: page,
-          pageSize: 6,
+          pageSize: 24,
         };
         await catalogApi.getAllProduct(params).then((response) => {
           if (response.items.length !== 0) {
