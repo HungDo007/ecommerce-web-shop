@@ -105,11 +105,15 @@ const SignIn = ({ setAction }) => {
         } catch (error) {
           if (error.response?.data === "Incorrect Username.") {
             setErrors({
-              email: "Your username is incorrect",
+              email: "Your username is incorrect!",
             });
           } else if (error.response?.data === "Incorrect Password.") {
             setErrors({
-              password: "Your password is incorrect",
+              password: "Your password is incorrect!",
+            });
+          } else {
+            setErrors({
+              email: "Your account has been locked!",
             });
           }
         }

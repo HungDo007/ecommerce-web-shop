@@ -170,21 +170,25 @@ const SignUp = ({ setAction, currentUser, tableRef }) => {
                 message: `Fail to sign up. Username already used!`,
                 type: "error",
               });
-            }
-            if (error.response?.data[0] === "Email already used") {
+            } else if (error.response?.data[0] === "Email already used") {
               setNotify({
                 isOpen: true,
                 message: `Fail to sign up. Email already used!`,
                 type: "error",
               });
-            }
-            if (
+            } else if (
               error.response?.data[0] === "Username already used" &&
               error.response?.data[1] === "Email already used"
             ) {
               setNotify({
                 isOpen: true,
                 message: `Fail to sign up. Username and email already used!`,
+                type: "error",
+              });
+            } else {
+              setNotify({
+                isOpen: true,
+                message: "Something went wrong! Fail to sign up",
                 type: "error",
               });
             }
