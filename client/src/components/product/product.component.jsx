@@ -31,7 +31,7 @@ const Product = ({ search }) => {
           keyword: search ? search : "",
           catId: directoryId ? directoryId : 0,
           pageIndex: page,
-          pageSize: 30,
+          pageSize: 6,
         };
         await catalogApi.getAllProduct(params).then((response) => {
           if (response.items.length !== 0) {
@@ -68,7 +68,7 @@ const Product = ({ search }) => {
           <div className="more-button">
             <Pagination
               count={productPaging?.pageCount}
-              defaultPage={1}
+              defaultPage={page}
               onChange={(event, page) => handleChangePage(event, page)}
               shape="rounded"
               color="primary"
